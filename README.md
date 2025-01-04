@@ -23,7 +23,7 @@ yarn add mosaic-data-table
 ## Basic Usage
 
 ```
-import { MosaicDataTable, useGridPlugins } from 'mosaic-data-table';
+import { MosaicDataTable, useGridPlugins, CustomBodyCellContentRenderPlugin} from 'mosaic-data-table';
 
 function MyTable() {
 
@@ -55,8 +55,8 @@ function MyTable() {
   return (
     <MosaicDataTable
       plugins={gridPlugins}
-      items={items}
       headCells={headCells}
+      items={items}
     />
   );
 }
