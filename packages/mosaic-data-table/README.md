@@ -9,6 +9,9 @@ A lightweight, extensible React data table library built with Material-UI. The c
 - 🎨 Material-UI based styling
 - 🚀 TypeScript support
 
+## Demo 
+[MosaicDataTable Demo](https://golabra.github.io/MosaicDataTable/)
+
 ## Installation
 
 ```bash

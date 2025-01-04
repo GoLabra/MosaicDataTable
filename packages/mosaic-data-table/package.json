@@ -1,7 +1,11 @@
 {
     "name": "mosaic-data-table",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "React DataTable component with Material-UI",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GoLabra/MosaicDataTable.git"
+    },
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",

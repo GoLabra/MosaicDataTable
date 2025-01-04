@@ -2,6 +2,9 @@
     "name": "mosaic-data-table",
     "version": "1.0.0",
     "private": true,
+    "scripts": {
+        "deploy-demo": "gh-pages -d packages/demo"
+    },
     "workspaces": [
       "packages/*"
     ]
