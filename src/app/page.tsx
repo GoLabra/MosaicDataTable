@@ -1,21 +1,16 @@
 'use client';
 
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import NextLink from 'next/link';
+
 import Copyright from '@/components/Copyright';
 import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useRowExpansionStore } from 'mosaic-data-table';
-import { useCallback, useState } from 'react';
-import { Avatar, Chip, LinearProgress, ListItemIcon, MenuItem, Rating, Stack } from '@mui/material';
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { Widgets } from '@mui/icons-material';
 import { useSelection } from '@/hooks/use-selection';
 import { stringAvatar } from '@/util/avatar-util';
 import RomaniaIcon from '@/lib/icons/RO';
 import { CountryIcon } from '@/lib/icons/country-icon';
+import { Avatar, Box, Chip, Container, LinearProgress, ListItemIcon, MenuItem, Rating, Stack, Typography } from '@mui/material';
+import { useCallback, useState } from 'react';
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 export default function Home() {
 
