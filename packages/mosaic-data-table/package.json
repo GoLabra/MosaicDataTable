@@ -1,0 +1,32 @@
+{
+    "name": "mosaic-data-table",
+    "version": "0.0.7",
+    "description": "React DataTable component with Material-UI",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT",
+    "peerDependencies": {
+        "@mui/material": "^6.1.8",
+        "@mui/icons-material": "^6.1.8",
+        "@emotion/react": "^11.11.4",
+        "@emotion/styled": "^11.11.5",
+        "react": "^18",
+        "react-dom": "^18"
+    },
+    "devDependencies": {
+        "ts-node": "^10.9.2",
+        "tsup": "^8.3.5",
+        "typescript": "^5.7.2",
+        "@types/react": "^18",
+        "@types/react-dom": "^18"
+    }
+}
