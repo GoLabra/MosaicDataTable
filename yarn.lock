@@ -2422,7 +2422,7 @@ minimist@^1.2.0, minimist@^1.2.6:
     react-dom "^18"
 
 mosaic-data-table@*, "mosaic-data-table@file:/home/andrei/projects/MosaicDataTable/packages/mosaic-data-table":
-  version "0.0.9"
+  version "0.0.10"
   resolved "file:packages/mosaic-data-table"
 
 ms@^2.1.1, ms@^2.1.3:

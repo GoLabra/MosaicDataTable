@@ -7,7 +7,7 @@ export interface Pagination {
     count: number
 }
 
-export interface MosaicDataTableProps<T extends any> {
+export interface MosaicDataTableProps<T = any> {
     caption?: string;
     items: T[];
     headCells: HeadCell<T>[];
@@ -15,13 +15,13 @@ export interface MosaicDataTableProps<T extends any> {
     plugins?: MosaicDataTablePlugin[];
 }
 
-export interface EnhancedTableProps<T extends any> {
+export interface EnhancedTableProps<T = any> {
     headCells: HeadCell<T>[]
     plugins?: MosaicDataTablePlugin[];
     gridApi: GridApi;
 }
 
-export interface HeadCell<T extends any> {
+export interface HeadCell<T = any> {
     id: string,
     label: string
     width?: number
@@ -31,7 +31,7 @@ export interface HeadCell<T extends any> {
     hasSort?: boolean;
 }
 
-export interface Action<T extends any> {
+export interface Action<T = any> {
     id: string
     render: (item: T) => ReactNode,
     isVisible?: (item: T) => boolean,

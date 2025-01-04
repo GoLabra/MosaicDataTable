@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
-    images: {
-        unoptimized: true,
-    },
-    basePath: '/MosaicDataTable',
-    assetPrefix: '/MosaicDataTable'
+    // For Github Pages
+    ...((process.env.GITHUB_ACTIONS || process.env.DEPLOY_ENV === 'gh-pages') && {
+        output: 'export',
+        basePath: '/mosaic-data-table',
+        assetPrefix: '/mosaic-data-table/',
+        images: {
+            unoptimized: true
+        }
+    })
 };
+
 
 export default nextConfig;
