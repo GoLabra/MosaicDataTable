@@ -165,3 +165,9 @@ Plugins can be combined to add specific functionality to your table. The order o
 - EmptyDataPlugin
 
     Handles empty state display
+
+    ```
+    usePluginWithParams(EmptyDataPlugin, {
+        content?: ReactNode
+    })
+    ```

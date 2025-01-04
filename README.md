@@ -70,7 +70,7 @@ Plugins can be combined to add specific functionality to your table. The order o
 
     Enables custom cell content rendering
 
-**Note:** In future versions, alternative rendering methods will be available, such as automatic value retrieval based on cell ID and smart content type detection. For now, this plugin is required and must be included first in the plugins list.
+    **Note:** In future versions, alternative rendering methods will be available, such as automatic value retrieval based on cell ID and smart content type detection. For now, this plugin is required and must be included first in the plugins list.
     
 
 - PaddingPlugin
@@ -165,3 +165,9 @@ Plugins can be combined to add specific functionality to your table. The order o
 - EmptyDataPlugin
 
     Handles empty state display
+
+    ```
+    usePluginWithParams(EmptyDataPlugin, {
+        content?: ReactNode
+    })
+    ```

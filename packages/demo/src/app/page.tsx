@@ -6,15 +6,18 @@ import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellCont
 import { useSelection } from '@/hooks/use-selection';
 import { stringAvatar } from '@/util/avatar-util';
 import { CountryIcon } from '@/lib/icons/country-icon';
-import { Avatar, Box, Chip, Container, LinearProgress, ListItemIcon, MenuItem, Rating, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Checkbox, Chip, Container, FormControlLabel, LinearProgress, ListItemIcon, MenuItem, Rating, Stack, Typography } from '@mui/material';
 import { useCallback, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import ModeSwitch from '@/components/ModeSwitch';
 
 export default function Home() {
 
     const [order, setOrder] = useState<{ order: Order, sortBy: string }>({ order: 'asc', sortBy: 'name' });
     const contentManagerSelection = useSelection<number>();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [empty, setEmpty] = useState<boolean>(false);
 
     const headCells: HeadCell[] = [{
         id: 'id',
@@ -132,7 +135,7 @@ export default function Home() {
     },
     ];
 
-    const items = [{
+    let items = empty ? [] : [{
         id: 1,
         name: 'Max Mustermann',
         email: 'max.mustermann@mail.com',
@@ -283,13 +286,21 @@ export default function Home() {
         }),
         PinnedColumnsPlugin,
         usePluginWithParams(SkeletonLoadingPlugin, {
-            isLoading: false
+            isLoading: loading
         }),
-        EmptyDataPlugin
+        usePluginWithParams(EmptyDataPlugin, {
+            content: "Wow, such empty!"
+        }),
     );
 
     return (
         <Container maxWidth="lg">
+
+            <Stack alignItems="center" direction="row" justifyContent="flex-end" > 
+                <FormControlLabel control={<Checkbox checked={empty} onChange={(event) => setEmpty(event.target.checked)} />} label="Simulate Empty Table" />
+                <FormControlLabel control={<Checkbox checked={loading} onChange={(event) => setLoading(event.target.checked)} />} label="Simulate Loading" />
+                <ModeSwitch />
+            </Stack>
             <Box
                 sx={{
                     my: 4,

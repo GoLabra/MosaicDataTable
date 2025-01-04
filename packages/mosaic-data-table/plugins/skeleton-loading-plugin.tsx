@@ -1,14 +1,25 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin } from "../types/table-types";
+import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
 import { DockedDiv, MosaicDataTableCellRoot } from "../style";
 import { Skeleton, TableBody, TableCell, TableRow } from "@mui/material";
 
 export const SkeletonLoadingPlugin = (props: {
     isLoading: boolean
-}): MosaicDataTableBodyRenderPlugin => {
+}): MosaicDataTableBodyRenderPlugin & MosaicDataTableGridColumnsPlugin => {
 
     return {
-        type: 'body-render',
+        type: ['body-render', 'grid-columns'] as const,
+        getColumns: (headCells: Array<HeadCell>) => {
+
+            if (!props.isLoading) {
+                return headCells;
+            }
+
+            return headCells.map((headCell: HeadCell) => ({
+                    ...headCell,
+                    pin: undefined
+                }));
+        },
         renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
 
             if (!props.isLoading) {

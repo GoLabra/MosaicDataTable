@@ -1,6 +1,6 @@
 {
     "name": "mosaic-data-table",
-    "version": "0.0.12",
+    "version": "0.0.14",
     "description": "React DataTable component with Material-UI",
     "repository": {
         "type": "git",
@@ -24,7 +24,7 @@
     "scripts": {
         "build": "tsup",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "deploy": "yarn version --patch && yarn build && yarn npm publish"
+        "deploy": "npm version patch && npm run build && npm publish"
     },
     "author": "",
     "license": "MIT",

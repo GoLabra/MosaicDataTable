@@ -3,8 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
+        "dev": "npm run dev --workspace=mosaic-data-table-demo",
         "deploy-demo": "npm run deploy --workspace=mosaic-data-table-demo",
-        "publish-npm": "npm run publish --workspace=mosaic-data-table"
+        "deploy-npm": "npm run deploy --workspace=mosaic-data-table"
     },
     "workspaces": [
       "packages/*"

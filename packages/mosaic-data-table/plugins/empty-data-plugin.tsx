@@ -3,35 +3,42 @@ import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin } from "../types/tab
 import { Box, TableBody, TableCell, TableRow } from "@mui/material";
 
 
-export const EmptyDataPlugin: MosaicDataTableBodyRenderPlugin = {
+export const EmptyDataPlugin = ({
+    content = 'No data'
+}: {
+    content?: ReactNode
+}): MosaicDataTableBodyRenderPlugin => {
 
-    type: 'body-render',
-    renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
+    return {
 
-        if (rows?.length) {
-            return null;
-        }
+        type: 'body-render',
+        renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
 
-        return <TableBody>
-            <TableRow>
-                <TableCell>
-                    <Box sx={{
-                        height: '150px',
-                        pointerEvents: 'none'
-                    }}>
+            if (rows?.length) {
+                return null;
+            }
+
+            return <TableBody>
+                <TableRow>
+                    <TableCell>
                         <Box sx={{
-                            padding: '60px',
-                            position: 'absolute',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
+                            height: '150px',
                             pointerEvents: 'none'
                         }}>
-                            No data
+                            <Box sx={{
+                                padding: '60px',
+                                position: 'absolute',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                pointerEvents: 'none'
+                            }}>
+                                {content}
+                            </Box>
                         </Box>
-                    </Box>
-                </TableCell>
-            </TableRow>
-        </TableBody>
-    }
+                    </TableCell>
+                </TableRow>
+            </TableBody>
+        }
 
+    }
 }   
