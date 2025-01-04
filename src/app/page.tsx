@@ -26,7 +26,7 @@ export default function Home() {
         id: 'id',
         label: 'ID',
         width: 100,
-        render: (row: any) => <span>{row.id}</span>,
+        render: (row: any) => <>{row.id}</>,
     },
     {
         id: 'name',
@@ -41,7 +41,7 @@ export default function Home() {
         label: 'E-mail',
         width: 200,
         hasSort: true,
-        render: (row: any) => <span>{row.email}</span>,
+        render: (row: any) => <>{row.email}</>,
     }, {
         id: 'country',
         label: 'Country',
@@ -62,21 +62,21 @@ export default function Home() {
         label: 'City',
         width: 150,
         hasSort: true,
-        render: (row: any) => <span>{row.city}</span>,
+        render: (row: any) => <>{row.city}</>,
     },
     {
         id: 'age',
         label: 'Age',
         width: 100,
         hasSort: true,
-        render: (row: any) => <span>{row.age}</span>,
+        render: (row: any) => <>{row.age}</>,
     },
     {
         id: 'gender',
         label: 'Gender',
         width: 100,
         hasSort: true,
-        render: (row: any) => <span>{row.gender}</span>,
+        render: (row: any) => <>{row.gender}</>,
     }, {
         id: 'status',
         label: 'Status',
@@ -96,14 +96,14 @@ export default function Home() {
         label: 'Address',
         width: 200,
         hasSort: true,
-        render: (row: any) => <span>{row.address}</span>,
+        render: (row: any) => <>{row.address}</>,
     },
     
     {
         id: 'phone',
         label: 'Phone',
         width: 150,
-        render: (row: any) => <span>{row.phone}</span>,
+        render: (row: any) => <>{row.phone}</>,
     },
     {
         id: 'progress',
@@ -116,19 +116,19 @@ export default function Home() {
         label: 'IsMember',
         width: 100,
         hasSort: true,
-        render: (row: any) => <span>{row.member ? 'Yes' : 'No'}</span>,
+        render: (row: any) => <>{row.member ? 'Yes' : 'No'}</>,
     }, {
         id: 'registrationDate',
         label: 'Registered On',
         width: 180,
         hasSort: true,
-        render: (row: any) => <span>{new Date(row.registrationDate).toISOString()}</span>,
+        render: (row: any) => <>{new Date(row.registrationDate).toISOString()}</>,
     }, {
         id: 'role',
         label: 'Role',
         width: 120,
         hasSort: true,
-        render: (row: any) => <span>{row.role}</span>,
+        render: (row: any) => <>{row.role}</>,
     }, 
     {
         id: 'rating',
