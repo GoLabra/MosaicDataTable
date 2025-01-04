@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "deploy-demo": "gh-pages -d packages/demo"
+        "deploy-demo": "npm run deploy --workspace=mosaic-data-table-demo",
+        "publish-npm": "npm run publish --workspace=mosaic-data-table"
     },
     "workspaces": [
       "packages/*"
