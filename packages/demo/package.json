@@ -1,8 +1,7 @@
 {
   "name": "mosaic-data-table-demo",
-  "version": "5.0.0",
-  "homepage": "https://go-labra.github.io/mosaic-data-table",
- 
+  "version": "1.0.0",
+  "homepage": "https://golabra.github.io/MosaicDataTable/",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,8 +10,8 @@
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest",
 
-    "predeploy": "yarn build",
-    "deploy": "gh-pages -d out --nojekyll"
+    "predeploy": "DEPLOY_ENV=gh-pages npm run build && touch ./out/.nojekyll",
+    "deploy": "gh-pages -d out"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",

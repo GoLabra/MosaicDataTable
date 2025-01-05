@@ -158,7 +158,8 @@ Plugins can be combined to add specific functionality to your table. The order o
 
     ```
     usePluginWithParams(SkeletonLoadingPlugin, {
-        isLoading: boolean
+        isLoading: boolean,
+        rowsWhenEmpty?: number
     })
     ```
 

@@ -3,15 +3,19 @@ import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin, MosaicDataTableGrid
 import { DockedDiv, MosaicDataTableCellRoot } from "../style";
 import { Skeleton, TableBody, TableCell, TableRow } from "@mui/material";
 
-export const SkeletonLoadingPlugin = (props: {
-    isLoading: boolean
+export const SkeletonLoadingPlugin = ({
+    isLoading,
+    rowsWhenEmpty = 5
+}: {
+    isLoading: boolean,
+    rowsWhenEmpty?: number
 }): MosaicDataTableBodyRenderPlugin & MosaicDataTableGridColumnsPlugin => {
 
     return {
         type: ['body-render', 'grid-columns'] as const,
         getColumns: (headCells: Array<HeadCell>) => {
 
-            if (!props.isLoading) {
+            if (!isLoading) {
                 return headCells;
             }
 
@@ -22,12 +26,12 @@ export const SkeletonLoadingPlugin = (props: {
         },
         renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
 
-            if (!props.isLoading) {
+            if (!isLoading) {
                 return null;
             }
 
             return <TableBody>
-                {props.isLoading && (<SkeleonRows columns={headCells.length} rows={rows?.length ?? 5} />)}
+                {isLoading && (<SkeleonRows columns={headCells.length} rows={rows?.length || rowsWhenEmpty} />)}
             </TableBody>
         }
     }
