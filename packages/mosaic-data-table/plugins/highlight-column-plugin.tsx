@@ -12,9 +12,7 @@ export const HighlightColumnPlugin = (props: {
 
         renderHeadCellContent: (headCell: HeadCell<any>, gridApi: GridApi, children?: ReactNode) => {
 
-            const isColumnHighlighted = props.isColumnHighlighted?.(headCell.id);
-
-            if(!isColumnHighlighted){
+            if (!headCell.highlight && !props.isColumnHighlighted?.(headCell.id)) {
                 return children;
             }
 
@@ -23,9 +21,8 @@ export const HighlightColumnPlugin = (props: {
             }}> {children} </DockedDiv>
         },
         renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
-            const isColumnHighlighted = props.isColumnHighlighted?.(headCell.id);
-
-            if(!isColumnHighlighted){
+            
+            if (!headCell.highlight && !props.isColumnHighlighted?.(headCell.id)) {
                 return children;
             }
 

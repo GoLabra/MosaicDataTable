@@ -26,6 +26,8 @@ export interface HeadCell<T = any> {
     label: string
     width?: number
 
+    //plugin needed
+    highlight?: boolean;
     render?: (row: T) => ReactNode;
     pin?: 'left' | 'right';
     hasSort?: boolean;

@@ -32,6 +32,7 @@ export default function Home() {
         hasSort: true,
         render: (row: any) => (<Stack direction="row" alignItems="center" gap={1}><Avatar  {...stringAvatar(row.name)} />{row.name}</Stack>),
         pin: useResponsivePin({ pin: 'left', breakpoint: 'sm', direction: 'up' }),
+        highlight: true,
     },
     {
         id: 'mail',
@@ -241,7 +242,7 @@ export default function Home() {
     }];
 
     const isColumnHighlighted = useCallback((headCellId: string) => {
-        return headCellId === 'name';
+        return headCellId === 'role';
     }, []);
 
     // Row Actions
