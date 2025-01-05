@@ -2,7 +2,7 @@
 
 
 import Copyright from '@/components/Copyright';
-import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
+import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
 import { useSelection } from '@/hooks/use-selection';
 import { stringAvatar } from '@/util/avatar-util';
 import { CountryIcon } from '@/lib/icons/country-icon';
@@ -121,6 +121,7 @@ export default function Home() {
         width: 180,
         hasSort: true,
         render: (row: any) => <>{new Date(row.registrationDate).toISOString()}</>,
+        visible: useResponsiveHeadCellVisible({ breakpoint: 'md', direction: 'up' }),
     }, {
         id: 'role',
         label: 'Role',

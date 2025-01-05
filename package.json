@@ -7,7 +7,8 @@
         "deploy-demo": "npm run deploy --workspace=mosaic-data-table-demo",
         "deploy-npm": "npm run deploy --workspace=mosaic-data-table",
 
-        "gh-lazy": "git add . && git commit -m \"Updates\" && git push"
+        "gh-lazy": "git add . && git commit -m \"Updates\" && git push",
+        "update-everything-i-am-lazy": "npm run deploy-demo && npm run deploy-npm && npm run gh-lazy"
     },
     "workspaces": [
       "packages/*"

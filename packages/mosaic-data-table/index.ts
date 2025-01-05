@@ -6,6 +6,7 @@ export type * from './types/table-types'
 // Export hooks
 export * from './hooks/useGridPlugins'
 export * from './hooks/usePluginWithParams'
+export * from './hooks/useResponsiveHeadCellVisible'
 
 // Export main components
 export { MosaicDataTable } from './MosaicDataTable'

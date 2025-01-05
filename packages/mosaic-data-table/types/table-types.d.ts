@@ -25,6 +25,7 @@ export interface HeadCell<T = any> {
     id: string,
     label: string
     width?: number
+    visible?: boolean = true;
 
     //plugin needed
     highlight?: boolean;

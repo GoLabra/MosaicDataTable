@@ -14,6 +14,10 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         });
     }, [props.plugins]);
 
+    const visileHeadCells = useMemo((): Array<HeadCell<any>> => {
+        return props.headCells.filter((headCell) => headCell.visible ?? true);
+    }, [props.headCells]);
+
     // grid-columns
     const bodyCellRenderPlugins = useMemo((): MosaicDataTableGridColumnsPlugin[] => {
         return filterGridPlugins<MosaicDataTableGridColumnsPlugin>(props.plugins, 'grid-columns');
@@ -23,9 +27,9 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         return bodyCellRenderPlugins.reduce((acc: Array<HeadCell<any>>, plugin: MosaicDataTableGridColumnsPlugin): Array<HeadCell<any>> => {
             const cellContent = plugin.getColumns?.(acc);
             return cellContent ?? [];
-        }, props.headCells);
+        }, visileHeadCells);
 
-    }, [bodyCellRenderPlugins, props.headCells]);
+    }, [bodyCellRenderPlugins, visileHeadCells]);
 
 
     const gridApi: GridApi = useMemo(() => ({
