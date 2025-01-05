@@ -102,6 +102,7 @@ export function MosaicDataTableBodyCore<T>(props: {
         <React.Fragment>
 
             {getRow({
+                row: row,
                 children: (
                     <>
                         {headCells

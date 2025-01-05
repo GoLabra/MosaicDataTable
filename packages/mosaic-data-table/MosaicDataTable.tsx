@@ -85,7 +85,3 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         </MosaicDataTableRoot>
     )
 }
-
-MosaicDataTable.defaultProps = {
-    showHeader: true
-};
