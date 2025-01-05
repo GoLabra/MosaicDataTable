@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { GridApi, HeadCell, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin } from "../types/table-types";
-import { TableCell } from "@mui/material";
-import { alpha, SxProps, Theme } from "@mui/material/styles";
+import { TableCell, useMediaQuery } from "@mui/material";
+import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
@@ -58,4 +58,22 @@ const getCell = (headCell: HeadCell<any>, gridApi: GridApi, sx: SxProps<Theme>, 
             zIndex: 1,
         }}>{children}</MosaicDataTableCellRoot>
     }
+}
+
+
+interface ResponsivePinProps {
+    pin: 'left' | 'right'
+    breakpoint: Breakpoint | number;
+    direction?: 'up' | 'down'
+}
+export const useResponsivePin = ({
+    pin,
+    breakpoint,
+    direction = 'up'
+}: ResponsivePinProps): 'left' | 'right' | undefined => {
+    const isActive = useMediaQuery((theme: Theme) => theme.breakpoints[direction](breakpoint));
+    if(isActive){
+        return pin;
+    }
+    return undefined;
 }

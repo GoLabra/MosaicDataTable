@@ -2,12 +2,12 @@
 
 
 import Copyright from '@/components/Copyright';
-import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useRowExpansionStore } from 'mosaic-data-table';
+import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
 import { useSelection } from '@/hooks/use-selection';
 import { stringAvatar } from '@/util/avatar-util';
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { Avatar, Box, Checkbox, Chip, Container, FormControlLabel, LinearProgress, ListItemIcon, MenuItem, Rating, Stack, Typography } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { use, useCallback, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ModeSwitch from '@/components/ModeSwitch';
@@ -31,7 +31,7 @@ export default function Home() {
         width: 200,
         hasSort: true,
         render: (row: any) => (<Stack direction="row" alignItems="center" gap={1}><Avatar  {...stringAvatar(row.name)} />{row.name}</Stack>),
-        pin: 'left'
+        pin: useResponsivePin({ pin: 'left', breakpoint: 'sm', direction: 'up' }),
     },
     {
         id: 'mail',
@@ -44,7 +44,7 @@ export default function Home() {
         label: 'Country',
         width: 150,
         hasSort: true,
-        pin: 'left',
+        pin: useResponsivePin({ pin: 'left', breakpoint: 'md', direction: 'up' }),
         render: (row: any) => <Stack direction="row" alignItems="center" gap={1}><CountryIcon country={row.countryCode}
             sx={{
                 fontSize: 24, // Change size as needed
@@ -79,6 +79,7 @@ export default function Home() {
         label: 'Status',
         width: 120,
         hasSort: true,
+        pin: useResponsivePin({ pin: 'left', breakpoint: 'md', direction: 'up' }),
         render: (row: any) => {
             if (row.status === 'Active') {
                 return (<Chip label="Active" color="primary" size="small" />);
@@ -86,7 +87,6 @@ export default function Home() {
                 return (<Chip label="Inactive" color="secondary" size="small" />);
             }
         },
-        pin: 'left'
     },
     {
         id: 'address',
