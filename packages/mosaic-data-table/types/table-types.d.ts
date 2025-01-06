@@ -30,7 +30,7 @@ export interface HeadCell<T = any> {
     //plugin needed
     highlight?: boolean;
     render?: (row: T) => ReactNode;
-    pin?: 'left' | 'right';
+    pin?: 'left' | 'right' | boolean;
     hasSort?: boolean;
 }
 

@@ -9,6 +9,7 @@ export default function Copyright() {
       align="center"
       sx={{
         color: 'text.secondary',
+        padding: 3
       }}
     >
       {'Copyright © '}

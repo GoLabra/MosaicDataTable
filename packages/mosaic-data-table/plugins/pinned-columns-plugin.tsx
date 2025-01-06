@@ -18,51 +18,57 @@ const getCell = (headCell: HeadCell<any>, gridApi: GridApi, sx: SxProps<Theme>, 
     if(!headCell.pin){
         return null;
     }
+ 
+    let leftOffset: number|undefined = undefined;
+    let rightOffset: number|undefined = undefined;
 
-    if(headCell.pin == 'left'){
+    if(headCell.pin === 'left' || headCell.pin === true){
 
         const leftPins = gridApi.getColumns()
-            .filter(i => i.pin === 'left'); 
+            .filter(i => i.pin === 'left' || i.pin === true); 
 
         const beforePins = leftPins.slice(0, leftPins.findIndex(col => col.id === headCell.id));
         
-        const leftOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
+        leftOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
 
-        return <MosaicDataTableCellRoot key={headCell.id} sx={{
-            ...sx,
-            position: 'sticky',
-            left: leftOffset,
-            backgroundColor: (theme: any) => theme.palette.background.paper,
-            width: headCell.width ?? '40px',
-            minWidth: headCell.width ?? '40px',
-            zIndex: 1,
-        }}>{children}</MosaicDataTableCellRoot>
+
     }
 
-    if(headCell.pin == 'right'){
+    if(headCell.pin == 'right' || headCell.pin === true){
         const rightPins = gridApi.getColumns()
-            .filter(i => i.pin === 'right');
+            .filter(i => i.pin === 'right' || i.pin === true);
         
         const beforePins = rightPins.slice(rightPins.findIndex(col => col.id === headCell.id) + 1)
             .reverse();
         
-        const rightOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
+        rightOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
 
-        return <MosaicDataTableCellRoot key={headCell.id} sx={{
-            ...sx,
-            position: 'sticky',
-            right: rightOffset,
-            backgroundColor: (theme: Theme) => theme.palette.background.paper,
-            width: headCell.width ?? '40px',
-            minWidth: headCell.width ?? '40px',
-            zIndex: 1,
-        }}>{children}</MosaicDataTableCellRoot>
+        // return <MosaicDataTableCellRoot key={headCell.id} sx={{
+        //     ...sx,
+        //     position: 'sticky',
+        //     right: rightOffset,
+        //     backgroundColor: (theme: Theme) => theme.palette.background.paper,
+        //     width: headCell.width ?? '40px',
+        //     minWidth: headCell.width ?? '40px',
+        //     zIndex: 1,
+        // }}>{children}</MosaicDataTableCellRoot>
     }
+
+    return <MosaicDataTableCellRoot key={headCell.id} sx={{
+        ...sx,
+        position: 'sticky',
+        left: leftOffset,
+        right: rightOffset,
+        backgroundColor: (theme: any) => theme.palette.background.paper,
+        width: headCell.width ?? '40px',
+        minWidth: headCell.width ?? '40px',
+        zIndex: 1,
+    }}>{children}</MosaicDataTableCellRoot>
 }
 
 
 interface ResponsivePinProps {
-    pin: 'left' | 'right'
+    pin: 'left' | 'right' | boolean
     breakpoint: Breakpoint | number;
     direction?: 'up' | 'down'
 }
@@ -70,7 +76,7 @@ export const useResponsivePin = ({
     pin,
     breakpoint,
     direction = 'up'
-}: ResponsivePinProps): 'left' | 'right' | undefined => {
+}: ResponsivePinProps): 'left' | 'right' | boolean | undefined => {
     const isActive = useMediaQuery((theme: Theme) => theme.breakpoints[direction](breakpoint));
     if(isActive){
         return pin;
