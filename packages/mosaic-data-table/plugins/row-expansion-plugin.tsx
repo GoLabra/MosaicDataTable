@@ -141,11 +141,9 @@ export const RowExpansionPlugin = (props: {
             return <>
                 <MosaicDataTableRowRoot key={rowId} hover tabIndex={-1} sx={sx} >{children}</MosaicDataTableRowRoot>
 
-                {expansionInfo?.isOpen && <MosaicDataTableRowRoot key={`${rowId}-expansion`} hover tabIndex={-1}>
+                {expansionInfo?.isOpen && <MosaicDataTableRowRoot key={`${rowId}-expansion`} tabIndex={-1}>
                     <MosaicDataTableCellRoot colSpan={100}>
-                        <Box>
-                            {props.getExpansionNode(row, expansionInfo.params)}
-                        </Box>
+                        {props.getExpansionNode(row, expansionInfo.params)}
                     </MosaicDataTableCellRoot>
                 </MosaicDataTableRowRoot>}
             </>

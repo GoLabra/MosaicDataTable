@@ -10,6 +10,7 @@ export * from './hooks/useResponsiveHeadCellVisible'
 
 // Export main components
 export { MosaicDataTable } from './MosaicDataTable'
+export { AbsoluteHeightContainer } from './absolute-auto-height-container'
 export * from './style'
 
 // export all builed-in plugins

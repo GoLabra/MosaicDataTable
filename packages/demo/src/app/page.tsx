@@ -2,7 +2,7 @@
 
 
 import Copyright from '@/components/Copyright';
-import { Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
 import { useSelection } from '@/hooks/use-selection';
 import { stringAvatar } from '@/util/avatar-util';
 import { CountryIcon } from '@/lib/icons/country-icon';
@@ -280,7 +280,7 @@ export default function Home() {
             showExpanderButton: true,
             onGetRowId: (row: any) => row.id,
             expanstionStore: useRowExpansionStore(),
-            getExpansionNode: useCallback((row: any, params: any) => (<Box p={5}>Hello {row.name}</Box>), [])
+            getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),
         ColumnsFillRowSpacePlugin,
         usePluginWithParams(RowActionsPlugin, {
