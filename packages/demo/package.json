@@ -23,7 +23,8 @@
     "mosaic-data-table": "*",
     "next": "^15.0.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "nuqs": "^1.17.6"
   },
   "devDependencies": {
     "@types/node": "latest",

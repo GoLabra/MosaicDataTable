@@ -30,13 +30,11 @@ function MyTable() {
   const headCells = [{
       id: 'id',
       label: 'ID',
-      width: 100,
-      render: (row: any) => {row.id},
+      render: (row: any) => row.id,
   },{
       id: 'name',
       label: 'Name',
-      width: 100,
-      render: (row: any) => {row.name},
+      render: (row: any) => row.name,
   }];
 
 
