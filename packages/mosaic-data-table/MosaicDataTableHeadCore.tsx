@@ -1,7 +1,7 @@
 import { TableCell, TableHead, TableRow} from '@mui/material'
 import { SxProps, Theme } from '@mui/material/styles'
 import { ReactNode, useCallback, useMemo } from 'react'
-import { EnhancedTableProps, HeadCell, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin } from './types/table-types'
+import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin } from './types/table-types'
 import { filterGridPlugins } from './util/filterGridPlugins'
 import { MosaicDataTableCellRoot } from './style'
 
@@ -40,7 +40,6 @@ export const MosaicDataTableHeadCore = <T,>(props: EnhancedTableProps<T>) => {
                 ...rowStyle
             }
         }, {});
-
     }, [rowStylePlugins]);
 
 
@@ -49,7 +48,7 @@ export const MosaicDataTableHeadCore = <T,>(props: EnhancedTableProps<T>) => {
         return filterGridPlugins<MosaicDataTableHeadCellRenderPlugin>(props.plugins, 'head-cell-render');
     }, [props.plugins]);
 
-    const getCell = useCallback((params: { headCell: HeadCell<T>, children?: ReactNode }) => {
+    const getCell = useCallback((params: { headCell: ColumnDef<T>, children?: ReactNode }) => {
 
         const cellStyle = getCellStyle({ cell: params.headCell });
 
@@ -72,13 +71,12 @@ export const MosaicDataTableHeadCore = <T,>(props: EnhancedTableProps<T>) => {
 
     }, [cellRenderPlugins]);
 
-
     // head-cell-style
     const cellStylePlugins = useMemo((): MosaicDataTableHeadCellStylePlugin[] => {
         return filterGridPlugins<MosaicDataTableHeadCellStylePlugin>(props.plugins, 'head-cell-render');
     }, [props.plugins]);
 
-    const getCellStyle = useCallback((params: { cell: HeadCell<T> }): SxProps<Theme> => {
+    const getCellStyle = useCallback((params: { cell: ColumnDef<T> }): SxProps<Theme> => {
         return cellStylePlugins.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableHeadCellStylePlugin) => {
             const cellStyle = plugin.getHeadCellStyle?.(params.cell, props.gridApi);
             return {
@@ -86,7 +84,6 @@ export const MosaicDataTableHeadCore = <T,>(props: EnhancedTableProps<T>) => {
                 ...cellStyle
             }
         }, {});
-
     }, [cellStylePlugins]);
 
     // head-cell-content-render
@@ -94,17 +91,16 @@ export const MosaicDataTableHeadCore = <T,>(props: EnhancedTableProps<T>) => {
         return filterGridPlugins<MosaicDataTableHeadCellContentRenderPlugin>(props.plugins, 'head-cell-content-render');
     }, [props.plugins]);
 
-    const getCellContent = useCallback((cell: HeadCell<T>) => {
+    const getCellContent = useCallback((cell: ColumnDef<T>) => {
+
+        const initialContent = typeof cell.header === 'function' ? cell.header() : cell.header;
 
         return cellContentRenderPlugins.reduce((acc: ReactNode | null, plugin: MosaicDataTableHeadCellContentRenderPlugin) => {
             const cellContent = plugin.renderHeadCellContent?.(cell, props.gridApi, acc);
             return cellContent;
-        }, cell.label);
+        }, initialContent);
 
     }, [cellContentRenderPlugins]);
-
-
-
 
     return (
         <TableHead >
@@ -113,7 +109,7 @@ export const MosaicDataTableHeadCore = <T,>(props: EnhancedTableProps<T>) => {
                 children: (
                     <>
                         {headCells
-                            .map((headCell: HeadCell<any>) => {
+                            .map((headCell: ColumnDef<any>) => {
                                 return (
                                     getCell({
                                         headCell: headCell,

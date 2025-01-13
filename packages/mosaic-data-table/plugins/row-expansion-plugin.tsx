@@ -1,5 +1,5 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
 import { Box, Button, Checkbox, IconButton, TableCell, TableRow } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -93,7 +93,7 @@ export const RowExpansionPlugin = (props: {
 
     return {
         type: ['grid-columns', 'body-cell-content-render', 'body-row-render'] as const,
-        getColumns: (headCells: Array<HeadCell<any>>) => {
+        getColumns: (headCells: Array<ColumnDef<any>>) => {
 
             if((props.showExpanderButton ?? true) == false){
                 return headCells
@@ -109,7 +109,12 @@ export const RowExpansionPlugin = (props: {
                 ...headCells
             ];
         },
-        renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+
+            if(row && row['sys_extra_row']){
+                return children;
+            }
+
             if (headCell.id == 'sys_expansion') {
 
                 const rowId = props.onGetRowId?.(row) ?? null;

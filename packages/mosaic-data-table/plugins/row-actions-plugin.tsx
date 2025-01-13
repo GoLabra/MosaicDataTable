@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { Action, GridApi, HeadCell, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTablePlugin } from "../types/table-types";
+import { Action, GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTablePlugin } from "../types/table-types";
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, IconButton, Menu } from "@mui/material";
 
@@ -7,7 +7,7 @@ export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataT
 
     return {
         type: ['grid-columns', 'body-cell-content-render'] as const,
-        getColumns: (headCells: Array<HeadCell<any>>) => {
+        getColumns: (headCells: Array<ColumnDef<any>>) => {
             return [
                 ...headCells,
                 {
@@ -18,7 +18,13 @@ export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataT
                 }
             ];
         },
-        renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+
+            if(row && row['sys_extra_row']){
+                debugger
+                return children;
+            }
+
             if (headCell.id == 'sys_actions') {
                 return (<Box sx={{ textAlign: 'center' }}>
                     <ActionButton actions={props.actions} row={row} />

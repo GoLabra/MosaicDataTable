@@ -1,19 +1,19 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin } from "../types/table-types";
 import { TableCell, useMediaQuery } from "@mui/material";
 import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
     type: ['body-cell-render', 'head-cell-render'] as const,
-    renderBodyCell: (headCell: HeadCell<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
+    renderBodyCell: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
         return getCell(headCell, gridApi, sx, children);
-    }, renderHeadCell: (headCell: HeadCell<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => { 
+    }, renderHeadCell: (headCell: ColumnDef<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => { 
         return getCell(headCell, gridApi, sx, children);
     }
 }
 
-const getCell = (headCell: HeadCell<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
+const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
 
     if(!headCell.pin){
         return null;

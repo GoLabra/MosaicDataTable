@@ -1,11 +1,16 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyCellContentRenderPlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin } from "../types/table-types";
 
 
 export const CustomBodyCellContentRenderPlugin: MosaicDataTableBodyCellContentRenderPlugin = {
     type: 'body-cell-content-render',
-    renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
-        const value = headCell.render?.(row);
+    renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+
+        if(row && row['sys_extra_row']){
+            return null;
+        }
+
+        const value = headCell.cell?.(row);
         return value;
     }
 }

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin } from "../types/table-types";
 import { Box, TableBody, TableCell, TableRow } from "@mui/material";
 
 
@@ -12,7 +12,7 @@ export const EmptyDataPlugin = ({
     return {
 
         type: 'body-render',
-        renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
+        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
 
             if (rows?.length) {
                 return null;

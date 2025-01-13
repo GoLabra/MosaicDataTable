@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyCellContentRenderPlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin } from "../types/table-types";
 import { DockedDiv } from "../style";
 import { alpha, Theme } from '@mui/material/styles';
 
@@ -9,7 +9,7 @@ export const HighlightRowPlugin = (props: {
 
     return {
         type: 'body-cell-content-render',
-        renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
             const isRowHighlighted = props.isRowHighlighted?.(row);
 
             if (!isRowHighlighted) {

@@ -1,20 +1,20 @@
 'use client';
 
 import { ListItemIcon, MenuItem, Stack } from '@mui/material';
-import { CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, usePluginWithParams, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, Action, ColumnsFillRowSpacePlugin } from 'mosaic-data-table';
+import { CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, Action, ColumnsFillRowSpacePlugin } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 export const BasicTable = () => {
 
-    const headCells: HeadCell[] = [{
+    const headCells: ColumnDef[] = [{
         id: 'id',
-        label: 'ID',
-        render: (row: any) => row.id,
+        header: 'ID',
+        cell: (row: any) => row.id,
     }, {
         id: 'name',
-        label: 'Name',
-        render: (row: any) => row.name,
+        header: 'Name',
+        cell: (row: any) => row.name,
     }];
 
 

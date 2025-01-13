@@ -69,7 +69,18 @@ Plugins can be combined to add specific functionality to your table. The order o
     Enables custom cell content rendering
 
     **Note:** In future versions, alternative rendering methods will be available, such as automatic value retrieval based on cell ID and smart content type detection. For now, this plugin is required and must be included first in the plugins list.
-    
+
+- SummaryRowPlugin
+
+    Adds summary row. You can add as many summary rows as you want
+
+    ```
+    usePluginWithParams(SummaryRowPlugin, {
+        visible?: boolean,
+        summaryColumns: Record<string, string | ReactNode | ((row: any) => string | ReactNode)>,
+        key?: string // needed only if you want to use more than one summary row
+    })
+    ```   
 
 - PaddingPlugin
 

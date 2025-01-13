@@ -78,6 +78,7 @@ const initialItems = [{
     countryCode: 'at',
     city: 'Vienna',
     language: 'German',
+    tokens: 100,
 }, {
     id: 2,
     name: 'John Doe',
@@ -96,7 +97,7 @@ const initialItems = [{
     countryCode: 'us',
     city: 'Washington DC',
     language: 'English',
-
+    tokens: 72,
 }, {
     id: 3,
     name: 'Juan Pérez',
@@ -115,6 +116,7 @@ const initialItems = [{
     countryCode: 'es',
     city: 'Madrid',
     language: 'Spanish',
+    tokens: 12
 }, {
     id: 4,
     name: 'Mario Rossi',
@@ -133,6 +135,7 @@ const initialItems = [{
     countryCode: 'it',
     city: 'Rome',
     language: 'Italian',
+    tokens: 10,
 }, {
     id: 5,
     name: 'Andrei Vinca',
@@ -151,6 +154,7 @@ const initialItems = [{
     countryCode: 'ro',
     city: 'Bucharest',
     language: 'Romanian',
+    tokens: 99
 }, {
     id: 6,
     name: 'Jean Dupont',
@@ -169,6 +173,7 @@ const initialItems = [{
     countryCode: 'fr',
     city: 'Paris',
     language: 'French',
+    tokens: 45
 }, {
     id: 7,
     name: 'Nino Kalandadze',
@@ -187,6 +192,7 @@ const initialItems = [{
     countryCode: null,
     city: 'Tbilisi',
     language: 'Georgian',
+    tokens: 92
 },{
     id: 8,
     name: 'Andreas Georgiou',
@@ -205,6 +211,7 @@ const initialItems = [{
     countryCode: null,
     city: 'Nicosia',
     language: 'Greek',
+    tokens: 33
 },{
     id: 9,
     name: 'João da Silva',
@@ -223,6 +230,7 @@ const initialItems = [{
     countryCode: null,
     city: 'Rio de Janeiro',
     language: 'Portuguese',
+    tokens: 34
 }, {
     id: 10,
     name: 'Naledi Khumalo',
@@ -241,6 +249,7 @@ const initialItems = [{
     countryCode: null,
     city: 'Cape Town',
     language: 'Afrikaans',
+    tokens: 51
 }, {
     id: 11,
     name: 'Hanako Suzuki',
@@ -259,4 +268,5 @@ const initialItems = [{
     countryCode: null,
     city: 'Tokyo',
     language: 'Japanese',
+    tokens: 86
 }];

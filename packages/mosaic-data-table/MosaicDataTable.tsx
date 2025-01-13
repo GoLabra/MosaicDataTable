@@ -1,7 +1,7 @@
 import { GlobalStyles, Table, TableBody, TableContainer } from "@mui/material";
 import { PropsWithChildren, useCallback, useEffect, useMemo } from "react";
 import { MosaicDataTableHeadCore } from "./MosaicDataTableHeadCore";
-import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps } from "./types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps } from "./types/table-types";
 import { MosaicDataTableBodyCore } from "./MosaicDataTableBodyCore";
 import { MosaicDataTableRoot } from "./style";
 import { filterGridPlugins } from "./util/filterGridPlugins";
@@ -14,7 +14,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         });
     }, [props.plugins]);
 
-    const visileHeadCells = useMemo((): Array<HeadCell<any>> => {
+    const visileHeadCells = useMemo((): Array<ColumnDef<any>> => {
         return props.headCells.filter((headCell) => headCell.visible ?? true);
     }, [props.headCells]);
 
@@ -23,8 +23,8 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         return filterGridPlugins<MosaicDataTableGridColumnsPlugin>(props.plugins, 'grid-columns');
     }, [props.plugins]);
 
-    const columns = useMemo((): Array<HeadCell<any>> => {
-        return bodyCellRenderPlugins.reduce((acc: Array<HeadCell<any>>, plugin: MosaicDataTableGridColumnsPlugin): Array<HeadCell<any>> => {
+    const columns = useMemo((): Array<ColumnDef<any>> => {
+        return bodyCellRenderPlugins.reduce((acc: Array<ColumnDef<any>>, plugin: MosaicDataTableGridColumnsPlugin): Array<ColumnDef<any>> => {
             const cellContent = plugin.getColumns?.(acc);
             return cellContent ?? [];
         }, visileHeadCells);
@@ -34,25 +34,10 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
 
     const gridApi: GridApi = useMemo(() => ({
         getData: () => props.items,
-        getColumns: () => columns
+        getColumns: () => columns,
+        getPlugins: () => props.plugins || []
     }), [props.items,columns]);
 
-    
-    // body-render
-    const bodyRenderPlugins = useMemo((): MosaicDataTableBodyRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRenderPlugin>(props.plugins, 'body-render');
-    }, [props.plugins]);
-
-    const getTableBody = useCallback((params: { children?: React.ReactNode }) => {
-        for (const plugin of bodyRenderPlugins) {
-            var cell = plugin.renderBody?.(columns, props.items, gridApi, params.children);
-            if (cell) {
-                return cell;
-            }
-        }
-
-        return (<TableBody>{params.children}</TableBody>);
-    }, [bodyRenderPlugins]);
 
     return (<>
 
@@ -77,22 +62,13 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
                             gridApi={gridApi}
                         />
 
-                        {
-                            getTableBody({
-                                children: <>
-                                    {(props.items ?? []).map((row) => (
-                                        <MosaicDataTableBodyCore
-                                            key={JSON.stringify(row)}
-                                            row={row}
-                                            headCells={columns}
-                                            plugins={props.plugins}
-                                            gridApi={gridApi}
-                                        />
-                                    ))}
-                                </>
-                            })
-                        }
-
+                        <MosaicDataTableBodyCore
+                            columns={columns}
+                            plugins={props.plugins}
+                            gridApi={gridApi}
+                            items={props.items}
+                        />
+                        
                     </Table>
                 </TableContainer>
 

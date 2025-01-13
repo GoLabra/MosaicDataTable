@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
 import { Box, Checkbox } from "@mui/material";
 
 export const RowSelectionPlugin = (props: {
@@ -11,7 +11,7 @@ export const RowSelectionPlugin = (props: {
 
     return {
         type: ['grid-columns', 'body-cell-content-render'] as const,
-        getColumns: (headCells: Array<HeadCell<any>>) => {
+        getColumns: (headCells: Array<ColumnDef<any>>) => {
             return [
                 {
                     id: 'sys_selection',
@@ -22,7 +22,12 @@ export const RowSelectionPlugin = (props: {
                 ...headCells
             ];
         },
-        renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+
+            if(row && row['sys_extra_row']){
+                return children;
+            }
+            
             if (headCell.id == 'sys_selection') {
 
                 const rowId = props.onGetRowId?.(row) ?? null;

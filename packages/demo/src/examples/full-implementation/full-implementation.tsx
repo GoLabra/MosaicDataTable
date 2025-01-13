@@ -2,9 +2,9 @@
 
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
-import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Box } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, HeadCell, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
-import { useCallback, useMemo, useState } from 'react';
+import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Box, Typography } from '@mui/material';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
+import { use, useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ModeSwitch from '@/components/ModeSwitch';
@@ -24,37 +24,37 @@ export const FullImplementationTable = () => {
     // responsive hooks for pinned columns and visible columns
     const namePinProps = useResponsivePin({ pin: 'left', breakpoint: 'sm', direction: 'up' });
     const countryPinProps = useResponsivePin({ pin: 'left', breakpoint: 'md', direction: 'up' });
-    const statusPinProps = useResponsivePin({ pin: true, breakpoint: 'lg', direction: 'up' });
+    const tokensPinProps = useResponsivePin({ pin: true, breakpoint: 'lg', direction: 'up' });
     const registrationDateVisible = useResponsiveHeadCellVisible({ breakpoint: 'md', direction: 'up' });
 
     // head cells
-    const headCells: HeadCell[] = useMemo(() => [{
+    const headCells: ColumnDef[] = useMemo(() => [{
         id: 'id',
-        label: 'ID',
+        header: 'ID',
         width: 100,
         hasSort: true,
-        render: (row: any) => <>{row.id}</>,
+        cell: (row: any) => <>{row.id}</>,
     }, {
         id: 'name',
-        label: 'Name',
+        header: 'Name',
         width: 200,
         hasSort: true,
-        render: (row: any) => (<Stack direction="row" alignItems="center" gap={1}><Avatar  {...stringAvatar(row.name)} />{row.name}</Stack>),
+        cell: (row: any) => (<Stack direction="row" alignItems="center" gap={1}><Avatar  {...stringAvatar(row.name)} />{row.name}</Stack>),
         pin: namePinProps,
         highlight: true,
     }, {
         id: 'email',
-        label: 'E-mail',
+        header: 'E-mail',
         width: 200,
         hasSort: true,
-        render: (row: any) => <>{row.email}</>,
+        cell: (row: any) => <>{row.email}</>,
     }, {
         id: 'country',
-        label: 'Country',
+        header: 'Country',
         width: 150,
         hasSort: true,
         pin: countryPinProps,
-        render: (row: any) => <Stack direction="row" alignItems="center" gap={1}><CountryIcon country={row.countryCode}
+        cell: (row: any) => <Stack direction="row" alignItems="center" gap={1}><CountryIcon country={row.countryCode}
             sx={{
                 fontSize: 24,
                 color: 'primary.main'
@@ -64,40 +64,39 @@ export const FullImplementationTable = () => {
         </Stack>,
     }, {
         id: 'city',
-        label: 'City',
+        header: () => 'City',
         width: 150,
         hasSort: true,
-        render: (row: any) => <>{row.city}</>,
+        cell: (row: any) => <>{row.city}</>,
     }, {
         id: 'age',
-        label: 'Age',
+        header: 'Age',
         width: 100,
         hasSort: true,
-        render: (row: any) => <>{row.age}</>,
+        cell: (row: any) => <>{row.age}</>,
     }, {
         id: 'gender',
-        label: 'Gender',
+        header: 'Gender',
         width: 100,
         hasSort: true,
-        render: (row: any) => <>{row.gender}</>,
+        cell: (row: any) => <>{row.gender}</>,
     }, {
         id: 'address',
-        label: 'Address',
+        header: 'Address',
         width: 200,
         hasSort: true,
-        render: (row: any) => <>{row.address}</>,
+        cell: (row: any) => <>{row.address}</>,
     }, {
         id: 'phone',
-        label: 'Phone',
+        header: 'Phone',
         width: 150,
-        render: (row: any) => <>{row.phone}</>,
+        cell: (row: any) => <>{row.phone}</>,
     }, {
         id: 'status',
-        label: 'Status',
+        header: 'Status',
         width: 120,
         hasSort: true,
-        pin: statusPinProps,
-        render: (row: any) => {
+        cell: (row: any) => {
             if (row.status === 'Active') {
                 return (<Chip label="Active" color="primary" size="small" />);
             } else {
@@ -105,41 +104,48 @@ export const FullImplementationTable = () => {
             }
         },
     }, {
+        id: 'tokens',
+        header: 'Tokens',
+        width: 80,
+        hasSort: true,
+        cell: (row: any) => <>{row.tokens}</>,
+        pin: tokensPinProps,
+    }, {
         id: 'language',
-        label: 'Language',
+        header: 'Language',
         width: 150,
         hasSort: true,
-        render: (row: any) => <>{row.language}</>,
+        cell: (row: any) => <>{row.language}</>,
     }, {
         id: 'progress',
-        label: 'Progress',
+        header: 'Progress',
         width: 100,
-        render: (row: any) => <LinearProgress color="success" value={row.progress} variant="determinate" />,
+        cell: (row: any) => <LinearProgress color="success" value={row.progress} variant="determinate" />,
     }, {
         id: 'Verified',
-        label: 'verified',
+        header: 'verified',
         width: 100,
         hasSort: true,
-        render: (row: any) => <>{row.verified ? 'Yes' : 'No'}</>,
+        cell: (row: any) => <>{row.verified ? 'Yes' : 'No'}</>,
     }, {
         id: 'registrationDate',
-        label: 'Registered On',
+        header: 'Registered On',
         width: 180,
         hasSort: true,
-        render: (row: any) => <>{new Date(row.registrationDate).toISOString()}</>,
+        cell: (row: any) => <>{new Date(row.registrationDate).toISOString()}</>,
         visible: registrationDateVisible,
     }, {
         id: 'role',
-        label: 'Role',
+        header: 'Role',
         width: 120,
         hasSort: true,
-        render: (row: any) => <>{row.role}</>,
+        cell: (row: any) => <>{row.role}</>,
     }, {
         id: 'rating',
-        label: 'Rating',
+        header: 'Rating',
         width: 180,
-        render: (row: any) => <Rating name="half-rating" defaultValue={row.rating} precision={0.5} readOnly />,
-    }], [namePinProps, countryPinProps, statusPinProps, registrationDateVisible]);
+        cell: (row: any) => <Rating name="half-rating" defaultValue={row.rating} precision={0.5} readOnly />,
+    }], [namePinProps, countryPinProps, tokensPinProps, registrationDateVisible]);
 
     const isColumnHighlighted = useCallback((headCellId: string) => {
         return headCellId === 'role';
@@ -160,6 +166,15 @@ export const FullImplementationTable = () => {
     const gridPlugins = useGridPlugins(
         // process the 'render' function
         CustomBodyCellContentRenderPlugin,
+
+        // add summary row. You can add as many summary rows as you want
+        usePluginWithParams(SummaryRowPlugin, {
+            visible: true,
+            key: 'symmary_row', // needed only if you want to use more than one summary row
+            summaryColumns: {
+                'name': (column: ColumnDef<any>) => <Typography fontWeight={700}>Total</Typography>,
+                'tokens': (column: ColumnDef<any>) => <Typography fontWeight={700}>{contentManagerStore.state.data.reduce((sum, item) => sum + item.tokens, 0)}</Typography>,
+        }}),
 
         // add padding to the table cells
         usePluginWithParams(PaddingPluggin, {}),

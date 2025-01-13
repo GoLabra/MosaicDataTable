@@ -10,26 +10,26 @@ export interface Pagination {
 export interface MosaicDataTableProps<T = any> {
     caption?: string;
     items: T[];
-    headCells: HeadCell<T>[];
+    headCells: ColumnDef<T>[];
     root?: any
     plugins?: MosaicDataTablePlugin[];
 }
 
 export interface EnhancedTableProps<T = any> {
-    headCells: HeadCell<T>[]
+    headCells: ColumnDef<T>[]
     plugins?: MosaicDataTablePlugin[];
     gridApi: GridApi;
 }
 
-export interface HeadCell<T = any> {
+export interface ColumnDef<T = any> {
     id: string,
-    label: string
+    header: string | (() => string | ReactNode), 
     width?: number
     visible?: boolean = true;
 
     //plugin needed
     highlight?: boolean;
-    render?: (row: T) => ReactNode;
+    cell?: (row: T) => ReactNode;
     pin?: 'left' | 'right' | boolean;
     hasSort?: boolean;
 }
@@ -69,22 +69,22 @@ export interface MosaicDataTableBodyRowRenderPlugin extends MosaicDataTablePlugi
 
 export interface MosaicDataTableHeadCellRenderPlugin extends MosaicDataTablePlugin {
     type: 'head-cell-render' | ArrayWithRequired<'head-cell-render'>;
-    renderHeadCell?: (headcell: HeadCell<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
+    renderHeadCell?: (headcell: ColumnDef<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
 }
 
 export interface MosaicDataTableBodyCellRenderPlugin extends MosaicDataTablePlugin {
     type: 'body-cell-render' | ArrayWithRequired<'body-cell-render'>;
-    renderBodyCell?: (headcell: HeadCell<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
+    renderBodyCell?: (headcell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
 }
 
 export interface MosaicDataTableHeadCellContentRenderPlugin extends MosaicDataTablePlugin {
     type: 'head-cell-content-render' | ArrayWithRequired<'head-cell-content-render'>;
-    renderHeadCellContent: (headcell: HeadCell<any>, gridApi: GridApi, children?: ReactNode) => ReactNode;
+    renderHeadCellContent: (headcell: ColumnDef<any>, gridApi: GridApi, children?: ReactNode) => ReactNode;
 }
 
 export interface MosaicDataTableBodyCellContentRenderPlugin extends MosaicDataTablePlugin {
     type: 'body-cell-content-render' | ArrayWithRequired<'body-cell-content-render'>;
-    renderBodyCellContent?: (headcell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => ReactNode;
+    renderBodyCellContent?: (headcell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => ReactNode;
 }
 
 export interface MosaicDataTableHeadRowStylePlugin extends MosaicDataTablePlugin {
@@ -99,19 +99,25 @@ export interface MosaicDataTableBodyRowStylePlugin extends MosaicDataTablePlugin
 
 export interface MosaicDataTableHeadCellStylePlugin extends MosaicDataTablePlugin {
     type: 'head-cell-style' | ArrayWithRequired<'head-cell-style'>;
-    getHeadCellStyle?: (headcell: HeadCell<any>, gridApi: GridApi) => SxProps<Theme>;
+    getHeadCellStyle?: (headcell: ColumnDef<any>, gridApi: GridApi) => SxProps<Theme>;
 }
 
 export interface MosaicDataTableBodyCellStylePlugin extends MosaicDataTablePlugin {
     type: 'body-cell-style' | ArrayWithRequired<'body-cell-style'>;
-    getBodyCellStyle?: (headcell: HeadCell<any>, row: any, gridApi: GridApi) => SxProps<Theme>;
+    getBodyCellStyle?: (headcell: ColumnDef<any>, row: any, gridApi: GridApi) => SxProps<Theme>;
+}
+
+export interface MosaicDataTableBodyExtraRowPlugin extends MosaicDataTablePlugin {
+    type: 'body-extra-row' | ArrayWithRequired<'body-extra-row'>;
+    getBodyExtraRow?: (columns: Array<ColumnDef<any>>, row: any, gridApi: GridApi) => ReactNode;
 }
 
 
 
 export interface GridApi {
     getData: () => any[];
-    getColumns: () => HeadCell<any>[];
+    getColumns: () => ColumnDef<any>[];
+    getPlugins: () => MosaicDataTablePlugin[]; 
 }
 
 export type GetFunctionParams<T> = T extends (...args: [infer P]) => any ? P : never;

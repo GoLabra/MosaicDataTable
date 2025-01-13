@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { GridApi, HeadCell, MosaicDataTableHeadCellContentRenderPlugin } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin } from "../types/table-types";
 import { Box, TableSortLabel } from "@mui/material";
 import { visuallyHidden } from '@mui/utils'
 
@@ -17,7 +17,7 @@ export const ColumnSortPlugin = (props: {
 
     return {
         type: 'head-cell-content-render',
-        renderHeadCellContent: (headCell: HeadCell<any>, gridApi: GridApi, children?: ReactNode): ReactNode => {
+        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, children?: ReactNode): ReactNode => {
             if (headCell.hasSort == true) {
                 return (<TableSortLabel
                     active={props.orderBy === headCell.id}
