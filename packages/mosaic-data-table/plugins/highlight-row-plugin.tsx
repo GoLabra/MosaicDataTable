@@ -17,7 +17,7 @@ export const HighlightRowPlugin = (props: {
             }
 
             return <DockedDiv sx={{
-                backgroundColor: (theme: Theme) => alpha(theme.palette.primary.main, 0.1),
+                backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
             }}> {children} </DockedDiv>
         }
     }

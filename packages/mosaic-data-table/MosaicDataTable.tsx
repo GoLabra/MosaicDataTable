@@ -1,4 +1,4 @@
-import { Table, TableBody, TableContainer } from "@mui/material";
+import { GlobalStyles, Table, TableBody, TableContainer } from "@mui/material";
 import { PropsWithChildren, useCallback, useEffect, useMemo } from "react";
 import { MosaicDataTableHeadCore } from "./MosaicDataTableHeadCore";
 import { GridApi, HeadCell, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps } from "./types/table-types";
@@ -54,13 +54,23 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         return (<TableBody>{params.children}</TableBody>);
     }, [bodyRenderPlugins]);
 
-    return (
+    return (<>
+
+        <GlobalStyles styles={{
+            'html': {
+                '--mui-palette-MosaicDataTable-background': 'var(--mui-palette-background-paper)',  
+                '--mui-palette-MosaicDataTable-highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), var(--mui-palette-MosaicDataTable-background) 70%)',
+                '--mui-palette-MosaicDataTable-rowHover': 'color-mix(in srgb, rgb(var(--mui-palette-background-paperChannel)), var(--mui-palette-common-onBackground) 7%)',
+            }
+        }} />
+
         <MosaicDataTableRoot {...props.root}>
-          
+     
                 <TableContainer>
+               
                     <Table sx={{ height: '100%' }} aria-labelledby="tableTitle" size="medium">
                         <caption>{props.caption}</caption>
-
+                     
                         <MosaicDataTableHeadCore
                             headCells={columns}
                             plugins={props.plugins}
@@ -87,5 +97,6 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
                 </TableContainer>
 
         </MosaicDataTableRoot>
+        </>
     )
 }

@@ -17,7 +17,7 @@ export const HighlightColumnPlugin = (props: {
             }
 
             return <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
-                backgroundColor: (theme: Theme) => alpha(theme.palette.primary.main, 0.3),
+                backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
             }}> {children} </DockedDiv>
         },
         renderBodyCellContent: (headCell: HeadCell<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
@@ -27,7 +27,7 @@ export const HighlightColumnPlugin = (props: {
             }
 
             return <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
-                backgroundColor: (theme: Theme) => alpha(theme.palette.primary.main, 0.3),
+                backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
             }}> {children} </DockedDiv>
         }
     }

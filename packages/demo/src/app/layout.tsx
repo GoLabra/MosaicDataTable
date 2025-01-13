@@ -14,21 +14,19 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     return (
         <html lang="en" suppressHydrationWarning>
             <body>
-                <InitColorSchemeScript attribute="class" />
+                <InitColorSchemeScript defaultMode="system" modeStorageKey="theme-mode" attribute="class" />
                 <AppRouterCacheProvider options={{ enableCssLayer: false }}>
-                    <ThemeProvider theme={theme} >
+                    <ThemeProvider theme={theme} defaultMode="system" modeStorageKey="theme-mode">
                         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-                        <CssBaseline />
-
+                        <CssBaseline enableColorScheme />
 
                         <Container maxWidth="lg">
 
-
-                        <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
+                            <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
                                 <ModeSwitch />
                             </Stack>
 
-                            
+
                             <Box
                                 sx={{
                                     my: 4,

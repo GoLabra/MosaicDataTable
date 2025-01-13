@@ -55,14 +55,14 @@ const getCell = (headCell: HeadCell<any>, gridApi: GridApi, sx: SxProps<Theme>, 
     }
 
     return <MosaicDataTableCellRoot key={headCell.id} sx={{
-        ...sx,
         position: 'sticky',
         left: leftOffset,
         right: rightOffset,
-        backgroundColor: (theme: any) => theme.palette.background.paper,
+        backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
         width: headCell.width ?? '40px',
         minWidth: headCell.width ?? '40px',
         zIndex: 1,
+        ...sx
     }}>{children}</MosaicDataTableCellRoot>
 }
 

@@ -1,4 +1,4 @@
-import { lighten, styled } from '@mui/material';
+import { darken, lighten, styled } from '@mui/material';
 import { Box, TableCell, TableRow } from "@mui/material";
 import { tableRowClasses } from '@mui/material';
 import { BoxProps } from '@mui/material/Box';
@@ -13,24 +13,34 @@ export const MosaicDataTableRoot = styled(Box, {
     width: '100%',
     caption: {
         display: 'none'
-    }
+    },
+    backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
 }));
 
 export const MosaicDataTableRowRoot = styled(TableRow, {
     name: 'MosaicDataTableRow',
     slot: 'root',
-})<TableRowProps>(({ theme }) => ({
-    [`&.${tableRowClasses.hover}`]: {
-        '&:hover': {
-            backgroundColor: lighten(theme.palette.background!.paper!, 0.04),
+})<TableRowProps>(({ theme }) => ([
+    {
+        borderBottomWidth: 0,
+        backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+
+        [`&.${tableRowClasses.root}`]: {
             'td': {
-                backgroundColor: lighten(theme.palette.background!.paper!, 0.04),
+                    backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+                },
+            },
+
+         [`&.${tableRowClasses.hover}`]: {
+            '&:hover': {
+                backgroundColor: 'var(--mui-palette-MosaicDataTable-rowHover)',
+                'td': {
+                    backgroundColor: 'var(--mui-palette-MosaicDataTable-rowHover)',
+                }
             }
-        }
+        },
     },
-    borderBottomWidth: 0,
-    backgroundColor: theme.palette.background.paper,
-}));
+]));
 
 export const MosaicDataTableCellRoot = styled(TableCell, {
     name: 'MosaicDataTableCell',
@@ -39,7 +49,7 @@ export const MosaicDataTableCellRoot = styled(TableCell, {
     return {
         padding: 0,
         height: '100%',
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
         borderBottomWidth: 1,
         borderBottomStyle: 'dashed',
         borderBottomColor: theme.palette.divider!,
@@ -56,3 +66,21 @@ export const DockedDiv = styled(Box)<BoxProps>(({ theme }) => ({
     justifyContent: 'flex-start',
     alignItems: 'center',
 }));
+
+
+declare module '@mui/material/styles' {
+    interface Palette {
+        MosaicDataTable: {
+            background: string;
+            highlight: string;
+            rowHover: string;
+        };
+    }
+    interface PaletteOptions {
+        MosaicDataTable?: {
+            background?: string;
+            highlight?: string;
+            rowHover?: string;
+        };
+    }
+  }
