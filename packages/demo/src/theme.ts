@@ -12,19 +12,19 @@ const theme = createTheme({
     colorSchemes: {
         light: {
             palette: {
-                // override the default palette
+                // override the default palette ( These values are used by the table head and body cells as default colors )
                 MosaicDataTable: {
                     'background': 'var(--mui-palette-background-paper)',
-                    'highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), var(--mui-palette-MosaicDataTable-background) 70%)',
+                    'highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), transparent 70%)',
                     'rowHover': 'color-mix(in srgb, rgb(var(--mui-palette-background-paperChannel)), var(--mui-palette-common-onBackground) 7%)',
                 }
             }
         }, dark: {
             palette: {
-                // override the default palette
+                // override the default palette ( These values are used by the table head and body cells as default colors )
                 MosaicDataTable: {
                     'background': 'var(--mui-palette-background-paper)',
-                    'highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), var(--mui-palette-MosaicDataTable-background) 70%)',
+                    'highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), transparent 70%)',
                     'rowHover': 'color-mix(in srgb, rgb(var(--mui-palette-background-paperChannel)), var(--mui-palette-common-onBackground) 7%)',
                 }
             }

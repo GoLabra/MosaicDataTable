@@ -59,7 +59,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         <GlobalStyles styles={{
             'html': {
                 '--mui-palette-MosaicDataTable-background': 'var(--mui-palette-background-paper)',  
-                '--mui-palette-MosaicDataTable-highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), var(--mui-palette-MosaicDataTable-background) 70%)',
+                '--mui-palette-MosaicDataTable-highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), transparent 70%)',
                 '--mui-palette-MosaicDataTable-rowHover': 'color-mix(in srgb, rgb(var(--mui-palette-background-paperChannel)), var(--mui-palette-common-onBackground) 7%)',
             }
         }} />
