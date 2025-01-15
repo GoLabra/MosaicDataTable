@@ -2,9 +2,9 @@ import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { GridApi, ColumnDef, MosaicDataTableBodyExtraRowEndPlugin, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadCellContentRenderPlugin } from "../types/table-types";
 import { MosaicDataTableBodyRow } from "../MosaicDataTableBodyRow";
 import { MosaicDataTableHeadRow } from "../MosaicDataTableHeadRow";
-import { backdropClasses, Box, Button, debounce, IconButton, Menu, MenuItem, Select, Stack, styled, TextField } from "@mui/material";
+import { backdropClasses, Box, Button, debounce, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Select, Stack, styled, TextField, Typography } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-
+import CheckIcon from '@mui/icons-material/Check';
 import { DockedDiv } from "../style";
 
 export const FilterRowPlugin = ({
@@ -63,13 +63,8 @@ export const FilterRowPlugin = ({
                 }
 
                 const typeDef = typeof filterDef === 'string' ? filterDef : filterDef.type;
-                // const InputComp = filterInputMap[typeDef];
-
-                // if (!InputComp) {
-                //     return <DockedWrapper key={column.id} className="MosaicDataTable-filter-row-docked">{children}</DockedWrapper>;
-                // }
-
                 const selectOptions = typeof filterDef != 'string' && filterDef.type == 'select' ? filterDef.selectOptions : undefined;
+                const defaultFilterOption = typeof filterDef != 'string' ? filterDef.defaultFilterOption : undefined;
                 const filterOptions = typeof filterDef != 'string' ? filterDef.filterOptions : undefined;
                 const filterValue = filter[column.id];
 
@@ -77,28 +72,29 @@ export const FilterRowPlugin = ({
                 return (
                     <DockedWrapper key={column.id} className="MosaicDataTable-filter-row-docked">
 
-                        <Box 
+                        <Box
                             key={column.id}
                             sx={{
-                            width: '100%',
-                            minWidth: '100px',
-                            margin: '3px',
-                            padding: '3px',
-                            borderRadius: '3px',
-                            backgroundColor: 'var(--mui-palette-background-paper)'
-                        }}>
+                                width: '100%',
+                                minWidth: '100px',
+                                margin: '3px',
+                                padding: '3px',
+                                borderRadius: '3px',
+                                backgroundColor: 'var(--mui-palette-background-paper)'
+                            }}>
                             <ColumnFilter
                                 key={`columnFilter-${column.id}`}
                                 type={typeDef}
                                 selectOptions={selectOptions}
-                                options={filterOptions} 
-                                value={filterValue} 
+                                options={filterOptions}
+                                defaultFilterOption={defaultFilterOption}
+                                value={filterValue}
                                 onChange={(columnFilter) => {
                                     filterChanged({
                                         ...filter,
                                         [column.id]: columnFilter
                                     })
-                                }}/>
+                                }} />
                         </Box>
 
                     </DockedWrapper>)
@@ -119,7 +115,7 @@ export interface InputProps {
 }
 
 const TextInput = (props: InputProps) => {
-    return (<TextField id="outlined-basic" variant="standard"  value={props.value} onChange={props.onChange}
+    return (<TextField id="outlined-basic" variant="standard" value={props.value} onChange={props.onChange}
         slotProps={{
             input: {
                 disableUnderline: true,
@@ -134,7 +130,7 @@ const TextInput = (props: InputProps) => {
 }
 
 const NumberInput = (props: InputProps) => {
-    return (<TextField type="number" id="outlined-basic" variant="standard"  value={props.value} onChange={props.onChange}
+    return (<TextField type="number" id="outlined-basic" variant="standard" value={props.value} onChange={props.onChange}
         slotProps={{
             input: {
                 disableUnderline: true,
@@ -149,7 +145,7 @@ const NumberInput = (props: InputProps) => {
 }
 
 const SelectInput = (props: InputProps) => {
-    return (<TextField id="outlined-basic" variant="standard" fullWidth  value={props.value} onChange={props.onChange} select
+    return (<TextField id="outlined-basic" variant="standard" fullWidth value={props.value} onChange={props.onChange} select
         slotProps={{
             input: {
                 disableUnderline: true,
@@ -161,7 +157,7 @@ const SelectInput = (props: InputProps) => {
             }
         }}
     >
-        <MenuItem value={''} sx={{height: '36px'}}></MenuItem>
+        <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         {props.selectOptions!.map((option, index) => (
             <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
         ))}
@@ -181,7 +177,7 @@ const BooleanInput = (props: InputProps) => {
             }
         }}
     >
-        <MenuItem value={''} sx={{height: '36px'}}></MenuItem>
+        <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         <MenuItem value={'true'}>True</MenuItem>
         <MenuItem value={'false'}>False</MenuItem>
     </TextField>)
@@ -199,13 +195,15 @@ let filterInputMap: Partial<Record<ColumnDefFilter['type'], React.FC<any>>> = {
 
 export interface IColumnDefFilter {
     type: 'string' | 'number' | 'date' | 'boolean' | keyof ColumnDefFilterTypeOverrides,
-    filterOptions?: { value: string | number, label: string }[]
+    filterOptions?: { value: string | number, label: string, iconText?: string }[],
+    defaultFilterOption?: string | number
 }
 
 export type ColumnDefFilter = IColumnDefFilter | {
     type: 'select',
-    filterOptions?: { value: string | number, label: string }[],
-    selectOptions: { value: string | number, label: string }[]
+    filterOptions?: { value: string | number, label: string, iconText?: string }[],
+    defaultFilterOption?: string | number,
+    selectOptions: { value: string | number, label: string, iconText?: string }[]
 };
 
 interface ColumnFilterProps {
@@ -215,34 +213,42 @@ interface ColumnFilterProps {
     onChange: (filter: FilterValue) => void
 
     selectOptions?: ColumnDefFilter['filterOptions'],
+    defaultFilterOption?: string | number,
 }
 const ColumnFilter = (props: ColumnFilterProps) => {
 
-    const {value, options} = props;
+    const { value, options } = props;
 
-    return (<Stack direction="row">
+    // const filterOptionsIconText = useMemo(() => options?.find((option) => option.value == (value?.filterOption ?? props.defaultFilterOption))?.iconText ?? '', [options, value?.filterOption, props.defaultFilterOption]);
+    
+    return (<Stack direction="row" alignItems="center">
+
+        {/* <Typography variant="body2" sx={{ fontSize: '0.8rem', margin: '3px' }}>
+            {filterOptionsIconText}
+        </Typography> */}
 
         <FreeInput
             key={`free-input-${props.type}`}
             type={props.type}
             value={value?.value}
             selectOptions={props.selectOptions}
-            onChange={(value: any) => {
+            onChange={(newValue: any) => {
+                debugger;
                 props.onChange({
-                    filterOption: value?.filterOption,
-                    value: value,
+                    filterOption: value?.filterOption ?? props.defaultFilterOption ?? '',
+                    value: newValue,
                 });
             }}
         />
-        {options && <ColumnDefFilterButtonOptions 
-            value={value?.value} 
-            filterOptions={options} 
-            onChange={(value: any) => {
+        {options && <ColumnDefFilterButtonOptions
+            value={value?.filterOption ?? props.defaultFilterOption ?? ''}
+            filterOptions={options}
+            onChange={(newValue: any) => {
                 props.onChange({
-                    filterOption: value,
+                    filterOption: newValue,
                     value: value?.value ?? ''
                 });
-        }}/>}
+            }} />}
     </Stack>)
 }
 
@@ -266,13 +272,13 @@ const FreeInput = (props: FreeInputProps) => {
     return (
         <InputComp
             key={`input-${props.type}`}
-            selectOptions={props.selectOptions} 
+            selectOptions={props.selectOptions}
             value={internalFilter}
             onChange={(value: any) => {
                 setInternalFilter(value.target.value);
                 memoizedDebounce(value.target.value);
             }}
-         />
+        />
     );
 };
 
@@ -299,6 +305,7 @@ const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
         memoizedDebounce(option.value);
     }, [props.onChange]);
 
+    console.log('props.value', props.value);
     return (<>
         <IconButton aria-label="delete" size="small" onClick={handleClick}>
             <MoreVertIcon fontSize="inherit" />
@@ -314,26 +321,43 @@ const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
             }}
         >
             {props.filterOptions!.map((option, index) => (
-                <MenuItem key={index} value={option.value} onClick={() => optionSelected(option)}>{option.label}</MenuItem>
+                <MenuItem key={index} value={option.value} onClick={() => optionSelected(option)}>
+                    <ListItemIcon>
+                        {props.value == option.value && <CheckIcon fontSize="small" />}
+                    </ListItemIcon>
+                    <ListItemText>{option.label}</ListItemText>
+                </MenuItem>
             ))}
         </Menu>
     </>)
 }
 
-export const DefaultStringFilterOptions: ColumnDefFilter['filterOptions'] = [
-    { value: 'contains', label: 'Contains' },
-    { value: 'starts-with', label: 'Starts With' },
-    { value: 'ends-with', label: 'Ends With' },
-    { value: 'equals', label: 'Equals' },
-]
+export const DefaultStringFilterOptions: {
+    filterOptions: ColumnDefFilter['filterOptions'],
+    defaultFilterOption: string | number
+} = {
+    filterOptions: [
+        { value: 'contains', label: 'Contains', iconText: '∗' },
+        { value: 'starts-with', label: 'Starts With', iconText: '∗[' },
+        { value: 'ends-with', label: 'Ends With', iconText: ']∗' },
+        { value: 'equals', label: 'Equals', iconText: '=' },
+    ],
+    defaultFilterOption: 'contains'
+}
 
-export const DefaultNumberDateFilterOptions: ColumnDefFilter['filterOptions'] = [
-    { value: 'less-than', label: 'Less Than' },
-    { value: 'less-or-equal-than', label: 'Less or Equal Than' },
-    { value: 'bigger-than', label: 'Bigger Than' },
-    { value: 'bigger-or-equal-than', label: 'Bigger or Equal Than' }, 
-    { value: 'equals', label: 'Equals' },
-]
+export const DefaultNumberDateFilterOptions: {
+    filterOptions:ColumnDefFilter['filterOptions'],
+    defaultFilterOption: string | number
+ } = {
+    filterOptions: [
+        { value: 'less-than', label: 'Less Than', iconText: '<' },
+        { value: 'less-or-equal-than', label: 'Less or Equal Than', iconText: '<=' },
+        { value: 'bigger-than', label: 'Bigger Than', iconText: '>' },
+        { value: 'bigger-or-equal-than', label: 'Bigger or Equal Than', iconText: '>=' },
+        { value: 'equals', label: 'Equals', iconText: '=' },
+    ],
+    defaultFilterOption: 'equals'
+}
 
 export type FilterValue = {
     filterOption: string | number,

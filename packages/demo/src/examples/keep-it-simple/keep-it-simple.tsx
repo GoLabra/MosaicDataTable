@@ -282,21 +282,21 @@ export const KeepItSimpleTable = () => {
                 'name': 'string',
                 'city': {
                     type: 'string',
-                    filterOptions: DefaultStringFilterOptions,
+                    ...DefaultStringFilterOptions,
                 },
                 'email': {
                     type: 'string',
-                    filterOptions: [{ value: 'contains', label: 'Contains' }, { value: 'starts-with', label: 'Starts With' }] 
+                    filterOptions: [{ value: 'contains', label: 'Contains', iconText: '@' }, { value: 'starts-with', label: 'Starts With', iconText: '@[' }],
+                    defaultFilterOption: 'contains'
                 },
                 'country': {
                     type: 'select',
-                    filterOptions: DefaultStringFilterOptions,
-                    selectOptions: [{ value: 'contains', label: 'Contains' }, { value: 'starts-with', label: 'Starts With' }] 
+                    selectOptions: [{ value: 'contains', label: 'Contains' }, { value: 'starts-with', label: 'Starts With' }],
                 },
                 'gender': 'boolean',
                 'tokens': {
                     type: 'number',
-                    filterOptions: DefaultNumberDateFilterOptions,
+                    ...DefaultNumberDateFilterOptions,
                 },
             }
         }),
