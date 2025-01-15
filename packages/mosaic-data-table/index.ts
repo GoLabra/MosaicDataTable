@@ -27,7 +27,8 @@ export * from './plugins/row-actions-plugin'
 export * from './plugins/row-expansion-plugin'
 export * from './plugins/row-selection-plugin'
 export * from './plugins/skeleton-loading-plugin'
-export * from './plugins/summary-row-pluggin'
+export * from './plugins/summary-row-plugin'
+export * from './plugins/filter-row-plugin'
 
 
 // MUI THEME INTEGRATION

@@ -10,7 +10,7 @@ export const HighlightColumnPlugin = (props: {
     return {
         type: ['head-cell-content-render', 'body-cell-content-render'] as const,
 
-        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, children?: ReactNode) => {
+        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, children?: ReactNode) => {
 
             if (!headCell.highlight && !props.isColumnHighlighted?.(headCell.id)) {
                 return children;

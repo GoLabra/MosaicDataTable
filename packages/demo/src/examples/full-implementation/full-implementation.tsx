@@ -31,7 +31,7 @@ export const FullImplementationTable = () => {
     const headCells: ColumnDef[] = useMemo(() => [{
         id: 'id',
         header: 'ID',
-        width: 100,
+        width: 80,
         hasSort: true,
         cell: (row: any) => <>{row.id}</>,
     }, {
@@ -71,7 +71,7 @@ export const FullImplementationTable = () => {
     }, {
         id: 'age',
         header: 'Age',
-        width: 100,
+        width: 80,
         hasSort: true,
         cell: (row: any) => <>{row.age}</>,
     }, {

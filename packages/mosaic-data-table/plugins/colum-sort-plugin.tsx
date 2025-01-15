@@ -17,7 +17,12 @@ export const ColumnSortPlugin = (props: {
 
     return {
         type: 'head-cell-content-render',
-        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, children?: ReactNode): ReactNode => {
+        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string,children?: ReactNode): ReactNode => {
+
+            if(caller != 'mosaic-data-table'){
+                return children;
+            }
+
             if (headCell.hasSort == true) {
                 return (<TableSortLabel
                     active={props.orderBy === headCell.id}

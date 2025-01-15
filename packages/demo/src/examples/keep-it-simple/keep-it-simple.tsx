@@ -3,7 +3,7 @@
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
 import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Typography } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin } from 'mosaic-data-table';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions } from 'mosaic-data-table';
 import { useCallback, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -11,6 +11,7 @@ import ModeSwitch from '@/components/ModeSwitch';
 import { useSelection } from './hooks/use-selection';
 
 export const KeepItSimpleTable = () => {
+    const [filter, setFilter] = useState<Filter>({});
     const [order, setOrder] = useState<{ order: Order, sortBy: string }>({ order: 'asc', sortBy: 'name' });
     const contentManagerSelection = useSelection<number>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +20,7 @@ export const KeepItSimpleTable = () => {
     const headCells: ColumnDef[] = [{
         id: 'id',
         header: 'ID',
-        width: 100,
+        width: 80,
         cell: (row: any) => <>{row.id}</>,
     }, {
         id: 'name',
@@ -30,7 +31,7 @@ export const KeepItSimpleTable = () => {
         pin: useResponsivePin({ pin: 'left', breakpoint: 'sm', direction: 'up' }),
         highlight: true,
     }, {
-        id: 'mail',
+        id: 'email',
         header: 'E-mail',
         width: 200,
         hasSort: true,
@@ -58,7 +59,7 @@ export const KeepItSimpleTable = () => {
     }, {
         id: 'age',
         header: 'Age',
-        width: 100,
+        width: 80,
         hasSort: true,
         cell: (row: any) => <>{row.age}</>,
     }, {
@@ -271,6 +272,36 @@ export const KeepItSimpleTable = () => {
         // process the 'render' function
         CustomBodyCellContentRenderPlugin,
 
+        
+        usePluginWithParams(FilterRowPlugin, {
+            visible: true,
+            filter: filter,
+            filterChanged: setFilter,
+            key: 'filter_row',
+            filterColumns: {
+                'name': 'string',
+                'city': {
+                    type: 'string',
+                    filterOptions: DefaultStringFilterOptions,
+                },
+                'email': {
+                    type: 'string',
+                    filterOptions: [{ value: 'contains', label: 'Contains' }, { value: 'starts-with', label: 'Starts With' }] 
+                },
+                'country': {
+                    type: 'select',
+                    filterOptions: DefaultStringFilterOptions,
+                    selectOptions: [{ value: 'contains', label: 'Contains' }, { value: 'starts-with', label: 'Starts With' }] 
+                },
+                'gender': 'boolean',
+                'tokens': {
+                    type: 'number',
+                    filterOptions: DefaultNumberDateFilterOptions,
+                },
+            }
+        }),
+
+
         // add summary row. You can add as many summary rows as you want
         usePluginWithParams(SummaryRowPlugin, {
             visible: true,
@@ -341,6 +372,7 @@ export const KeepItSimpleTable = () => {
                 <ModeSwitch />
             </Stack>
 
+            {JSON.stringify(filter)}
             <MosaicDataTable
                 caption="Keep it simple table" // not visible. used for accessibility
                 plugins={gridPlugins}

@@ -1,8 +1,8 @@
 import { GlobalStyles, Table, TableBody, TableContainer } from "@mui/material";
 import { PropsWithChildren, useCallback, useEffect, useMemo } from "react";
-import { MosaicDataTableHeadCore } from "./MosaicDataTableHeadCore";
+import { MosaicDataTableHead } from "./MosaicDataTableHead";
 import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps } from "./types/table-types";
-import { MosaicDataTableBodyCore } from "./MosaicDataTableBodyCore";
+import { MosaicDataTableBody } from "./MosaicDataTableBody";
 import { MosaicDataTableRoot } from "./style";
 import { filterGridPlugins } from "./util/filterGridPlugins";
 
@@ -46,6 +46,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
                 '--mui-palette-MosaicDataTable-background': 'var(--mui-palette-background-paper)',  
                 '--mui-palette-MosaicDataTable-highlight': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), transparent 70%)',
                 '--mui-palette-MosaicDataTable-rowHover': 'color-mix(in srgb, rgb(var(--mui-palette-background-paperChannel)), var(--mui-palette-common-onBackground) 7%)',
+                '--mui-palette-MosaicDataTable-extraRow': 'color-mix(in srgb, rgb(var(--mui-palette-primary-mainChannel)), var(--mui-palette-background-paper) 90%)',
             }
         }} />
 
@@ -56,13 +57,13 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
                     <Table sx={{ height: '100%' }} aria-labelledby="tableTitle" size="medium">
                         <caption>{props.caption}</caption>
                      
-                        <MosaicDataTableHeadCore
+                        <MosaicDataTableHead
                             headCells={columns}
                             plugins={props.plugins}
                             gridApi={gridApi}
                         />
 
-                        <MosaicDataTableBodyCore
+                        <MosaicDataTableBody
                             columns={columns}
                             plugins={props.plugins}
                             gridApi={gridApi}
