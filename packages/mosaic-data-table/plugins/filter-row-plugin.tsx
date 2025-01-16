@@ -1,10 +1,12 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { GridApi, ColumnDef,  MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadCellContentRenderPlugin } from "../types/table-types";
 import { MosaicDataTableHeadRow } from "../MosaicDataTableHeadRow";
-import { Box,  debounce, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, styled, TextField } from "@mui/material";
+import { Box,  debounce, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, styled, TextField, TextFieldProps } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CheckIcon from '@mui/icons-material/Check';
 import { DockedDiv } from "../style";
+import { DatePicker } from "@mui/x-date-pickers";
+import { useLocalizationContext } from "@mui/x-date-pickers/internals";
 
 export const FilterRowPlugin = ({
     visible = true,
@@ -67,7 +69,6 @@ export const FilterRowPlugin = ({
                 const operators = typeof filterDef != 'string' ? filterDef.operators : undefined;
                 const filterValue = filter?.[column.id];
 
-                console.log('render content')
                 return (
                     <DockedWrapper key={column.id} className="MosaicDataTable-filter-row-docked">
 
@@ -169,6 +170,11 @@ const FreeInput = (props: FreeInputProps) => {
     }
 
     return (
+        <Box sx={{  
+            width: '100%',
+            padding: '0 5px'
+         }} >
+
         <InputComp
             key={`input-${props.type}`}
             selectOptions={props.selectOptions}
@@ -178,6 +184,7 @@ const FreeInput = (props: FreeInputProps) => {
                 memoizedDebounce(value.target.value);
             }}
         />
+        </Box>
     );
 };
 
@@ -186,18 +193,18 @@ export interface InputProps {
     onChange: (value: any) => void;
     selectOptions?: Extract<ColumnDefFilter, { type: 'select' }>['selectOptions'];
 }
-const TextInput = (props: InputProps) => {
-    return (<TextField id="outlined-basic" variant="standard" value={props.value} onChange={props.onChange}
+const TextInput = (props: InputProps & TextFieldProps) => {
+
+    const {selectOptions, ...other} = props;
+    
+    return (<TextField id="outlined-basic" variant="standard" //value={props.value} onChange={props.onChange}
+        
         slotProps={{
-            input: {
-                disableUnderline: true,
-                inputProps: {
-                    sx: {
-                        padding: '3px'
-                    }
-                }
+                input: {
+                        disableUnderline: true,
             }
         }}
+        {...other}
     />)
 }
 
@@ -206,11 +213,6 @@ const NumberInput = (props: InputProps) => {
         slotProps={{
             input: {
                 disableUnderline: true,
-                inputProps: {
-                    sx: {
-                        padding: '3px'
-                    }
-                }
             }
         }}
     />)
@@ -221,11 +223,6 @@ const SelectInput = (props: InputProps) => {
         slotProps={{
             input: {
                 disableUnderline: true,
-                inputProps: {
-                    sx: {
-                        padding: '3px'
-                    }
-                }
             }
         }}
     >
@@ -241,11 +238,6 @@ const BooleanInput = (props: InputProps) => {
         slotProps={{
             input: {
                 disableUnderline: true,
-                inputProps: {
-                    sx: {
-                        padding: '3px'
-                    }
-                }
             }
         }}
     >
@@ -253,6 +245,52 @@ const BooleanInput = (props: InputProps) => {
         <MenuItem value={'true'}>True</MenuItem>
         <MenuItem value={'false'}>False</MenuItem>
     </TextField>)
+}
+
+const DateInput = (props: InputProps) => {
+
+    const localizationContext = useLocalizationContext();
+    
+    // Now you can check if there's an adapter available
+    if (!localizationContext) {
+        console.warn('No LocalizationProvider found. DatePicker requires LocalizationProvider to function.');
+        return null;
+    }
+    
+    const onChange = useCallback((value: any | null) => {
+        
+        if(!value){
+            props.onChange({ target: { value: null } });
+            return;
+        }
+
+        if(!value.isValid()){
+            props.onChange({ target: { value: null } });    
+            return;
+        }   
+             
+        props.onChange({ target: { value: localizationContext.utils.formatByString(value, 'YYYY-MM-DD')  } });
+    }, [props.onChange]);
+
+    const value = useMemo(( ) => {
+        if(!props.value){
+            return null;
+        }
+        return props.value ? localizationContext.utils.parse(props.value, 'YYYY-MM-DD') as any : null;
+    }, [props.value]);
+
+    return (<DatePicker value={value} onChange={onChange}
+                slotProps={{
+                    textField: {
+                        InputProps:{
+                            disableUnderline: true,
+                          },
+
+                        variant: 'standard'
+                    }
+                }}
+            />)
+              
 }
 
 interface ColumnDefFilterButtonProps {
@@ -278,7 +316,6 @@ const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
         memoizedDebounce(option.value);
     }, [props.onChange]);
 
-    console.log('props.value', props.value);
     return (<>
         <IconButton aria-label="delete" size="small" onClick={handleClick}>
             <MoreVertIcon fontSize="inherit" />
@@ -343,6 +380,7 @@ let filterInputMap: Partial<Record<ColumnDefFilter['type'], React.FC<any>>> = {
     'select': SelectInput,
     'number': NumberInput,
     'boolean': BooleanInput,
+    'date': DateInput
 }
 
 export interface IColumnDefFilter {

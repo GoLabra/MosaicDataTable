@@ -13,6 +13,7 @@ import { useContentManagerStore } from './hooks/use-content-manager-store';
 import { useContentManagerIds } from './hooks/use-content-manger-ids';
 import { useSelection } from './hooks/use-selection';
 import { CenterPagination, CoolPagination } from './components/cool-pagination';
+import dayjs from 'dayjs';
 
 export const FullImplementationTable = () => {
 
@@ -130,9 +131,9 @@ export const FullImplementationTable = () => {
     }, {
         id: 'registrationDate',
         header: 'Registered On',
-        width: 180,
+        width: 210,
         hasSort: true,
-        cell: (row: any) => <>{new Date(row.registrationDate).toISOString()}</>,
+        cell: (row: any) => <>{dayjs(row.registrationDate).format('MMM DD, YYYY, hh:mm:ss A')}</>,
         visible: registrationDateVisible,
     }, {
         id: 'role',
@@ -197,6 +198,11 @@ export const FullImplementationTable = () => {
                         { value: 'South Africa', label: 'South Africa' },
                         { value: 'USA', label: 'USA' },
                     ],
+                },
+                'registrationDate': {
+                    type: 'date',
+                    ...DefaultNumberDateFilterOptions,
+                    defaultOperator: 'less-or-equal-than',
                 },
                 'tokens': {
                     type: 'number',

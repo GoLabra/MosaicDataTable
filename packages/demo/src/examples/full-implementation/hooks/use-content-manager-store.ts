@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ContentManagerSearchState } from "../types/types";
 import { FilterValue } from "mosaic-data-table";
+import { useLocalizationContext } from "@mui/x-date-pickers/internals";
 
 interface UseContentManagerStoreParams {
     searchState: ContentManagerSearchState;
@@ -12,7 +13,7 @@ export const useContentManagerStore = (params: UseContentManagerStoreParams) => 
 
     const [state, setState] = useState<any[]>(initialItems)
     const [loading, setLoading] = useState(false);
-
+    const localizationContext = useLocalizationContext();
 
 
     // simulate API loading
@@ -45,28 +46,61 @@ export const useContentManagerStore = (params: UseContentManagerStoreParams) => 
                     return true; // Skip if operation or value is empty if
                 }
 
-                const itemValue = item[key]?.toString().toLowerCase();
+                const itemValue = item[key];
+                const sItemValue = itemValue?.toString().toLowerCase();
                 const filterValue = filter.value.toLowerCase();
 
                 switch (filter.operation) {
                     case 'starts-with':
-                        return itemValue.startsWith(filterValue);
+                        return sItemValue.startsWith(filterValue);
                     case 'ends-with':
-                        return itemValue.endsWith(filterValue);
+                        return sItemValue.endsWith(filterValue);
                     case 'contains':
-                        return itemValue.includes(filterValue);
+                        return sItemValue.includes(filterValue);
                     case 'equals':
-                        return itemValue === filterValue;
+                        return sItemValue === filterValue;
                     case 'less-than':
-                        return parseFloat(itemValue) < parseFloat(filterValue);
+                        // if filter value is a number
+                        if(/^\d+$/.test(filterValue)) {
+                            return itemValue < parseFloat(filterValue);
+                        }
+                        else // if filter value is a date
+                        {
+                            const value = localizationContext.utils.parse(filterValue, 'YYYY-MM-DD');
+                            return itemValue < value!.toDate();
+                        }
                     case 'less-or-equal-than':
-                        return parseFloat(itemValue) <= parseFloat(filterValue);
+                        // if filter value is a number
+                        if(/^\d+$/.test(filterValue)) {
+                            return parseFloat(itemValue) <= parseFloat(filterValue);
+                        }
+                        else // if filter value is a date
+                        {
+                            const value = localizationContext.utils.parse(filterValue, 'YYYY-MM-DD');
+                            return itemValue <= value!.toDate();
+                        }
                     case 'bigger-than':
-                        return parseFloat(itemValue) > parseFloat(filterValue);
+                        // if filter value is a number
+                        if(/^\d+$/.test(filterValue)) {
+                            return parseFloat(itemValue) > parseFloat(filterValue);
+                        }
+                        else // if filter value is a date
+                        {
+                            const value = localizationContext.utils.parse(filterValue, 'YYYY-MM-DD');
+                            return itemValue > value!.toDate();
+                        }
                     case 'bigger-or-equal-than':
-                        return parseFloat(itemValue) >= parseFloat(filterValue);
+                        // if filter value is a number
+                        if(/^\d+$/.test(filterValue)) {
+                            return parseFloat(itemValue) >= parseFloat(filterValue);
+                        }
+                        else // if filter value is a date
+                        {
+                            const value = localizationContext.utils.parse(filterValue, 'YYYY-MM-DD');
+                            return itemValue >= value!.toDate();
+                        }
                     default:
-                        return itemValue.includes(filterValue);
+                        return sItemValue.includes(filterValue);
                 }
             });
         });

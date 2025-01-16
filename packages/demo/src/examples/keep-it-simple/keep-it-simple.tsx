@@ -9,6 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ModeSwitch from '@/components/ModeSwitch';
 import { useSelection } from './hooks/use-selection';
+import dayjs from 'dayjs';
 
 export const KeepItSimpleTable = () => {
     const [filter, setFilter] = useState<Filter>({});
@@ -120,9 +121,9 @@ export const KeepItSimpleTable = () => {
     }, {
         id: 'registrationDate',
         header: 'Registered On',
-        width: 180,
+        width: 210,
         hasSort: true,
-        cell: (row: any) => <>{new Date(row.registrationDate).toISOString()}</>,
+        cell: (row: any) => <>{dayjs(row.registrationDate).format('MMM DD, YYYY, hh:mm:ss A')}</>,
         visible: useResponsiveHeadCellVisible({ breakpoint: 'md', direction: 'up' }),
     }, {
         id: 'role',
@@ -305,6 +306,7 @@ export const KeepItSimpleTable = () => {
                         { value: 'USA', label: 'USA' },
                     ],
                 },
+                'registrationDate': 'date',
                 'tokens': {
                     type: 'number',
                     ...DefaultNumberDateFilterOptions,

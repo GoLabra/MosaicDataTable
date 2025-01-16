@@ -1,6 +1,6 @@
 {
     "name": "mosaic-data-table",
-    "version": "0.0.28",
+    "version": "0.0.29",
     "description": "React DataTable component with Material-UI",
     "repository": {
         "type": "git",
@@ -33,6 +33,7 @@
         "@emotion/styled": "^11.11.5",
         "@mui/icons-material": "^6.1.8",
         "@mui/material": "^6.1.8",
+        "@mui/x-date-pickers": "^7.11.0",
         "react": "^18",
         "react-dom": "^18"
     },

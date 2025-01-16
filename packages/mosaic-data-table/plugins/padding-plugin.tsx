@@ -15,8 +15,6 @@ export const PaddingPluggin = ({
     skipCellHeads?: string[];
 }): MosaicDataTableHeadCellContentRenderPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
-    console.log('padding cell');
-
     return {
         type: ['head-cell-content-render', 'body-cell-content-render'],
 
