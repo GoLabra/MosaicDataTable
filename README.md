@@ -29,12 +29,12 @@ function MyTable() {
 
   const headCells = [{
       id: 'id',
-      label: 'ID',
-      render: (row: any) => row.id,
+      header: 'ID',
+      cell: (row: any) => row.id,
   },{
       id: 'name',
-      label: 'Name',
-      render: (row: any) => row.name,
+      header: 'Name',
+      cell: (row: any) => row.name,
   }];
 
 
