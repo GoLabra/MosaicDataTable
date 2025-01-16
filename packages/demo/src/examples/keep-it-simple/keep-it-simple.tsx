@@ -384,7 +384,6 @@ export const KeepItSimpleTable = () => {
                 <ModeSwitch />
             </Stack>
 
-            {JSON.stringify(filter)}
             <MosaicDataTable
                 caption="Keep it simple table" // not visible. used for accessibility
                 plugins={gridPlugins}

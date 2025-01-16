@@ -70,6 +70,20 @@ Plugins can be combined to add specific functionality to your table. The order o
 
     **Note:** In future versions, alternative rendering methods will be available, such as automatic value retrieval based on cell ID and smart content type detection. For now, this plugin is required and must be included first in the plugins list.
 
+- FilterRowPlugin
+
+    Adds filter row
+
+    ```
+    usePluginWithParams(FilterRowPlugin, {
+        visible?: boolean;
+        filterChanged: (filter: Filter) => void;
+        filter: Filter;
+        filterColumns: Record<string, ColumnDefFilter>;
+        key: string;
+    })
+    ```   
+
 - SummaryRowPlugin
 
     Adds summary row. You can add as many summary rows as you want
@@ -78,7 +92,7 @@ Plugins can be combined to add specific functionality to your table. The order o
     usePluginWithParams(SummaryRowPlugin, {
         visible?: boolean,
         summaryColumns: Record<string, string | ReactNode | ((row: any) => string | ReactNode)>,
-        key?: string // needed only if you want to use more than one summary row
+        key: string
     })
     ```   
 

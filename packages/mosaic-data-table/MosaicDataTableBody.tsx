@@ -26,7 +26,7 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
         }
 
         return (<TableBody>{params.children}</TableBody>);
-    }, [...bodyRenderPlugins]);
+    }, [...bodyRenderPlugins, props.items, props.columns, props.gridApi]);
 
     // extra-row-start
     const extraRowStartPlugins = useMemo((): MosaicDataTableBodyExtraRowStartPlugin[] => {
