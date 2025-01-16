@@ -58,6 +58,7 @@ export const MosaicDataTableCellRoot = styled(TableCell, {
 
 export const DockedDiv = styled(Box)<BoxProps>(({ theme }) => ({
     height: '100%',
+    width: '100%',
     position: 'relative',
     display: 'flex',
     flexDirection: 'row',

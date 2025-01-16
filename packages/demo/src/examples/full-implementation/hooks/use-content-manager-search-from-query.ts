@@ -1,7 +1,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useQueryState, parseAsInteger, parseAsString, parseAsJson } from 'nuqs';
-import { Order } from "mosaic-data-table";
+import { Filter, Order } from "mosaic-data-table";
 import { ContentManagerSearchState } from "../types/types";
 import { initialize } from "next/dist/server/lib/render-server";
 
@@ -17,7 +17,7 @@ export const useContentManagerSearchFromQuery = (props: UseContentManagerSearchF
     const [rowsPerPage, setRowsPerPage] = useQueryState('rpp', parseAsInteger.withDefault(props.initialRowsPerPage))
     const [sortBy, setSortBy] = useQueryState('s', parseAsString.withDefault(props.initialSortBy))
     const [order, setOrderBy] = useQueryState('o', parseAsString.withDefault(props.initialOrder))
-
+    const [filter, setFilter] = useQueryState('f', parseAsJson<Filter>());
 
     const handlePageChange = useCallback((value: number): void => {
         setPage(value);
@@ -33,18 +33,25 @@ export const useContentManagerSearchFromQuery = (props: UseContentManagerSearchF
         setOrderBy(order);
     }, [setSortBy, setOrderBy]);
 
+    const handleFilterChange = useCallback((filters: Filter): void => {
+        setFilter(filters);
+        setPage(1);
+    }, [setSortBy, setOrderBy]);
+
 
     const searchState: ContentManagerSearchState = useMemo(() => ({
         page,
         rowsPerPage,
         sortBy,
         order: order as Order,
-    }), [page, rowsPerPage, sortBy, order]);
+        filter
+    }), [page, rowsPerPage, sortBy, order, filter]);
 
     return useMemo(() => ({
         handlePageChange,
         handleRowsPerPageChange,
         handleSortChange,
+        handleFilterChange,
         state: searchState
-    }), [ handlePageChange, handleRowsPerPageChange, handleSortChange, searchState]);
+    }), [ handlePageChange, handleRowsPerPageChange, handleSortChange, handleFilterChange, searchState]);
 };

@@ -7,40 +7,41 @@ import { MosaicDataTableCellRoot } from "../style";
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
     type: ['body-cell-render', 'head-cell-render'] as const,
     renderBodyCell: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
-        return getCell(headCell, gridApi, sx, children);
-    }, renderHeadCell: (headCell: ColumnDef<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => { 
-        return getCell(headCell, gridApi, sx, children);
+        return getCell(headCell, gridApi, '', sx, children);
+    },
+    renderHeadCell: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode) => {
+        return getCell(headCell, gridApi, caller, sx, children);
     }
 }
 
-const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
+const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode) => {
 
-    if(!headCell.pin){
+    if (!headCell.pin) {
         return null;
     }
- 
-    let leftOffset: number|undefined = undefined;
-    let rightOffset: number|undefined = undefined;
 
-    if(headCell.pin === 'left' || headCell.pin === true){
+    let leftOffset: number | undefined = undefined;
+    let rightOffset: number | undefined = undefined;
+
+    if (headCell.pin === 'left' || headCell.pin === true) {
 
         const leftPins = gridApi.getColumns()
-            .filter(i => i.pin === 'left' || i.pin === true); 
+            .filter(i => i.pin === 'left' || i.pin === true);
 
         const beforePins = leftPins.slice(0, leftPins.findIndex(col => col.id === headCell.id));
-        
+
         leftOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
 
 
     }
 
-    if(headCell.pin == 'right' || headCell.pin === true){
+    if (headCell.pin == 'right' || headCell.pin === true) {
         const rightPins = gridApi.getColumns()
             .filter(i => i.pin === 'right' || i.pin === true);
-        
+
         const beforePins = rightPins.slice(rightPins.findIndex(col => col.id === headCell.id) + 1)
             .reverse();
-        
+
         rightOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
 
         // return <MosaicDataTableCellRoot key={headCell.id} sx={{
@@ -78,7 +79,7 @@ export const useResponsivePin = ({
     direction = 'up'
 }: ResponsivePinProps): 'left' | 'right' | boolean | undefined => {
     const isActive = useMediaQuery((theme: Theme) => theme.breakpoints[direction](breakpoint));
-    if(isActive){
+    if (isActive) {
         return pin;
     }
     return undefined;

@@ -3,7 +3,7 @@
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
 import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Box, Typography } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore } from 'mosaic-data-table';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, FilterRowPlugin, DefaultStringFilterOptions, DefaultNumberDateFilterOptions } from 'mosaic-data-table';
 import { use, useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -31,7 +31,7 @@ export const FullImplementationTable = () => {
     const headCells: ColumnDef[] = useMemo(() => [{
         id: 'id',
         header: 'ID',
-        width: 100,
+        width: 80,
         hasSort: true,
         cell: (row: any) => <>{row.id}</>,
     }, {
@@ -71,7 +71,7 @@ export const FullImplementationTable = () => {
     }, {
         id: 'age',
         header: 'Age',
-        width: 100,
+        width: 80,
         hasSort: true,
         cell: (row: any) => <>{row.age}</>,
     }, {
@@ -106,7 +106,7 @@ export const FullImplementationTable = () => {
     }, {
         id: 'tokens',
         header: 'Tokens',
-        width: 80,
+        width: 100,
         hasSort: true,
         cell: (row: any) => <>{row.tokens}</>,
         pin: tokensPinProps,
@@ -167,6 +167,44 @@ export const FullImplementationTable = () => {
         // process the 'render' function
         CustomBodyCellContentRenderPlugin,
 
+                
+        usePluginWithParams(FilterRowPlugin, {
+            visible: true,
+            filter: contentManagerSearch.state.filter,
+            filterChanged: contentManagerSearch.handleFilterChange,
+            key: 'filter_row',
+            filterColumns: useMemo<any>(() => ({
+                'name': 'string',
+                'city': {
+                    type: 'string',
+                    ...DefaultStringFilterOptions,
+                },
+                'email': {
+                    type: 'string',
+                    operators: [{ value: 'contains', label: 'Contains', iconText: '@' }, { value: 'starts-with', label: 'Starts With', iconText: '@[' }],
+                    defaultOperator: 'contains'
+                },
+                'country': {
+                    type: 'select',
+                    selectOptions: [
+                        { value: 'Austria', label: 'Austria' }, 
+                        { value: 'Brazil', label: 'Brazil' },
+                        { value: 'Cyprus', label: 'Cyprus' },
+                        { value: 'France', label: 'France' },
+                        { value: 'Italy', label: 'Italy' },
+                        { value: 'Japan', label: 'Japan' },
+                        { value: 'Romania', label: 'Romania' },
+                        { value: 'South Africa', label: 'South Africa' },
+                        { value: 'USA', label: 'USA' },
+                    ],
+                },
+                'tokens': {
+                    type: 'number',
+                    ...DefaultNumberDateFilterOptions,
+                },
+            }), [])
+        }),
+        
         // add summary row. You can add as many summary rows as you want
         usePluginWithParams(SummaryRowPlugin, {
             visible: true,

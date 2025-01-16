@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ContentManagerSearchState } from "../types/types";
+import { FilterValue } from "mosaic-data-table";
 
 interface UseContentManagerStoreParams {
     searchState: ContentManagerSearchState;
@@ -12,7 +13,7 @@ export const useContentManagerStore = (params: UseContentManagerStoreParams) => 
     const [state, setState] = useState<any[]>(initialItems)
     const [loading, setLoading] = useState(false);
 
-    const totalCount = initialItems.length;
+
 
     // simulate API loading
     useEffect(() => {
@@ -23,15 +24,65 @@ export const useContentManagerStore = (params: UseContentManagerStoreParams) => 
         return () => clearTimeout(timer);
     }, [searchState]);
 
+    // const filteredData = useMemo(() => {
+    //     return state.filter((item: any) => {
+    //         return Object.keys(searchState.filter).every((key: string) => {
+    //             const value = searchState.filter[key];
+    //             return item[key] === value;
+    //         });
+    //     });
+    // }, [loading]);
+
+    const filteredData = useMemo(() => {
+        if (!searchState.filter) {
+            return state;
+        }
+
+        return state.filter((item) => {
+            return Object.entries(searchState.filter).every(([key, filter]: [string, FilterValue | any]) => {
+
+                if (!filter.value) {
+                    return true; // Skip if operation or value is empty if
+                }
+
+                const itemValue = item[key]?.toString().toLowerCase();
+                const filterValue = filter.value.toLowerCase();
+
+                switch (filter.operation) {
+                    case 'starts-with':
+                        return itemValue.startsWith(filterValue);
+                    case 'ends-with':
+                        return itemValue.endsWith(filterValue);
+                    case 'contains':
+                        return itemValue.includes(filterValue);
+                    case 'equals':
+                        return itemValue === filterValue;
+                    case 'less-than':
+                        return parseFloat(itemValue) < parseFloat(filterValue);
+                    case 'less-or-equal-than':
+                        return parseFloat(itemValue) <= parseFloat(filterValue);
+                    case 'bigger-than':
+                        return parseFloat(itemValue) > parseFloat(filterValue);
+                    case 'bigger-or-equal-than':
+                        return parseFloat(itemValue) >= parseFloat(filterValue);
+                    default:
+                        return itemValue.includes(filterValue);
+                }
+            });
+        });
+    }, [loading]);
+
+    const totalCount = filteredData.length;
+
     const sortedData = useMemo(() => {
         if (!params.searchState.sortBy) {
             return state;
         }
 
-        return [...state].sort((a: any, b: any) => {
+        return [...filteredData].sort((a: any, b: any) => {
             const aValue = a[params.searchState.sortBy!];
             const bValue = b[params.searchState.sortBy!];
-            
+
             if (searchState.order === 'asc') {
                 return aValue > bValue ? 1 : -1;
             }
@@ -193,7 +244,7 @@ const initialItems = [{
     city: 'Tbilisi',
     language: 'Georgian',
     tokens: 92
-},{
+}, {
     id: 8,
     name: 'Andreas Georgiou',
     email: 'andreas.georgiou@mail.com',
@@ -212,7 +263,7 @@ const initialItems = [{
     city: 'Nicosia',
     language: 'Greek',
     tokens: 33
-},{
+}, {
     id: 9,
     name: 'João da Silva',
     email: 'giorgi.beridze@mail.com',
