@@ -47,7 +47,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
                 ...rowStyle
             }
         }, {});
-    }, [rowStylePlugins, props.caller]);
+    }, [...rowStylePlugins, props.caller]);
 
 
     // head-cell-render
@@ -76,7 +76,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
                 ...cellStyle
             }} >{params.children}</MosaicDataTableCellRoot>);
 
-    }, [cellRenderPlugins, props.caller]);
+    }, [...cellRenderPlugins, props.caller]);
 
     // head-cell-style
     const cellStylePlugins = useMemo((): MosaicDataTableHeadCellStylePlugin[] => {
@@ -91,7 +91,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
                 ...cellStyle
             }
         }, {});
-    }, [cellStylePlugins, props.caller]);
+    }, [...cellStylePlugins, props.caller]);
 
     // head-cell-content-render
     const cellContentRenderPlugins = useMemo((): MosaicDataTableHeadCellContentRenderPlugin[] => {
@@ -107,7 +107,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
             return cellContent;
         }, initialContent);
 
-    }, [cellContentRenderPlugins, props.caller]);
+    }, [...cellContentRenderPlugins, props.caller]);
 
 
     return (

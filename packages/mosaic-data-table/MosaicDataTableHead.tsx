@@ -26,7 +26,7 @@ export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
             return row;
         });
 
-    }, [extraRowStartPlugins, props.headCells, props.gridApi]);
+    }, [...extraRowStartPlugins, props.headCells, props.gridApi]);
 
 
     // extra-row-end
@@ -41,7 +41,7 @@ export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
             return row;
         });
 
-    }, [extraRowEndPlugins, props.headCells, props.gridApi]);
+    }, [...extraRowEndPlugins, props.headCells, props.gridApi]);
 
     return (
         <TableHead >

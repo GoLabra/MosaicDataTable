@@ -29,7 +29,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
             return cellContent ?? [];
         }, visileHeadCells);
 
-    }, [bodyCellRenderPlugins, visileHeadCells]);
+    }, [...bodyCellRenderPlugins, visileHeadCells]);
 
 
     const gridApi: GridApi = useMemo(() => ({

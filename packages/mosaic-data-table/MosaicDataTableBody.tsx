@@ -26,7 +26,7 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
         }
 
         return (<TableBody>{params.children}</TableBody>);
-    }, [bodyRenderPlugins]);
+    }, [...bodyRenderPlugins]);
 
     // extra-row-start
     const extraRowStartPlugins = useMemo((): MosaicDataTableBodyExtraRowStartPlugin[] => {
@@ -38,7 +38,7 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
             var row = plugin.getBodyExtraRowStart?.(props.columns, props.items, props.gridApi);
             return row;
         });
-    }, [extraRowStartPlugins, props.items, props.columns, props.gridApi]);
+    }, [...extraRowStartPlugins, props.items, props.columns, props.gridApi]);
 
 
     // extra-row-end
@@ -52,7 +52,7 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
             return row;
         });
 
-    }, [extraRowEndPlugins, props.items, props.columns, props.gridApi]);
+    }, [...extraRowEndPlugins, props.items, props.columns, props.gridApi]);
 
     return (
         <React.Fragment>

@@ -21,7 +21,7 @@ export function MosaicDataTableBodyRow<T>(props: {
 
     const getRow = useCallback((params: {row: any, children?: ReactNode }) => {
 
-        const rowStyle = getRowStyle();
+        const rowStyle = getRowStyle;
 
         for (const plugin of rowRenderPlugins) {
             var cell = plugin.renderBodyRow?.(row, props.gridApi, rowStyle, params.children);
@@ -31,14 +31,14 @@ export function MosaicDataTableBodyRow<T>(props: {
         }
 
         return (<MosaicDataTableRowRoot key={row} hover tabIndex={-1} sx={rowStyle} >{params.children}</MosaicDataTableRowRoot>);
-    }, [rowRenderPlugins]);
+    }, [...rowRenderPlugins]);
 
     // body-row-style
     const rowStylePlugins = useMemo((): MosaicDataTableBodyRowStylePlugin[] => {
         return filterGridPlugins<MosaicDataTableBodyRowStylePlugin>(props.plugins, 'body-row-style');
     }, [props.plugins]);
 
-    const getRowStyle = useCallback((): SxProps<Theme> => {
+    const getRowStyle = useMemo((): SxProps<Theme> => {
         return rowStylePlugins.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableBodyRowStylePlugin) => {
             const rowStyle = plugin.getBodyRowStyle?.(row, props.gridApi);
             return {
@@ -46,7 +46,7 @@ export function MosaicDataTableBodyRow<T>(props: {
                 ...rowStyle
             }
         }, {});
-    }, [rowStylePlugins]);
+    }, [...rowStylePlugins]);
 
     // body-cell-render
     const cellRenderPlugins = useMemo((): MosaicDataTableBodyCellRenderPlugin[] => {

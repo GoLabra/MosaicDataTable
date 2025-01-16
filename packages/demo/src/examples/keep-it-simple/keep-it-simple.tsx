@@ -16,6 +16,8 @@ export const KeepItSimpleTable = () => {
     const contentManagerSelection = useSelection<number>();
     const [loading, setLoading] = useState<boolean>(false);
     const [empty, setEmpty] = useState<boolean>(false);
+    const [showFilter, setShowFilter] = useState<boolean>(true);
+    const [showFooter, setShowFooter] = useState<boolean>(true);
 
     const headCells: ColumnDef[] = [{
         id: 'id',
@@ -274,7 +276,7 @@ export const KeepItSimpleTable = () => {
 
         
         usePluginWithParams(FilterRowPlugin, {
-            visible: true,
+            visible: showFilter,
             filter: filter,
             filterChanged: setFilter,
             key: 'filter_row',
@@ -286,8 +288,8 @@ export const KeepItSimpleTable = () => {
                 },
                 'email': {
                     type: 'string',
-                    filterOptions: [{ value: 'contains', label: 'Contains', iconText: '@' }, { value: 'starts-with', label: 'Starts With', iconText: '@[' }],
-                    defaultFilterOption: 'contains'
+                    operators: [{ value: 'contains', label: 'Contains', iconText: '@' }, { value: 'starts-with', label: 'Starts With', iconText: '@[' }],
+                    defaultOperator: 'contains'
                 },
                 'country': {
                     type: 'select',
@@ -304,7 +306,7 @@ export const KeepItSimpleTable = () => {
 
         // add summary row. You can add as many summary rows as you want
         usePluginWithParams(SummaryRowPlugin, {
-            visible: true,
+            visible: showFooter,
             key: 'symmary_row', // needed only if you want to use more than one summary row
             summaryColumns: {
                 'name': (column: ColumnDef<any>) => <Typography fontWeight={700}>Total</Typography>,
@@ -367,6 +369,8 @@ export const KeepItSimpleTable = () => {
     return (
         <>
             <Stack alignItems="center" direction="row" justifyContent="flex-end" >
+                <FormControlLabel control={<Checkbox checked={showFilter} onChange={(event) => setShowFilter(event.target.checked)} />} label="Show Filters" />
+                <FormControlLabel control={<Checkbox checked={showFooter} onChange={(event) => setShowFooter(event.target.checked)} />} label="Show Footer" />
                 <FormControlLabel control={<Checkbox checked={empty} onChange={(event) => setEmpty(event.target.checked)} />} label="Simulate Empty Table" />
                 <FormControlLabel control={<Checkbox checked={loading} onChange={(event) => setLoading(event.target.checked)} />} label="Simulate Loading" />
                 <ModeSwitch />
