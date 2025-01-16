@@ -3,8 +3,8 @@
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
 import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Typography } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions } from 'mosaic-data-table';
-import { useCallback, useState } from 'react';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions, ColumnDefFilter } from 'mosaic-data-table';
+import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ModeSwitch from '@/components/ModeSwitch';
@@ -96,7 +96,7 @@ export const KeepItSimpleTable = () => {
     }, {
         id: 'tokens',
         header: 'Tokens',
-        width: 80,
+        width: 100,
         hasSort: true,
         pin: useResponsivePin({ pin: true, breakpoint: 'lg', direction: 'up' }),
         cell: (row: any) => <>{row.tokens}</>,
@@ -274,13 +274,13 @@ export const KeepItSimpleTable = () => {
         // process the 'render' function
         CustomBodyCellContentRenderPlugin,
 
-        
+
         usePluginWithParams(FilterRowPlugin, {
             visible: showFilter,
             filter: filter,
             filterChanged: setFilter,
             key: 'filter_row',
-            filterColumns: {
+            filterColumns: useMemo<any>(() => ({
                 'name': 'string',
                 'city': {
                     type: 'string',
@@ -293,16 +293,24 @@ export const KeepItSimpleTable = () => {
                 },
                 'country': {
                     type: 'select',
-                    selectOptions: [{ value: 'contains', label: 'Contains' }, { value: 'starts-with', label: 'Starts With' }],
+                    selectOptions: [
+                        { value: 'Austria', label: 'Austria' },
+                        { value: 'Brazil', label: 'Brazil' },
+                        { value: 'Cyprus', label: 'Cyprus' },
+                        { value: 'France', label: 'France' },
+                        { value: 'Italy', label: 'Italy' },
+                        { value: 'Japan', label: 'Japan' },
+                        { value: 'Romania', label: 'Romania' },
+                        { value: 'South Africa', label: 'South Africa' },
+                        { value: 'USA', label: 'USA' },
+                    ],
                 },
-                'gender': 'boolean',
                 'tokens': {
                     type: 'number',
                     ...DefaultNumberDateFilterOptions,
                 },
-            }
+            }), [])
         }),
-
 
         // add summary row. You can add as many summary rows as you want
         usePluginWithParams(SummaryRowPlugin, {

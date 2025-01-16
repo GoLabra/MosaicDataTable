@@ -65,7 +65,7 @@ export const FilterRowPlugin = ({
                 const selectOptions = typeof filterDef != 'string' && filterDef.type == 'select' ? filterDef.selectOptions : undefined;
                 const defaultOperator = typeof filterDef != 'string' ? filterDef.defaultOperator : undefined;
                 const operators = typeof filterDef != 'string' ? filterDef.operators : undefined;
-                const filterValue = filter[column.id];
+                const filterValue = filter?.[column.id];
 
                 console.log('render content')
                 return (
@@ -75,7 +75,6 @@ export const FilterRowPlugin = ({
                             key={column.id}
                             sx={{
                                 width: '100%',
-                                minWidth: '100px',
                                 margin: '3px',
                                 padding: '3px',
                                 borderRadius: '3px',
@@ -134,7 +133,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
                     value: value?.value ?? ''
                 });
             }} />}
-            
+
         <FreeInput
             key={`free-input-${props.type}`}
             type={props.type}

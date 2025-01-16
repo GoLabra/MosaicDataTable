@@ -36,7 +36,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
         getData: () => props.items,
         getColumns: () => columns,
         getPlugins: () => props.plugins || []
-    }), [props.items,columns]);
+    }), [props.items,columns, ...props.plugins??[]]);
 
 
     return (<>

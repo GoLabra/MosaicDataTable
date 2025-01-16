@@ -30,7 +30,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
         } as SxProps<Theme>
 
         return (<TableRow key="head-row" sx={ rowSx } >{params.children}</TableRow>);
-    }, [rowRenderPlugins]);
+    }, [...rowRenderPlugins, props.headCells, props.gridApi]);
 
 
     // head-row-style
@@ -76,7 +76,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
                 ...cellStyle
             }} >{params.children}</MosaicDataTableCellRoot>);
 
-    }, [...cellRenderPlugins, props.caller]);
+    }, [...cellRenderPlugins, props.caller, props.headCells, props.gridApi]);
 
     // head-cell-style
     const cellStylePlugins = useMemo((): MosaicDataTableHeadCellStylePlugin[] => {

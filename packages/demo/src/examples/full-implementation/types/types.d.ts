@@ -11,4 +11,5 @@ export interface ContentManagerSearchState {
     rowsPerPage: number;
     sortBy: string | null;
     order: Order;
+    filter: Filter;
 }
