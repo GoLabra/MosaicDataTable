@@ -3,6 +3,7 @@ import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicD
 import { Box, Checkbox } from "@mui/material";
 
 export const RowSelectionPlugin = (props: {
+    visible?: boolean,
     onGetRowId: (row: any) => string,
     onSelectOne: (id: any) => void,
     onDeselectOne: (id: any) => void,
@@ -12,6 +13,12 @@ export const RowSelectionPlugin = (props: {
     return {
         type: ['grid-columns', 'body-cell-content-render'] as const,
         getColumns: (headCells: Array<ColumnDef<any>>) => {
+            
+            const visible = props.visible ?? true;
+            if(!visible){
+                return headCells;
+            }
+
             return [
                 {
                     id: 'sys_selection',

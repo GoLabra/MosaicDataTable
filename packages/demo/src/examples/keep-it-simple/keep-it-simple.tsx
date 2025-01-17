@@ -19,6 +19,8 @@ export const KeepItSimpleTable = () => {
     const [empty, setEmpty] = useState<boolean>(false);
     const [showFilter, setShowFilter] = useState<boolean>(true);
     const [showFooter, setShowFooter] = useState<boolean>(true);
+    const [showRowSelection, setShowRowSelection] = useState<boolean>(true);
+    const [showRowExpansion, setShowRowExpansion] = useState<boolean>(true);
 
     const headCells: ColumnDef[] = [{
         id: 'id',
@@ -336,6 +338,7 @@ export const KeepItSimpleTable = () => {
 
         // add row selection functionality (checlbox column)
         usePluginWithParams(RowSelectionPlugin, {
+            visible: showRowSelection,
             onGetRowId: (row: any) => row.id,
             onSelectOne: contentManagerSelection.handleSelectOne,
             onDeselectOne: contentManagerSelection.handleDeselectOne,
@@ -343,7 +346,7 @@ export const KeepItSimpleTable = () => {
         }),
 
         usePluginWithParams(RowExpansionPlugin, {
-            showExpanderButton: true,
+            showExpanderButton: showRowExpansion,
             onGetRowId: (row: any) => row.id,
             expanstionStore: useRowExpansionStore(),
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
@@ -378,12 +381,13 @@ export const KeepItSimpleTable = () => {
 
     return (
         <>
-            <Stack alignItems="center" direction="row" justifyContent="flex-end" >
+            <Stack alignItems="center" direction="row" justifyContent="flex-end" flexWrap="wrap" sx={{marginBottom: 5}} >
                 <FormControlLabel control={<Checkbox checked={showFilter} onChange={(event) => setShowFilter(event.target.checked)} />} label="Show Filters" />
+                <FormControlLabel control={<Checkbox checked={showRowExpansion} onChange={(event) => setShowRowExpansion(event.target.checked)} />} label="Show Row Expansion" />
+                <FormControlLabel control={<Checkbox checked={showRowSelection} onChange={(event) => setShowRowSelection(event.target.checked)} />} label="Show Row Selection" />
                 <FormControlLabel control={<Checkbox checked={showFooter} onChange={(event) => setShowFooter(event.target.checked)} />} label="Show Footer" />
                 <FormControlLabel control={<Checkbox checked={empty} onChange={(event) => setEmpty(event.target.checked)} />} label="Simulate Empty Table" />
                 <FormControlLabel control={<Checkbox checked={loading} onChange={(event) => setLoading(event.target.checked)} />} label="Simulate Loading" />
-                <ModeSwitch />
             </Stack>
 
             <MosaicDataTable

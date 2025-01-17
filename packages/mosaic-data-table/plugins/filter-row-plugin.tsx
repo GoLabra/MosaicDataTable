@@ -1,11 +1,11 @@
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { GridApi, ColumnDef,  MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadCellContentRenderPlugin } from "../types/table-types";
 import { MosaicDataTableHeadRow } from "../MosaicDataTableHeadRow";
 import { Box,  debounce, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, styled, TextField, TextFieldProps } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CheckIcon from '@mui/icons-material/Check';
 import { DockedDiv } from "../style";
-import { DatePicker } from "@mui/x-date-pickers";
+import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { useLocalizationContext } from "@mui/x-date-pickers/internals";
 
 export const FilterRowPlugin = ({
@@ -89,6 +89,14 @@ export const FilterRowPlugin = ({
                                 defaultOperator={defaultOperator}
                                 value={filterValue}
                                 onChange={(columnFilter) => {
+
+                                    if(!columnFilter){
+                                        const newFilter = { ...filter };
+                                        delete newFilter[column.id];
+                                        filterChanged(newFilter);
+                                        return;
+                                    }
+
                                     filterChanged({
                                         ...filter,
                                         [column.id]: columnFilter
@@ -108,7 +116,7 @@ interface ColumnFilterProps {
     type: ColumnDefFilter['type'],
     options?: ColumnDefFilter['operators'],
     value?: FilterValue,
-    onChange: (filter: FilterValue) => void
+    onChange: (filter?: FilterValue | null) => void
 
     selectOptions?: ColumnDefFilter['operators'],
     defaultOperator?: string | number,
@@ -117,33 +125,58 @@ const ColumnFilter = (props: ColumnFilterProps) => {
 
     const { value, options } = props;
 
-    // const filterOptionsIconText = useMemo(() => options?.find((option) => option.value == (value?.filterOption ?? props.defaultFilterOption))?.iconText ?? '', [options, value?.filterOption, props.defaultFilterOption]);
+    const [internalValue, setInternalValue] = useState<FilterValue>({
+        operation: value?.operation ?? props.defaultOperator ?? options?.[0]?.value ?? '',
+        value: value?.value
+    });
     
+    const onChange = useCallback((newValue: FilterValue) => {
+        if(!newValue?.value){
+            props.onChange(null);
+        } else {
+            props.onChange(newValue);
+        }
+
+        setInternalValue(newValue);
+        
+    }, [props.onChange]);
+
+    useEffect(() => {
+
+        if(!value){
+            setInternalValue({
+                ...internalValue,
+                value: null
+            });
+            return;
+        }
+
+        setInternalValue(value);
+    }, [value]);
+
     return (<Stack direction="row" alignItems="center">
 
-        {/* <Typography variant="body2" sx={{ fontSize: '0.8rem', margin: '3px' }}>
-            {filterOptionsIconText}
-        </Typography> */}
-
-{options && <ColumnDefFilterButtonOptions
-            value={value?.operation ?? props.defaultOperator ?? ''}
+        {options && <ColumnDefFilterButtonOptions
+            key={`column-def-filter-button-options-${props.type}`}
+            value={internalValue.operation}
+            defaultOperator={props.defaultOperator}
             operators={options}
-            onChange={(newValue: any) => {
-                props.onChange({
+            onChange={(newValue) => {
+                onChange({
                     operation: newValue,
-                    value: value?.value ?? ''
+                    value: internalValue.value,
                 });
-            }} />}
+            }}
+        />}
 
         <FreeInput
             key={`free-input-${props.type}`}
             type={props.type}
-            value={value?.value}
+            value={internalValue?.value}
             selectOptions={props.selectOptions}
-            onChange={(newValue: any) => {
-                debugger;
-                props.onChange({
-                    operation: value?.operation ?? props.defaultOperator ?? '',
+            onChange={(newValue) => {
+                onChange({
+                    operation: internalValue.operation,
                     value: newValue,
                 });
             }}
@@ -161,8 +194,12 @@ interface FreeInputProps {
 const FreeInput = (props: FreeInputProps) => {
     const InputComp = filterInputMap[props.type];
 
-    const [internalFilter, setInternalFilter] = useState<string | number>(props.value ?? '');
+    const [internalValue, setInternalValue] = useState<string | number | undefined>(props.value);
     const memoizedDebounce = useMemo(() => debounce((value: string | number) => props.onChange(value), 300), [props.onChange]);
+
+    useEffect(() => {
+        setInternalValue(props.value);
+    }, [props.value]);
 
     if (!InputComp) {
         console.log(`No input component for type ${props.type}`);
@@ -178,9 +215,9 @@ const FreeInput = (props: FreeInputProps) => {
         <InputComp
             key={`input-${props.type}`}
             selectOptions={props.selectOptions}
-            value={internalFilter}
+            value={internalValue}
             onChange={(value: any) => {
-                setInternalFilter(value.target.value);
+                setInternalValue(value.target.value);
                 memoizedDebounce(value.target.value);
             }}
         />
@@ -197,7 +234,7 @@ const TextInput = (props: InputProps & TextFieldProps) => {
 
     const {selectOptions, ...other} = props;
     
-    return (<TextField id="outlined-basic" variant="standard" //value={props.value} onChange={props.onChange}
+    return (<TextField id="outlined-basic" variant="standard" fullWidth
         
         slotProps={{
                 input: {
@@ -205,26 +242,37 @@ const TextInput = (props: InputProps & TextFieldProps) => {
             }
         }}
         {...other}
+        value={props.value ?? ''}
     />)
 }
 
 const NumberInput = (props: InputProps) => {
-    return (<TextField type="number" id="outlined-basic" variant="standard" value={props.value} onChange={props.onChange}
+    
+    const {selectOptions, ...other} = props;
+
+    return (<TextField type="number" id="outlined-basic" variant="standard" fullWidth
         slotProps={{
             input: {
                 disableUnderline: true,
             }
         }}
+        {...other}
+        value={props.value ?? ''}
     />)
 }
 
 const SelectInput = (props: InputProps) => {
-    return (<TextField id="outlined-basic" variant="standard" fullWidth value={props.value} onChange={props.onChange} select
+
+    const {selectOptions, ...other} = props;
+
+    return (<TextField id="outlined-basic" variant="standard" fullWidth  select
         slotProps={{
             input: {
                 disableUnderline: true,
             }
         }}
+        {...other}
+        value={props.value ?? ''}
     >
         <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         {props.selectOptions!.map((option, index) => (
@@ -234,12 +282,17 @@ const SelectInput = (props: InputProps) => {
 }
 
 const BooleanInput = (props: InputProps) => {
-    return (<TextField id="outlined-basic" variant="standard" fullWidth value={props.value} onChange={props.onChange} select
+
+    const {selectOptions, ...other} = props;
+
+    return (<TextField id="outlined-basic" variant="standard" fullWidth select
         slotProps={{
             input: {
                 disableUnderline: true,
             }
         }}
+        {...other}
+        value={props.value ?? ''}
     >
         <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         <MenuItem value={'true'}>True</MenuItem>
@@ -247,11 +300,18 @@ const BooleanInput = (props: InputProps) => {
     </TextField>)
 }
 
-const DateInput = (props: InputProps) => {
+
+const PickerBase = (props: InputProps & {
+    Picker: React.FC<any>;
+    format: (value: any) => string;
+    parse: (value: string) => any;
+}) => {
+
+    const {Picker} = props;
+
 
     const localizationContext = useLocalizationContext();
     
-    // Now you can check if there's an adapter available
     if (!localizationContext) {
         console.warn('No LocalizationProvider found. DatePicker requires LocalizationProvider to function.');
         return null;
@@ -269,34 +329,86 @@ const DateInput = (props: InputProps) => {
             return;
         }   
              
-        props.onChange({ target: { value: localizationContext.utils.formatByString(value, 'YYYY-MM-DD')  } });
+        props.onChange({ target: { value: props.format(value)  } });
     }, [props.onChange]);
 
     const value = useMemo(( ) => {
         if(!props.value){
             return null;
         }
-        return props.value ? localizationContext.utils.parse(props.value, 'YYYY-MM-DD') as any : null;
+        return props.value ? props.parse(props.value) as any : null;
     }, [props.value]);
 
-    return (<DatePicker value={value} onChange={onChange}
-                slotProps={{
-                    textField: {
-                        InputProps:{
-                            disableUnderline: true,
-                          },
+    return (<Picker value={value} onChange={onChange}
+        slotProps={{
+            textField: {
+                InputProps:{
+                    disableUnderline: true,
+                  },
 
-                        variant: 'standard'
+                variant: 'standard'
+            },
+            popper: {
+                placement: "bottom-end",
+                    popperOptions: {
+                        modifiers: [
+                              {
+                                name: 'preventOverflow',
+                                enabled: true,
+                                options: {
+                                  altAxis: true,
+                                  altBoundary: false,
+                                  tether: false,
+                                  rootBoundary: 'viewport',
+                                  padding: 0,
+                                },
+                              },
+                        ]
                     }
-                }}
-            />)
-              
+            }
+        }}
+    />);
+
+}
+
+const DateInput = (props: InputProps) => {
+
+    const localizationContext = useLocalizationContext();
+
+    if (!localizationContext) {
+        console.warn('No LocalizationProvider found. DatePicker requires LocalizationProvider to function.');
+        return null;
+    }
+
+    const format = (value: any) => localizationContext.utils.formatByString(value, 'YYYY-MM-DD');
+    const parse = (value: string) => localizationContext.utils.parse(props.value, 'YYYY-MM-DD') as any;
+    return (<PickerBase {...props} format={format} parse={parse} Picker={DatePicker} />);
+}
+
+const TimeInput = (props: InputProps) => {
+
+    const localizationContext = useLocalizationContext();
+    
+    const format = (value: any) => localizationContext.utils.formatByString(value, 'HH:mm:ss');
+    const parse = (value: string) => localizationContext.utils.parse(props.value, 'HH:mm:ss') as any;
+    return (<PickerBase {...props} format={format} parse={parse} Picker={TimePicker} />);
+}
+
+
+const DateTimeInput = (props: InputProps) => {
+
+    const localizationContext = useLocalizationContext();
+    
+    const format = (value: any) => localizationContext.utils.formatByString(value, 'YYYY-MM-DD HH:mm:ss');
+    const parse = (value: string) => localizationContext.utils.parse(props.value, 'YYYY-MM-DD HH:mm:ss') as any;
+    return (<PickerBase {...props} format={format} parse={parse} Picker={DateTimePicker} />);
 }
 
 interface ColumnDefFilterButtonProps {
     value: any;
     onChange: (value: any) => void;
     operators: ColumnDefFilter['operators'];
+    defaultOperator?: string | number;
 }
 const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
 
@@ -333,7 +445,7 @@ const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
             {props.operators!.map((option, index) => (
                 <MenuItem key={index} value={option.value} onClick={() => optionSelected(option)}>
                     <ListItemIcon>
-                        {props.value == option.value && <CheckIcon fontSize="small" />}
+                        {option.value == props.value && <CheckIcon fontSize="small" />}
                     </ListItemIcon>
                     <ListItemText>{option.label}</ListItemText>
                 </MenuItem>
@@ -380,11 +492,13 @@ let filterInputMap: Partial<Record<ColumnDefFilter['type'], React.FC<any>>> = {
     'select': SelectInput,
     'number': NumberInput,
     'boolean': BooleanInput,
-    'date': DateInput
+    'date': DateInput,
+    'time': TimeInput,
+    'datetime': DateTimeInput
 }
 
 export interface IColumnDefFilter {
-    type: 'string' | 'number' | 'date' | 'boolean' | keyof ColumnDefFilterTypeOverrides,
+    type: 'string' | 'number' | 'date' | 'time' | 'datetime' | 'boolean' | keyof ColumnDefFilterTypeOverrides,
     operators?: { value: string | number, label: string, iconText?: string }[],
     defaultOperator?: string | number
 }

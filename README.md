@@ -117,6 +117,7 @@ Plugins can be combined to add specific functionality to your table. The order o
 
     ```
     usePluginWithParams(RowSelectionPlugin, {
+        visible?: boolean,
         onGetRowId: (row: any) => any,
         onSelectOne: (id: any) => void,
         onDeselectOne: (id: any) => void,
