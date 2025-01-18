@@ -118,15 +118,15 @@ interface ColumnFilterProps {
     value?: FilterValue,
     onChange: (filter?: FilterValue | null) => void
 
-    selectOptions?: ColumnDefFilter['operators'],
-    defaultOperator?: string | number,
+    selectOptions?: Extract<ColumnDefFilter, { type: 'select' }>['selectOptions'],
+    defaultOperator?: string,
 }
 const ColumnFilter = (props: ColumnFilterProps) => {
 
     const { value, options } = props;
 
     const [internalValue, setInternalValue] = useState<FilterValue>({
-        operation: value?.operation ?? props.defaultOperator ?? options?.[0]?.value ?? '',
+        operator: value?.operator ?? props.defaultOperator ?? options?.[0]?.value ?? '',
         value: value?.value
     });
     
@@ -158,12 +158,12 @@ const ColumnFilter = (props: ColumnFilterProps) => {
 
         {options && <ColumnDefFilterButtonOptions
             key={`column-def-filter-button-options-${props.type}`}
-            value={internalValue.operation}
+            value={internalValue.operator}
             defaultOperator={props.defaultOperator}
             operators={options}
             onChange={(newValue) => {
                 onChange({
-                    operation: newValue,
+                    operator: newValue,
                     value: internalValue.value,
                 });
             }}
@@ -176,7 +176,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
             selectOptions={props.selectOptions}
             onChange={(newValue) => {
                 onChange({
-                    operation: internalValue.operation,
+                    operator: internalValue.operator,
                     value: newValue,
                 });
             }}
@@ -258,6 +258,15 @@ const NumberInput = (props: InputProps) => {
         }}
         {...other}
         value={props.value ?? ''}
+        onChange={(event) =>{
+            props.onChange({
+                ...event,
+                target: {
+                    ...event.target,
+                    value: event.target.value === '' ? null : Number(event.target.value)
+                }
+            });
+        }}
     />)
 }
 
@@ -408,7 +417,7 @@ interface ColumnDefFilterButtonProps {
     value: any;
     onChange: (value: any) => void;
     operators: ColumnDefFilter['operators'];
-    defaultOperator?: string | number;
+    defaultOperator?: string;
 }
 const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
 
@@ -421,9 +430,9 @@ const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
         setAnchorEl(null);
     };
 
-    const memoizedDebounce = useMemo(() => debounce((value: string | number) => props.onChange(value), 0), [props.onChange]);
+    const memoizedDebounce = useMemo(() => debounce((value: string) => props.onChange(value), 0), [props.onChange]);
 
-    const optionSelected = useCallback((option: { value: string | number, label: string }) => {
+    const optionSelected = useCallback((option: { value: string, label: string }) => {
         handleClose();
         memoizedDebounce(option.value);
     }, [props.onChange]);
@@ -456,7 +465,7 @@ const ColumnDefFilterButtonOptions = (props: ColumnDefFilterButtonProps) => {
 
 export const DefaultStringFilterOptions: {
     operators: ColumnDefFilter['operators'],
-    defaultOperator: string | number
+    defaultOperator: string
 } = {
     operators: [
         { value: 'contains', label: 'Contains', iconText: '∗' },
@@ -469,7 +478,7 @@ export const DefaultStringFilterOptions: {
 
 export const DefaultNumberDateFilterOptions: {
     operators:ColumnDefFilter['operators'],
-    defaultOperator: string | number
+    defaultOperator: string
  } = {
     operators: [
         { value: 'less-than', label: 'Less Than', iconText: '<' },
@@ -478,7 +487,7 @@ export const DefaultNumberDateFilterOptions: {
         { value: 'bigger-or-equal-than', label: 'Bigger or Equal Than', iconText: '>=' },
         { value: 'equals', label: 'Equals', iconText: '=' },
     ],
-    defaultOperator: 'equals'
+    defaultOperator: 'less-or-equal-than'
 }
 
 export const DockedWrapper = styled(DockedDiv)(({ theme }) => ({
@@ -499,20 +508,20 @@ let filterInputMap: Partial<Record<ColumnDefFilter['type'], React.FC<any>>> = {
 
 export interface IColumnDefFilter {
     type: 'string' | 'number' | 'date' | 'time' | 'datetime' | 'boolean' | keyof ColumnDefFilterTypeOverrides,
-    operators?: { value: string | number, label: string, iconText?: string }[],
-    defaultOperator?: string | number
+    operators?: { value: string, label: string, iconText?: string }[],
+    defaultOperator?: string
 }
 
 export type ColumnDefFilter = IColumnDefFilter | {
     type: 'select',
     selectOptions?: { value: string | number, label: string }[]
     
-    operators?: { value: string | number, label: string, iconText?: string }[],
-    defaultOperator?: string | number,
+    operators?: { value: string, label: string, iconText?: string }[],
+    defaultOperator?: string,
 };
 
 export type FilterValue = {
-    operation: string | number,
+    operator: string,
     value: any
 }
 export type Filter = Record<string, FilterValue>

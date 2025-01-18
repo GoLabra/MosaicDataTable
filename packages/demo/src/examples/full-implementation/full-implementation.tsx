@@ -168,7 +168,7 @@ export const FullImplementationTable = () => {
         // process the 'render' function
         CustomBodyCellContentRenderPlugin,
 
-                
+        // add filter row
         usePluginWithParams(FilterRowPlugin, {
             visible: true,
             filter: contentManagerSearch.state.filter,

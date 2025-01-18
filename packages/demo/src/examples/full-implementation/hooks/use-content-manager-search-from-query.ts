@@ -33,8 +33,9 @@ export const useContentManagerSearchFromQuery = (props: UseContentManagerSearchF
         setOrderBy(order);
     }, [setSortBy, setOrderBy]);
 
-    const handleFilterChange = useCallback((filters: Filter): void => {
-        setFilter(filters);
+    const handleFilterChange = useCallback((filter: Filter): void => {
+        const newFilter = Object.keys(filter).length == 0 ? null : filter;
+        setFilter(newFilter);
         setPage(1);
     }, [setSortBy, setOrderBy]);
 

@@ -48,17 +48,25 @@ export const useContentManagerStore = (params: UseContentManagerStoreParams) => 
 
                 const itemValue = item[key];
                 const sItemValue = itemValue?.toString().toLowerCase();
-                const filterValue = filter.value.toLowerCase();
+                const filterValue = filter.value;
 
-                switch (filter.operation) {
-                    case 'starts-with':
-                        return sItemValue.startsWith(filterValue);
-                    case 'ends-with':
-                        return sItemValue.endsWith(filterValue);
-                    case 'contains':
-                        return sItemValue.includes(filterValue);
+
+                switch (filter.operator) {
+                    case 'starts-with': {
+                        const sFilterValue = filterValue.toString().toLowerCase();
+                        return sItemValue.startsWith(sFilterValue);
+                    }
+                    case 'ends-with':{
+                        const sFilterValue = filterValue.toString().toLowerCase();
+                        return sItemValue.endsWith(sFilterValue);
+                    }
+                    case 'contains': {
+                        const sFilterValue = filterValue.toString().toLowerCase();
+                        return sItemValue.includes(sFilterValue);
+                    }
                     case 'equals':
                         return sItemValue === filterValue;
+
                     case 'less-than':
                         // if filter value is a number
                         if(/^\d+$/.test(filterValue)) {
