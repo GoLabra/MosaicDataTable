@@ -398,8 +398,8 @@ const TimeInput = (props: InputProps) => {
 
     const localizationContext = useLocalizationContext();
     
-    const format = (value: any) => localizationContext.utils.formatByString(value, 'HH:mm:ss');
-    const parse = (value: string) => localizationContext.utils.parse(props.value, 'HH:mm:ss') as any;
+    const format = (value: any) => localizationContext.utils.formatByString(value, 'HH:mm:ss.SSS');
+    const parse = (value: string) => localizationContext.utils.parse(props.value, 'HH:mm:ss.SSS') as any;
     return (<PickerBase {...props} format={format} parse={parse} Picker={TimePicker} />);
 }
 
@@ -408,8 +408,8 @@ const DateTimeInput = (props: InputProps) => {
 
     const localizationContext = useLocalizationContext();
     
-    const format = (value: any) => localizationContext.utils.formatByString(value, 'YYYY-MM-DD HH:mm:ss');
-    const parse = (value: string) => localizationContext.utils.parse(props.value, 'YYYY-MM-DD HH:mm:ss') as any;
+    const format = (value: any) => localizationContext.utils.formatByString(value, 'YYYY-MM-DDTHH:mm:ss.SSS');
+    const parse = (value: string) => localizationContext.utils.parse(props.value, 'YYYY-MM-DDTHH:mm:ss.SSS') as any;
     return (<PickerBase {...props} format={format} parse={parse} Picker={DateTimePicker} />);
 }
 
