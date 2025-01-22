@@ -204,11 +204,10 @@ Plugins can be combined to add specific functionality to your table. The order o
 * You can refer to the built-in plugins in the source code at: https://github.com/GoLabra/MosaicDataTable/tree/main/packages/mosaic-data-table/plugins
      
      ```
-     Example combining multiple plugin types:
+     Example plugin:
      export const RedCellPlugin: MosaicDataTableBodyCellStylePlugin  =  {
         type: 'body-cell-style',
         getBodyCellStyle: (row: any, gridApi: GridApi): SxProps<Theme> => {
-            debugger;
             return { backgroundColor: '#ff000070 !important' };
         }
     }
