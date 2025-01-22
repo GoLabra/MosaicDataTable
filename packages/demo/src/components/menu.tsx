@@ -23,6 +23,11 @@ export const Menu = () => {
                     <ListItemText primary="Keep it simple" />
                 </Link>
             </ListItem>
+            <ListItem>
+                <Link href="/more" component={NextLink}>
+                    <ListItemText primary="More Examples" />
+                </Link>
+            </ListItem>
         </List>
     );
 }

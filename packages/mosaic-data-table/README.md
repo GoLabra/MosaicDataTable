@@ -205,11 +205,13 @@ Plugins can be combined to add specific functionality to your table. The order o
      
      ```
      Example combining multiple plugin types:
-     {
-       type: ['body-row-style', 'body-cell-style'],
-       getBodyRowStyle: (row, gridApi) => ({ backgroundColor: 'red' }),
-       getBodyCellStyle: (headcell, row, gridApi) => ({ color: 'white' })
-     }
+     export const RedCellPlugin: MosaicDataTableBodyCellStylePlugin  =  {
+        type: 'body-cell-style',
+        getBodyCellStyle: (row: any, gridApi: GridApi): SxProps<Theme> => {
+            debugger;
+            return { backgroundColor: '#ff000070 !important' };
+        }
+    }
      ```
     
 
