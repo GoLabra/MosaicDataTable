@@ -13,7 +13,7 @@ export const SummaryRowPlugin = ({
 }): MosaicDataTableBodyExtraRowEndPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
-        type: ['body-extra-row-end', 'body-cell-content-render'] as const,
+        scope: ['body-extra-row-end', 'body-cell-content-render'] as const,
         getBodyExtraRowEnd: (columns: Array<ColumnDef<any>>, items: any, gridApi: GridApi) => {
 
             if (!visible) {

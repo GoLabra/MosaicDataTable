@@ -3,11 +3,10 @@
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
 import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Typography } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions, ColumnDefFilter } from 'mosaic-data-table';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions } from 'mosaic-data-table';
 import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import ModeSwitch from '@/components/ModeSwitch';
 import { useSelection } from './hooks/use-selection';
 import dayjs from 'dayjs';
 
@@ -396,7 +395,6 @@ export const KeepItSimpleTable = () => {
                 headCells={headCells}
                 items={items}
             />
-
         </>
     )
 }

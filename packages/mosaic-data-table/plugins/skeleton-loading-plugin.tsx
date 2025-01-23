@@ -12,7 +12,7 @@ export const SkeletonLoadingPlugin = ({
 }): MosaicDataTableBodyRenderPlugin & MosaicDataTableGridColumnsPlugin => {
 
     return {
-        type: ['body-render', 'grid-columns'] as const,
+        scope: ['body-render', 'grid-columns'] as const,
         getColumns: (headCells: Array<ColumnDef>) => {
 
             if (!isLoading) {

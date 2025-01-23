@@ -11,7 +11,7 @@ export const RowSelectionPlugin = (props: {
 }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
-        type: ['grid-columns', 'body-cell-content-render'] as const,
+        scope: ['grid-columns', 'body-cell-content-render'] as const,
         getColumns: (headCells: Array<ColumnDef<any>>) => {
             
             const visible = props.visible ?? true;

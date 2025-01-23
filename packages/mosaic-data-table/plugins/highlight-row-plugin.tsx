@@ -8,7 +8,7 @@ export const HighlightRowPlugin = (props: {
 }): MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
-        type: 'body-cell-content-render',
+        scope: 'body-cell-content-render',
         renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
             const isRowHighlighted = props.isRowHighlighted?.(row);
 

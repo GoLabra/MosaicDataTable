@@ -24,7 +24,7 @@ export const FilterRowPlugin = ({
 }): MosaicDataTableHeadExtraRowEndPlugin & MosaicDataTableHeadCellContentRenderPlugin => {
 
     return {
-        type: ['head-extra-row-end', 'head-cell-content-render'] as const,
+        scope: ['head-extra-row-end', 'head-cell-content-render'] as const,
         getHeadExtraRowEnd: (columns: Array<ColumnDef<any>>, gridApi: GridApi) => {
 
             if (!visible) {

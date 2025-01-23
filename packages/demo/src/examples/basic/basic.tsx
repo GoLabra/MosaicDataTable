@@ -1,7 +1,7 @@
 'use client';
 
-import { ListItemIcon, MenuItem, Stack } from '@mui/material';
-import { CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, Action, ColumnsFillRowSpacePlugin } from 'mosaic-data-table';
+import { ListItemIcon, MenuItem } from '@mui/material';
+import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, useGridPlugins, Action } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 

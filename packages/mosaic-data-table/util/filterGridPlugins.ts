@@ -8,9 +8,9 @@ export function filterGridPlugins<T>(
         return [];
     }
     return plugins.filter((plugin) => {
-        if (typeof plugin.type === 'string') {
-            return plugin.type === filterType;
+        if (typeof plugin.scope === 'string') {
+            return plugin.scope === filterType;
         }
-        return plugin.type.includes(filterType);
+        return plugin.scope.includes(filterType);
     }) as T[];
 }

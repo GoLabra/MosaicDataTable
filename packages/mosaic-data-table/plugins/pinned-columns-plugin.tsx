@@ -5,7 +5,7 @@ import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
-    type: ['body-cell-render', 'head-cell-render'] as const,
+    scope: ['body-cell-render', 'head-cell-render'] as const,
     renderBodyCell: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => {
         return getCell(headCell, gridApi, '', sx, children);
     },

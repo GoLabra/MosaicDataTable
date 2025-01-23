@@ -1,7 +1,7 @@
 'use client';
 
-import { Box, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material';
-import { CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, Action, ColumnsFillRowSpacePlugin, HighlightRowPlugin } from 'mosaic-data-table';
+import { Box, ListItemIcon, MenuItem, Typography } from '@mui/material';
+import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, useGridPlugins, Action, HighlightRowPlugin } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -16,7 +16,6 @@ export const RowHighlightTable = () => {
         header: 'Name',
         cell: (row: any) => row.name,
     }];
-
 
     const items = [{
         id: 1,

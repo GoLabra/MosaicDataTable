@@ -206,8 +206,8 @@ Plugins can be combined to add specific functionality to your table. The order o
      ```
      Example plugin:
      export const RedCellPlugin: MosaicDataTableBodyCellStylePlugin  =  {
-        type: 'body-cell-style',
-        getBodyCellStyle: (row: any, gridApi: GridApi): SxProps<Theme> => {
+        scope: 'body-cell-style',
+        getBodyCellStyle(headCell: ColumnDef<any>, row: any, gridApi: GridApi): SxProps<Theme> {
             return { backgroundColor: '#ff000070 !important' };
         }
     }
@@ -218,64 +218,64 @@ Plugin Interfaces for MosaicDataTable
  
  * MosaicDataTableGridColumnsPlugin - Modifies or filters the columns displayed in the grid
     
-    type: 'grid-columns'
+    scope: 'grid-columns'
  
  * MosaicDataTableBodyRenderPlugin - Custom rendering of the entire table body
     
-    type: 'body-render'
+    scope: 'body-render'
  
  * MosaicDataTableHeadRowRenderPlugin - Custom rendering of header row
   
-    type: 'head-row-render'
+    scope: 'head-row-render'
  
  * MosaicDataTableBodyRowRenderPlugin - Custom rendering of body rows
     
-    type: 'body-row-render'
+    scope: 'body-row-render'
  
  * MosaicDataTableHeadCellRenderPlugin - Custom rendering of header cells
     
-    type: 'head-cell-render'
+    scope: 'head-cell-render'
  
  * MosaicDataTableBodyCellRenderPlugin - Custom rendering of body cells
     
-    type: 'body-cell-render'
+    scope: 'body-cell-render'
  
  * MosaicDataTableHeadCellContentRenderPlugin - Custom rendering of header cell content
     
-    type: 'head-cell-content-render'
+    scope: 'head-cell-content-render'
  
  * MosaicDataTableBodyCellContentRenderPlugin - Custom rendering of body cell content
     
-    type: 'body-cell-content-render'
+    scope: 'body-cell-content-render'
  
  * MosaicDataTableHeadRowStylePlugin - Custom styling for header rows
     
-    type: 'head-row-style'
+    scope: 'head-row-style'
  
  * MosaicDataTableBodyRowStylePlugin - Custom styling for body rows
     
-    type: 'body-row-style'
+    scope: 'body-row-style'
  
  * MosaicDataTableHeadCellStylePlugin - Custom styling for header cells
     
-    type: 'head-cell-style'
+    scope: 'head-cell-style'
  
  * MosaicDataTableBodyCellStylePlugin - Custom styling for body cells
     
-    type: 'body-cell-style'
+    scope: 'body-cell-style'
  
  * MosaicDataTableHeadExtraRowStartPlugin - Add content before header rows
     
-    type: 'head-extra-row-start'
+    scope: 'head-extra-row-start'
  
  * MosaicDataTableHeadExtraRowEndPlugin - Add content after header rows
     
-    type: 'head-extra-row-end'
+    scope: 'head-extra-row-end'
  
  * MosaicDataTableBodyExtraRowStartPlugin - Add content before body rows
     
-    type: 'body-extra-row-start'
+    scope: 'body-extra-row-start'
  
  * MosaicDataTableBodyExtraRowEndPlugin - Add content after body rows
     
-    type: 'body-extra-row-end'
+    scope: 'body-extra-row-end'

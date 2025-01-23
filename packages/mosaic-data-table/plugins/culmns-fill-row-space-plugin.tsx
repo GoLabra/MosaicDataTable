@@ -3,7 +3,7 @@ import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicD
 import { Box } from "@mui/material";
 
 export const ColumnsFillRowSpacePlugin: MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin = {
-    type: ['grid-columns', 'body-cell-content-render'] as const,
+    scope: ['grid-columns', 'body-cell-content-render'] as const,
     getColumns: (columns: Array<ColumnDef<any>>) => {
         return [
             ...columns,

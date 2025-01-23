@@ -3,7 +3,7 @@ import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin } from "
 
 
 export const CustomBodyCellContentRenderPlugin: MosaicDataTableBodyCellContentRenderPlugin = {
-    type: 'body-cell-content-render',
+    scope: 'body-cell-content-render',
     renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
 
         if(row && row['sys_extra_row']){

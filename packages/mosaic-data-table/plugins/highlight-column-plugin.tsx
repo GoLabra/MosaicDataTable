@@ -8,7 +8,7 @@ export const HighlightColumnPlugin = (props: {
 }): MosaicDataTableHeadCellContentRenderPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
-        type: ['head-cell-content-render', 'body-cell-content-render'] as const,
+        scope: ['head-cell-content-render', 'body-cell-content-render'] as const,
 
         renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, children?: ReactNode) => {
 

@@ -92,7 +92,7 @@ export const RowExpansionPlugin = (props: {
 }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin & MosaicDataTableBodyRowRenderPlugin => {
 
     return {
-        type: ['grid-columns', 'body-cell-content-render', 'body-row-render'] as const,
+        scope: ['grid-columns', 'body-cell-content-render', 'body-row-render'] as const,
         getColumns: (headCells: Array<ColumnDef<any>>) => {
 
             if((props.showExpanderButton ?? true) == false){

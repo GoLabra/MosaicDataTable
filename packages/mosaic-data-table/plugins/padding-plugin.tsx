@@ -16,7 +16,7 @@ export const PaddingPluggin = ({
 }): MosaicDataTableHeadCellContentRenderPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
-        type: ['head-cell-content-render', 'body-cell-content-render'],
+        scope: ['head-cell-content-render', 'body-cell-content-render'],
 
         renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string,children?: ReactNode) => {
 

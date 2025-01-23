@@ -6,7 +6,7 @@ import { Box, IconButton, Menu } from "@mui/material";
 export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
-        type: ['grid-columns', 'body-cell-content-render'] as const,
+        scope: ['grid-columns', 'body-cell-content-render'] as const,
         getColumns: (headCells: Array<ColumnDef<any>>) => {
             return [
                 ...headCells,

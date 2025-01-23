@@ -10,7 +10,6 @@ export default function KeepItSimplePage() {
             </Typography>
 
             <KeepItSimpleTable />
-
         </>
     );
 }

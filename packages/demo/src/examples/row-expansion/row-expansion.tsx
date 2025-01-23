@@ -1,14 +1,14 @@
 'use client';
 
-import { Box, Button, IconButton, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material';
-import { CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, Action, ColumnsFillRowSpacePlugin, AbsoluteHeightContainer } from 'mosaic-data-table';
+import { Box, Button, ListItemIcon, MenuItem, Typography } from '@mui/material';
+import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, RowExpansionPlugin, useGridPlugins, useRowExpansionStore, Action, AbsoluteHeightContainer } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useCallback } from 'react';
 
 export const RowExpansionTable = () => {
 
-    // this is there the grid will keep track of the expansion state
+    // this is where the grid will keep track of the expansion state
     const rowExpansionStore = useRowExpansionStore();
 
     const headCells: ColumnDef[] = [{

@@ -1,11 +1,11 @@
 'use client';
 
-import { Box, ListItemIcon, MenuItem, Stack, Typography } from '@mui/material';
-import { CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, Action, ColumnsFillRowSpacePlugin, HighlightRowPlugin } from 'mosaic-data-table';
+import { Box, ListItemIcon, MenuItem, Typography } from '@mui/material';
+import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, useGridPlugins, Action } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { RedCellPlugin } from './plugins/red-cell-plugin';
-import { GreenBorderPlugin } from './plugins/gree-border-plugin';
+import { GreenBorderPlugin } from './plugins/green-border-plugin';
 
 export const CustomPluginTable = () => {
 
