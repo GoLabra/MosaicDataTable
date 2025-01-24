@@ -1,7 +1,7 @@
 import { TableCell, TableHead, TableRow } from '@mui/material'
 import { SxProps, Theme } from '@mui/material/styles'
 import { ReactNode, useCallback, useMemo } from 'react'
-import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTablePlugin, GridApi } from './types/table-types'
+import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTablePlugin, GridApi, MosaicDataTableHeadOnClickPlugin } from './types/table-types'
 import { filterGridPlugins } from './util/filterGridPlugins'
 import { MosaicDataTableCellRoot } from './style'
 import { MosaicDataTableHeadRow } from './MosaicDataTableHeadRow'
@@ -43,8 +43,20 @@ export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
 
     }, [...extraRowEndPlugins, props.headCells, props.gridApi]);
 
+
+    // events
+    const headOnClickPlugins = useMemo((): MosaicDataTableHeadOnClickPlugin[] => {
+        return filterGridPlugins<MosaicDataTableHeadOnClickPlugin>(props.plugins, 'on-click');
+    }, [props.plugins]);
+
+    const headOnClick = useCallback((event: React.MouseEvent<HTMLTableSectionElement>) => {
+        for (const plugin of headOnClickPlugins) {
+            plugin.headOnClick(event, props.gridApi);
+        }
+    }, [...headOnClickPlugins]);
+    
     return (
-        <TableHead >
+        <TableHead onClick={headOnClick}>
 
             {getExtraRowsStart}
 

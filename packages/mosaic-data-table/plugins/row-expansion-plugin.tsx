@@ -1,6 +1,6 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
 import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
-import { Box, Button, Checkbox, IconButton, TableCell, TableRow } from "@mui/material";
+import { Box, Button, Checkbox, IconButton, TableCell, TableRow, TableRowProps } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
@@ -139,12 +139,12 @@ export const RowExpansionPlugin = (props: {
 
             return children;
         },
-        renderBodyRow: (row: any, gridApi: GridApi, sx: any, children?: ReactNode) => {
+        renderBodyRow: (row: any, gridApi: GridApi, sx: any, children?: ReactNode, rowProps?: TableRowProps) => {
             const rowId = props.onGetRowId?.(row) ?? null;
             const expansionInfo = props.expanstionStore.getExpansionInfo(rowId);
 
             return <>
-                <MosaicDataTableRowRoot key={rowId} hover tabIndex={-1} sx={sx} >{children}</MosaicDataTableRowRoot>
+                <MosaicDataTableRowRoot key={rowId} hover tabIndex={-1} sx={sx} {...rowProps}>{children}</MosaicDataTableRowRoot>
 
                 {expansionInfo?.isOpen && <MosaicDataTableRowRoot key={`${rowId}-expansion`} tabIndex={-1}>
                     <MosaicDataTableCellRoot colSpan={100}>

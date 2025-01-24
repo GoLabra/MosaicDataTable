@@ -1,4 +1,4 @@
-import { ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, Theme } from '@mui/material'
+import { ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, TableBodyProps, Theme } from '@mui/material'
 import { ReactNode } from 'react'
 
 export interface Pagination {
@@ -47,7 +47,7 @@ export interface MosaicDataTablePlugin {
     onInit?: (gridApi: GridApi) => void;
 }
 
-type ArrayWithRequired<T extends string> = [T, ...string[]] | [...string[], T] | [string, T, ...string[]];
+type ArrayWithRequired<T extends string> = [T, ...string[]] | [...string[], T] | [...string[], T, ...string[]];
 
 export interface MosaicDataTableGridColumnsPlugin extends MosaicDataTablePlugin {
     scope: 'grid-columns' | ArrayWithRequired<'grid-columns'>;
@@ -56,27 +56,27 @@ export interface MosaicDataTableGridColumnsPlugin extends MosaicDataTablePlugin 
 
 export interface MosaicDataTableBodyRenderPlugin extends MosaicDataTablePlugin {
     scope: 'body-render' | ArrayWithRequired<'body-render'>;
-    renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => ReactNode;
+    renderBody: (headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, children?: ReactNode, bodyProps?: TableBodyProps) => ReactElement;
 }
 
 export interface MosaicDataTableHeadRowRenderPlugin extends MosaicDataTablePlugin {
     scope: 'head-row-render' | ArrayWithRequired<'head-row-render'>;
-    renderHeadRow?: (gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
+    renderHeadRow?: (gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode, rowProps?: TableRowProps) => ReactElement;
 }
 
 export interface MosaicDataTableBodyRowRenderPlugin extends MosaicDataTablePlugin {
     scope: 'body-row-render' | ArrayWithRequired<'body-row-render'>;
-    renderBodyRow?: (row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
+    renderBodyRow?: (row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode, rowProps?: TableRowProps) => ReactElement;
 }
 
 export interface MosaicDataTableHeadCellRenderPlugin extends MosaicDataTablePlugin {
     scope: 'head-cell-render' | ArrayWithRequired<'head-cell-render'>;
-    renderHeadCell?: (headcell: ColumnDef<any>, gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
+    renderHeadCell?: (headcell: ColumnDef<any>, gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => ReactElement;
 }
 
 export interface MosaicDataTableBodyCellRenderPlugin extends MosaicDataTablePlugin {
     scope: 'body-cell-render' | ArrayWithRequired<'body-cell-render'>;
-    renderBodyCell?: (headcell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode) => ReactNode;
+    renderBodyCell?: (headcell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => ReactElement;
 }
 
 export interface MosaicDataTableHeadCellContentRenderPlugin extends MosaicDataTablePlugin {
@@ -127,6 +127,37 @@ export interface MosaicDataTableBodyExtraRowStartPlugin extends MosaicDataTableP
 export interface MosaicDataTableBodyExtraRowEndPlugin extends MosaicDataTablePlugin {
     scope: 'body-extra-row-end' | ArrayWithRequired<'body-extra-row-end'>;
     getBodyExtraRowEnd?: (columns: Array<ColumnDef<any>>, row: any, gridApi: GridApi) => ReactNode;
+}
+
+export interface MosaicDataTableOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'on-click' | ArrayWithRequired<'on-click'>;
+    onClick: (event: React.MouseEvent<HTMLTableElement>, gridApi: GridApi) => void;
+}
+
+export interface MosaicDataTableBodyOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'body-on-click' | ArrayWithRequired<'body-on-click'>;
+    bodyOnClick: (event: React.MouseEvent<HTMLTableSectionElement>, gridApi: GridApi) => void;
+}
+export interface MosaicDataTableBodyRowOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'body-row-on-click' | ArrayWithRequired<'body-row-on-click'>;
+    bodyRowOnClick: (event: React.MouseEvent<HTMLTableRowElement>, row: any, gridApi: GridApi) => void;
+}
+export interface MosaicDataTableBodyRowCellOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'body-row-cell-on-click' | ArrayWithRequired<'body-row-cell-on-click'>;
+    bodyRowCellOnClick: (event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>, row: any, gridApi: GridApi) => void;
+}
+
+export interface MosaicDataTableHeadOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'head-on-click' | ArrayWithRequired<'head-on-click'>;
+    headOnClick: (event: React.MouseEvent<HTMLTableSectionElement>, gridApi: GridApi) => void;
+}
+export interface MosaicDataTableHeadRowOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'head-row-on-click' | ArrayWithRequired<'head-row-on-click'>;
+    headRowOnClick: (event: React.MouseEvent<HTMLTableRowElement>, gridApi: GridApi) => void;
+}
+export interface MosaicDataTableHeadRowCellOnClickPlugin extends MosaicDataTablePlugin {
+    scope: 'head-row-cell-on-click' | ArrayWithRequired<'head-row-cell-on-click'>;
+    headRowCellOnClick: (event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>, gridApi: GridApi) => void;
 }
 
 

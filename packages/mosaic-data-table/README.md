@@ -197,6 +197,22 @@ Plugins can be combined to add specific functionality to your table. The order o
     })
     ```
 
+- EventsPlugin
+
+    Handles data table events (just onClick for now)
+
+    ```
+    usePluginWithParams(EventsPlugin, {
+        tableOnClick?: (event: React.MouseEvent<HTMLTableElement>) => void,
+        bodyOnClick?: (event: React.MouseEvent<HTMLTableSectionElement>) => void,
+        bodyRowOnClick?: (event: React.MouseEvent<HTMLTableBodyRowElement>) => void,
+        bodyRowCellOnClick?: (event: React.MouseEvent<HTMLTableBodyCellElement>) => void,
+        headOnClick?: (event: React.MouseEvent<HTMLTableSectionElement>) => void,
+        headRowOnClick?: (event: React.MouseEvent<HTMLTableRowElement>) => void,
+        headRowCellOnClick?: (event: React.MouseEvent<HTMLTableHeadCellElement>) => void,
+    })
+    ```
+
 ## Make your own plugins
 
 -  To create a plugin, implement one or more of these interfaces. Each plugin can combine multiple functionalities by implementing multiple interfaces. For example, a plugin can implement both MosaicDataTableBodyRowStylePlugin and MosaicDataTableBodyCellStylePlugin to provide comprehensive row and cell styling. 
@@ -279,3 +295,32 @@ Plugin Interfaces for MosaicDataTable
  * MosaicDataTableBodyExtraRowEndPlugin - Add content after body rows
     
     scope: 'body-extra-row-end'
+
+ * MosaicDataTableOnClickPlugin
+
+    scope: 'on-click'
+    
+ * MosaicDataTableBodyOnClickPlugin
+
+    scope: 'body-on-click'
+    
+ * MosaicDataTableBodyRowOnClickPlugin
+
+    scope: 'body-row-on-click'
+    
+ * MosaicDataTableBodyRowCellOnClickPlugin
+
+    scope: 'body-row-cell-on-click'
+
+ * MosaicDataTableHeadOnClickPlugin
+
+    scope: 'head-on-click'
+    
+ * MosaicDataTableHeadRowOnClickPlugin
+
+    scope: 'head-row-on-click'
+    
+ * MosaicDataTableHeadRowCellOnClickPlugin
+
+    scope: 'head-row-cell-on-click'
+     

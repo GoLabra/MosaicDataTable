@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin } from "../types/table-types";
-import { Box, TableBody, TableCell, TableRow } from "@mui/material";
+import { Box, TableBody, TableBodyProps, TableCell, TableRow } from "@mui/material";
 
 
 export const EmptyDataPlugin = ({
@@ -12,7 +12,7 @@ export const EmptyDataPlugin = ({
     return {
 
         scope: 'body-render',
-        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, children?: ReactNode) => {
+        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, children?: ReactNode, bodyProps?: TableBodyProps) => {
 
             if (rows?.length) {
                 return null;

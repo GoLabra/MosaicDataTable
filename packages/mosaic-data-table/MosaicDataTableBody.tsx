@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { GridApi, ColumnDef, MosaicDataTablePlugin, MosaicDataTableBodyRenderPlugin, MosaicDataTableBodyExtraRowEndPlugin, MosaicDataTableBodyExtraRowStartPlugin } from "./types/table-types";
+import { GridApi, ColumnDef, MosaicDataTablePlugin, MosaicDataTableBodyRenderPlugin, MosaicDataTableBodyExtraRowEndPlugin, MosaicDataTableBodyExtraRowStartPlugin, MosaicDataTableBodyOnClickPlugin } from "./types/table-types";
 import React from "react";
 import { TableBody } from "@mui/material";
 import { filterGridPlugins } from "./util/filterGridPlugins";
@@ -19,13 +19,13 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
 
     const getTableBody = useCallback((params: { children?: React.ReactNode }) => {
         for (const plugin of bodyRenderPlugins) {
-            var cell = plugin.renderBody?.(props.columns, props.items, props.gridApi, params.children);
-            if (cell) {
-                return cell;
+            var body = plugin.renderBody?.(props.columns, props.items, props.gridApi, params.children, { onClick: headOnClick });
+            if (body) {
+                return body
             }
         }
 
-        return (<TableBody>{params.children}</TableBody>);
+        return (<TableBody onClick={headOnClick}>{params.children}</TableBody>);
     }, [...bodyRenderPlugins, props.items, props.columns, props.gridApi]);
 
     // extra-row-start
@@ -53,6 +53,17 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
         });
 
     }, [...extraRowEndPlugins, props.items, props.columns, props.gridApi]);
+
+    // events
+    const bodyOnClickPlugins = useMemo((): MosaicDataTableBodyOnClickPlugin[] => {
+        return filterGridPlugins<MosaicDataTableBodyOnClickPlugin>(props.plugins, 'on-click');
+    }, [props.plugins]);
+
+    const headOnClick = useCallback((event: React.MouseEvent<HTMLTableSectionElement>) => {
+        for (const plugin of bodyOnClickPlugins) {
+            plugin.bodyOnClick(event, props.gridApi);
+        }
+    }, [...bodyOnClickPlugins]);
 
     return (
         <React.Fragment>
