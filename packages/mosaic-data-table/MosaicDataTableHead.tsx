@@ -46,7 +46,7 @@ export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
 
     // events
     const headOnClickPlugins = useMemo((): MosaicDataTableHeadOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableHeadOnClickPlugin>(props.plugins, 'on-click');
+        return filterGridPlugins<MosaicDataTableHeadOnClickPlugin>(props.plugins, 'head-on-click');
     }, [props.plugins]);
 
     const headOnClick = useCallback((event: React.MouseEvent<HTMLTableSectionElement>) => {

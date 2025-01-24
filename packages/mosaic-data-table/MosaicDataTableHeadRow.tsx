@@ -110,6 +110,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
 
     }, [...cellContentRenderPlugins, props.caller]);
 
+    //events
     const bodyRowOnClickPlugins = useMemo((): MosaicDataTableHeadRowOnClickPlugin[] => {
         return filterGridPlugins<MosaicDataTableHeadRowOnClickPlugin>(props.plugins, 'head-row-on-click');
     }, [props.plugins]);
