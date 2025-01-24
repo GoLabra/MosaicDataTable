@@ -3,6 +3,8 @@ import { RowHighlightTable } from '@/examples/row-highlight/row-highlight';
 import { CustomPluginTable } from '@/examples/custom-plugin/custom-plugin';
 import { RowExpansionTable } from '@/examples/row-expansion/row-expansion';
 import { EventsTable } from '@/examples/events/events';
+import { InlineEditTable } from '@/examples/inline-edit/inline-edit';
+
 
 export default function BasicPage() {
 
@@ -17,6 +19,7 @@ export default function BasicPage() {
                 <CustomPluginTable />
                 <RowExpansionTable />
                 <EventsTable />
+                <InlineEditTable />
             </Stack>
         </>
     );
