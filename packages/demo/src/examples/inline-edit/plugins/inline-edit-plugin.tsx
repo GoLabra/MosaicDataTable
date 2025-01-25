@@ -1,8 +1,7 @@
 import { Box } from "@mui/material";
-import { ColumnDef, GridApi, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyRowCellOnClickPlugin } from "mosaic-data-table";
+import { ColumnDef, GridApi, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyRowCellPropsPlugin } from "mosaic-data-table";
 import React, { useCallback, useMemo, useState } from "react";
 import { ReactNode } from "react";
-import { styleText } from "util";
 
 
 
@@ -48,10 +47,10 @@ export const InlineEditPlugin = (props: {
     inlineEditStore: ReturnType<typeof useInlineEditPluginStore>,
     onGetRowId: (row: any) => string,
     onCellValueChanged: (rowId: string, columnId: string, value: any) => void,
-}): MosaicDataTableBodyCellContentRenderPlugin & MosaicDataTableBodyRowCellOnClickPlugin => {
+}): MosaicDataTableBodyCellContentRenderPlugin & MosaicDataTableBodyRowCellPropsPlugin => {
 
     return {
-        scope: ['body-cell-content-render', 'body-row-cell-on-click'],
+        scope: ['body-cell-content-render', 'body-row-cell-props'],
         renderBodyCellContent: (columnDef: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
 
             const rowId = props.onGetRowId(row);
@@ -76,16 +75,21 @@ export const InlineEditPlugin = (props: {
                  
                 />);
         },
-        bodyRowCellOnClick: (event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>, row: any, gridApi: GridApi) => {
+        getBodyRowCellProps: (columnDef: ColumnDef<any>, row: any, gridApi: GridApi) => {
 
             if (columnDef.id == 'sys_actions') {
-                return;
+                return null;
             }
 
             if (columnDef.id == 'id') {
-                return;
+                return null;
             }
-            props.inlineEditStore.enterCellInEditMode(columnDef.id, props.onGetRowId(row), columnDef.cell!(row) as string);
+
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableCellElement>) => {
+                    props.inlineEditStore.enterCellInEditMode(columnDef.id, props.onGetRowId(row), columnDef.cell!(row) as string);
+                }
+            }
         }
     }
 

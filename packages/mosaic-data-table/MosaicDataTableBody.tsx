@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import { GridApi, ColumnDef, MosaicDataTablePlugin, MosaicDataTableBodyRenderPlugin, MosaicDataTableBodyExtraRowEndPlugin, MosaicDataTableBodyExtraRowStartPlugin, MosaicDataTableBodyOnClickPlugin } from "./types/table-types";
+import { GridApi, ColumnDef, MosaicDataTablePlugin, MosaicDataTableBodyRenderPlugin, MosaicDataTableBodyExtraRowEndPlugin, MosaicDataTableBodyExtraRowStartPlugin, MosaicDataTableBodyPropsPlugin } from "./types/table-types";
 import React from "react";
-import { TableBody } from "@mui/material";
+import { TableBody, TableBodyProps, TableProps } from "@mui/material";
 import { filterGridPlugins } from "./util/filterGridPlugins";
 import { MosaicDataTableBodyRow } from "./MosaicDataTableBodyRow";
 
@@ -19,13 +19,13 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
 
     const getTableBody = useCallback((params: { children?: React.ReactNode }) => {
         for (const plugin of bodyRenderPlugins) {
-            var body = plugin.renderBody?.(props.columns, props.items, props.gridApi, params.children, { onClick: headOnClick });
+            var body = plugin.renderBody?.(props.columns, props.items, props.gridApi, bodyProps, params.children);
             if (body) {
                 return body
             }
         }
 
-        return (<TableBody onClick={headOnClick}>{params.children}</TableBody>);
+        return (<TableBody {...bodyProps}>{params.children}</TableBody>);
     }, [...bodyRenderPlugins, props.items, props.columns, props.gridApi]);
 
     // extra-row-start
@@ -55,15 +55,19 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
     }, [...extraRowEndPlugins, props.items, props.columns, props.gridApi]);
 
     // events
-    const bodyOnClickPlugins = useMemo((): MosaicDataTableBodyOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyOnClickPlugin>(props.plugins, 'body-on-click');
+    const bodyPropsPlugins = useMemo((): MosaicDataTableBodyPropsPlugin[] => {
+        return filterGridPlugins<MosaicDataTableBodyPropsPlugin>(props.plugins, 'body-props');
     }, [props.plugins]);
 
-    const headOnClick = useCallback((event: React.MouseEvent<HTMLTableSectionElement>) => {
-        for (const plugin of bodyOnClickPlugins) {
-            plugin.bodyOnClick(event, props.gridApi);
-        }
-    }, [...bodyOnClickPlugins]);
+    const bodyProps = useMemo(() => {
+        return bodyPropsPlugins.reduce((acc: TableBodyProps, plugin: MosaicDataTableBodyPropsPlugin) => {
+            const bodyProps = plugin.getBodyProps(props.gridApi);
+            return {
+                ...acc,
+                ...bodyProps
+            }
+        }, {});
+    }, [...bodyPropsPlugins]);
 
     return (
         <React.Fragment>

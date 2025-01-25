@@ -296,31 +296,31 @@ Plugin Interfaces for MosaicDataTable
     
     scope: 'body-extra-row-end'
 
- * MosaicDataTableOnClickPlugin
+ * MosaicDataTablePropsPlugin
 
-    scope: 'on-click'
+    scope: 'table-props'
     
- * MosaicDataTableBodyOnClickPlugin
+ * MosaicDataTableBodyPropsPlugin
 
-    scope: 'body-on-click'
+    scope: 'body-props'
     
- * MosaicDataTableBodyRowOnClickPlugin
+ * MosaicDataTableBodyRowPropsPlugin
 
-    scope: 'body-row-on-click'
+    scope: 'body-row-props'
     
- * MosaicDataTableBodyRowCellOnClickPlugin
+ * MosaicDataTableBodyRowCellPropsPlugin
 
-    scope: 'body-row-cell-on-click'
+    scope: 'body-row-cell-props'
 
- * MosaicDataTableHeadOnClickPlugin
+ * MosaicDataTableHeadPropsPlugin
 
-    scope: 'head-on-click'
+    scope: 'head-props'
     
- * MosaicDataTableHeadRowOnClickPlugin
+ * MosaicDataTableHeadRowPropsPlugin
 
-    scope: 'head-row-on-click'
+    scope: 'head-row-props'
     
- * MosaicDataTableHeadRowCellOnClickPlugin
+ * MosaicDataTableHeadRowCellPropsPlugin
 
-    scope: 'head-row-cell-on-click'
+    scope: 'head-row-cell-props'
      

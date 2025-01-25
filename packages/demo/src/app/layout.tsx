@@ -8,8 +8,6 @@ import { Box, Container, IconButton, Stack, Typography } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { Menu } from '@/components/menu';
 import ModeSwitch from '@/components/ModeSwitch';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ClientProviders } from './providers';
 import Copyright from '@/components/Copyright';
 

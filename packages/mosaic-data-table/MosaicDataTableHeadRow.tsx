@@ -1,7 +1,7 @@
-import { TableCell, TableHead, TableRow } from '@mui/material'
+import { TableCell, TableCellProps, TableHead, TableRow, TableRowProps } from '@mui/material'
 import { SxProps, Theme } from '@mui/material/styles'
 import React, { ReactNode, useCallback, useMemo } from 'react'
-import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadRowCellOnClickPlugin, MosaicDataTableHeadRowOnClickPlugin } from './types/table-types'
+import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadRowCellPropsPlugin, MosaicDataTableHeadRowPropsPlugin } from './types/table-types'
 import { filterGridPlugins } from './util/filterGridPlugins'
 import { MosaicDataTableCellRoot } from './style'
 
@@ -15,10 +15,8 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
 
     const getRow = useCallback((params: { children?: ReactNode }) => {
 
-        const cellStyle = getRowStyle();
-
         for (const plugin of rowRenderPlugins) {
-            var row = plugin.renderHeadRow?.(props.gridApi, props.caller, cellStyle, params.children, { onClick: headRowOnClickPlugin });
+            var row = plugin.renderHeadRow?.(props.gridApi, props.caller, headRowProps, rowStyle, params.children);
             if (row) {
                 return row;
             }
@@ -26,10 +24,10 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
 
         const rowSx = {
             ...(props.sx ?? {}),
-            ...cellStyle
+            ...rowStyle
         } as SxProps<Theme>
 
-        return (<TableRow key="head-row" sx={rowSx} onClick={headRowOnClickPlugin} >{params.children}</TableRow>);
+        return (<TableRow key="head-row" sx={rowSx} {...headRowProps} >{params.children}</TableRow>);
     }, [...rowRenderPlugins, props.headCells, props.gridApi]);
 
 
@@ -39,7 +37,7 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
     }, [props.plugins]);
 
 
-    const getRowStyle = useCallback((): SxProps<Theme> => {
+    const rowStyle = useMemo((): SxProps<Theme> => {
         return rowStylePlugins.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableHeadRowStylePlugin) => {
             const rowStyle = plugin.getHeadRowStyle?.(props.gridApi, props.caller);
             return {
@@ -58,9 +56,10 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
     const getCell = useCallback((params: { columnDef: ColumnDef<T>, children?: ReactNode }) => {
 
         const cellStyle = getCellStyle({ columnDef: params.columnDef });
+        const cellProps = getHeadRowCellProps(params.columnDef);
 
         for (const plugin of cellRenderPlugins) {
-            var cell = plugin.renderHeadCell?.(params.columnDef, props.gridApi, props.caller, cellStyle, params.children, { onClick: headRowCellOnClickPlugin });
+            var cell = plugin.renderHeadCell?.(params.columnDef, props.gridApi, props.caller, cellProps, cellStyle, params.children);
             if (cell) {
                 return cell;
             }
@@ -70,12 +69,13 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
             key={params.columnDef.id as string}
             align="left"
             padding="normal"
-            onClick={(event) => headRowCellOnClickPlugin(event, params.columnDef)}
             sx={{
                 minWidth: params.columnDef.width,
                 width: params.columnDef.width,
                 ...cellStyle
-            }} >{params.children}</MosaicDataTableCellRoot>);
+            }}
+            {...cellProps}
+            >{params.children}</MosaicDataTableCellRoot>);
 
     }, [...cellRenderPlugins, props.caller, props.headCells, props.gridApi]);
 
@@ -110,26 +110,34 @@ export const MosaicDataTableHeadRow = <T,>(props: EnhancedTableProps<T>) => {
 
     }, [...cellContentRenderPlugins, props.caller]);
 
-    //events
-    const bodyRowOnClickPlugins = useMemo((): MosaicDataTableHeadRowOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableHeadRowOnClickPlugin>(props.plugins, 'head-row-on-click');
+    //props
+    const bodyRowPropsPlugins = useMemo((): MosaicDataTableHeadRowPropsPlugin[] => {
+        return filterGridPlugins<MosaicDataTableHeadRowPropsPlugin>(props.plugins, 'head-row-props');
     }, [props.plugins]);
 
-    const headRowOnClickPlugin = useCallback((event: React.MouseEvent<HTMLTableRowElement>) => {
-        for (const plugin of bodyRowOnClickPlugins) {
-            plugin.headRowOnClick(event, props.gridApi);
-        }
-    }, [...bodyRowOnClickPlugins]);
+    const headRowProps = useMemo(() => {
+        return bodyRowPropsPlugins.reduce((acc: TableRowProps, plugin: MosaicDataTableHeadRowPropsPlugin) => {
+            const bodyRowProps = plugin.getHeadRowProps(props.gridApi);
+            return {
+                ...acc,
+                ...bodyRowProps
+            }
+        }, {});
+    }, [...bodyRowPropsPlugins]);
 
-    const headRowCellOnClickPlugins = useMemo((): MosaicDataTableHeadRowCellOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableHeadRowCellOnClickPlugin>(props.plugins, 'head-row-cell-on-click');
+    const headRowCellPropsPlugins = useMemo((): MosaicDataTableHeadRowCellPropsPlugin[] => {
+        return filterGridPlugins<MosaicDataTableHeadRowCellPropsPlugin>(props.plugins, 'head-row-cell-props');
     }, [props.plugins]);
 
-    const headRowCellOnClickPlugin = useCallback((event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>) => {
-        for (const plugin of headRowCellOnClickPlugins) {
-            plugin.headRowCellOnClick(event, columnDef, props.gridApi);
-        }
-    }, [...headRowCellOnClickPlugins]);
+    const getHeadRowCellProps = useCallback((columnDef: ColumnDef<any>) => {
+        return headRowCellPropsPlugins.reduce((acc: TableCellProps, plugin: MosaicDataTableHeadRowCellPropsPlugin) => {
+            const bodyRowCellProps = plugin.getHeadRowCellProps(columnDef, props.gridApi);
+            return {
+                ...acc,
+                ...bodyRowCellProps
+            }
+        }, {});
+    }, [...headRowCellPropsPlugins]);
 
     return (
         getRow({

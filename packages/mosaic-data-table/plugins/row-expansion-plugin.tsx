@@ -1,6 +1,6 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
 import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
-import { Box, Button, Checkbox, IconButton, TableCell, TableRow, TableRowProps } from "@mui/material";
+import { Box, Button, Checkbox, IconButton, TableBodyProps, TableCell, TableRow, TableRowProps } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
@@ -139,7 +139,7 @@ export const RowExpansionPlugin = (props: {
 
             return children;
         },
-        renderBodyRow: (row: any, gridApi: GridApi, sx: any, children?: ReactNode, rowProps?: TableRowProps) => {
+        renderBodyRow: (row: any, gridApi: GridApi, rowProps: TableRowProps, sx: any, children?: ReactNode) => {
             const rowId = props.onGetRowId?.(row) ?? null;
             const expansionInfo = props.expanstionStore.getExpansionInfo(rowId);
 

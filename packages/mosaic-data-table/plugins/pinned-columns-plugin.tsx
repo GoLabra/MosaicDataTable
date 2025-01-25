@@ -1,20 +1,20 @@
 import { ReactNode } from "react";
 import { GridApi, ColumnDef, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin } from "../types/table-types";
-import { TableCell, TableCellProps, useMediaQuery } from "@mui/material";
+import { TableBodyProps, TableCell, TableCellProps, useMediaQuery } from "@mui/material";
 import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
     scope: ['body-cell-render', 'head-cell-render'] as const,
-    renderBodyCell: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
-        return getCell(headCell, gridApi, '', sx, children, cellProps);
+    renderBodyCell: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
+        return getCell(headCell, gridApi, '', props, sx, children, cellProps);
     },
-    renderHeadCell: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
-        return getCell(headCell, gridApi, caller, sx, children, cellProps);
+    renderHeadCell: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
+        return getCell(headCell, gridApi, caller, props, sx, children, cellProps);
     }
 }
 
-const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
+const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
 
     if (!headCell.pin) {
         return null;
@@ -64,6 +64,7 @@ const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, sx:
         minWidth: headCell.width ?? '40px',
         zIndex: 1,
         ...sx,
+        ...props
     }}>{children}</MosaicDataTableCellRoot>
 }
 

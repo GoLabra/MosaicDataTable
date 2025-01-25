@@ -12,7 +12,7 @@ export const EmptyDataPlugin = ({
     return {
 
         scope: 'body-render',
-        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, children?: ReactNode, bodyProps?: TableBodyProps) => {
+        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, bodyProps: TableBodyProps, children?: ReactNode) => {
 
             if (rows?.length) {
                 return null;

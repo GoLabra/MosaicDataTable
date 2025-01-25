@@ -1,7 +1,7 @@
-import { GlobalStyles, Table, TableBody, TableContainer } from "@mui/material";
+import { GlobalStyles, Table, TableBody, TableContainer, TableProps } from "@mui/material";
 import { PropsWithChildren, useCallback, useEffect, useMemo } from "react";
 import { MosaicDataTableHead } from "./MosaicDataTableHead";
-import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps, MosaicDataTableOnClickPlugin } from "./types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps, MosaicDataTablePropsPlugin } from "./types/table-types";
 import { MosaicDataTableBody } from "./MosaicDataTableBody";
 import { MosaicDataTableRoot } from "./style";
 import { filterGridPlugins } from "./util/filterGridPlugins";
@@ -31,23 +31,28 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
 
     }, [...bodyCellRenderPlugins, visileHeadCells]);
 
-    // events
-    const onClickPlugins = useMemo((): MosaicDataTableOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableOnClickPlugin>(props.plugins, 'on-click');
-    }, [props.plugins]);
-
-    const tableOnClick = useCallback((event: React.MouseEvent<HTMLTableElement>) => {
-        for (const plugin of onClickPlugins) {
-            plugin.onClick(event, gridApi);
-        }
-    }, [...onClickPlugins]);
-
     const gridApi: GridApi = useMemo(() => ({
         getData: () => props.items,
         getColumns: () => columns,
         getPlugins: () => props.plugins || []
     }), [props.items,columns, ...props.plugins??[]]);
 
+    // props
+    const tablePropsPlugins = useMemo((): MosaicDataTablePropsPlugin[] => {
+        return filterGridPlugins<MosaicDataTablePropsPlugin>(props.plugins, 'table-props');
+    }, [props.plugins]);
+
+    const tableProps = useMemo(() => {
+
+        return tablePropsPlugins.reduce((acc: TableProps, plugin: MosaicDataTablePropsPlugin) => {
+            const tableProps = plugin.getTableProps(gridApi);
+            return {
+                ...acc,
+                ...tableProps
+            }
+        }, {});
+
+    }, [...tablePropsPlugins]);
 
     return (<>
 
@@ -64,7 +69,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
      
                 <TableContainer>
                
-                    <Table sx={{ height: '100%' }} aria-labelledby="tableTitle" size="medium" onClick={tableOnClick}>
+                    <Table sx={{ height: '100%' }} aria-labelledby="tableTitle" size="medium" {...tableProps}>
                         <caption>{props.caption}</caption>
                      
                         <MosaicDataTableHead

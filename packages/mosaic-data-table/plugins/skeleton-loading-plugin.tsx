@@ -24,7 +24,7 @@ export const SkeletonLoadingPlugin = ({
                     pin: undefined
                 }));
         },
-        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, children?: ReactNode, bodyProps?: TableBodyProps) => {
+        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, bodyProps: TableBodyProps, children?: ReactNode) => {
 
             if (!isLoading) {
                 return null;

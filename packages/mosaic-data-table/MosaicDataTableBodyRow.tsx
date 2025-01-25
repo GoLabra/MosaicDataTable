@@ -1,9 +1,10 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
-import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableBodyCellStylePlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableBodyRowStylePlugin, MosaicDataTablePlugin, MosaicDataTableBodyRowOnClickPlugin, MosaicDataTableBodyRowCellOnClickPlugin } from "./types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableBodyCellStylePlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableBodyRowStylePlugin, MosaicDataTablePlugin, MosaicDataTableBodyRowPropsPlugin, MosaicDataTableBodyRowCellPropsPlugin } from "./types/table-types";
 import React from "react";
 import { SxProps, Theme } from "@mui/material/styles";
 import { filterGridPlugins } from "./util/filterGridPlugins";
 import { MosaicDataTableCellRoot, MosaicDataTableRowRoot } from "./style";
+import { TableCellProps, TableRowProps } from "@mui/material";
 
 
 export function MosaicDataTableBodyRow<T>(props: {
@@ -54,13 +55,13 @@ export function MosaicDataTableBodyRow<T>(props: {
     const getRow = useCallback((params: { row: any, children?: ReactNode }) => {
 
         for (const plugin of rowRenderPlugins) {
-            var bodyRow = plugin.renderBodyRow?.(row, props.gridApi, getRowStyle, params.children, { onClick: (event: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => bodyRowOnClickPlugin(event, params.row) });
+            var bodyRow = plugin.renderBodyRow?.(row, props.gridApi, bodyRowPropsPlugin, getRowStyle, params.children);
             if (bodyRow) {
                 return bodyRow;
             }
         }
 
-        return (<MosaicDataTableRowRoot key={row} hover tabIndex={-1} sx={getRowStyle} onClick={(event) => bodyRowOnClickPlugin(event, params.row)} >{params.children}</MosaicDataTableRowRoot>);
+        return (<MosaicDataTableRowRoot key={row} hover tabIndex={-1} sx={getRowStyle} {...bodyRowPropsPlugin} >{params.children}</MosaicDataTableRowRoot>); 
     }, [...rowRenderPlugins, getRowStyle]);
 
 
@@ -72,15 +73,16 @@ export function MosaicDataTableBodyRow<T>(props: {
     const getCell = useCallback((params: { columnDef: ColumnDef<T>, row: T, children?: ReactNode }) => {
 
         const cellStyle = getCellStyle({ columnDef: params.columnDef, row: params.row });
-
+        const bodyRowCellProps = getBodyRowCellPropsPlugin(params.columnDef, params.row);
+        
         for (const plugin of cellRenderPlugins) {
-            var cell = plugin.renderBodyCell?.(params.columnDef, params.row, props.gridApi, cellStyle, params.children, { onClick: (event: React.MouseEvent<HTMLTableCellElement>) => bodyRowCellOnClickPlugin(event, params.columnDef, params.row) });
+            var cell = plugin.renderBodyCell?.(params.columnDef, params.row, props.gridApi, bodyRowCellProps, cellStyle, params.children);
             if (cell) {
                 return cell;
             }
         }
 
-        return (<MosaicDataTableCellRoot key={params.columnDef.id} align="left" sx={cellStyle} onClick={(event) => bodyRowCellOnClickPlugin(event, params.columnDef, params.row)} >{params.children}</MosaicDataTableCellRoot>);
+        return (<MosaicDataTableCellRoot key={params.columnDef.id} align="left" sx={cellStyle} {...bodyRowCellProps} >{params.children}</MosaicDataTableCellRoot>);
     }, [cellRenderPlugins, getCellStyle]);
 
 
@@ -97,28 +99,34 @@ export function MosaicDataTableBodyRow<T>(props: {
     }, [cellContentRenderPlugins]);
 
 
-    // events
-    const bodyRowOnClickPlugins = useMemo((): MosaicDataTableBodyRowOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowOnClickPlugin>(props.plugins, 'body-row-on-click');
+    // props
+    const bodyRowPropsPlugins = useMemo((): MosaicDataTableBodyRowPropsPlugin[] => {
+        return filterGridPlugins<MosaicDataTableBodyRowPropsPlugin>(props.plugins, 'body-row-props');
     }, [props.plugins]);
 
-    const bodyRowOnClickPlugin = useCallback((event: React.MouseEvent<HTMLTableRowElement>, row: any) => {
-        for (const plugin of bodyRowOnClickPlugins) {
-            plugin.bodyRowOnClick(event, row, props.gridApi);
-        }
-    }, [...bodyRowOnClickPlugins]);
+    const bodyRowPropsPlugin = useMemo(() => { 
+        return bodyRowPropsPlugins.reduce((acc: TableRowProps, plugin: MosaicDataTableBodyRowPropsPlugin) => {
+            const bodyRowProps = plugin.getBodyRowProps(row, props.gridApi);
+            return {
+                ...acc,
+                ...bodyRowProps
+            }
+        }, {});
+    }, [...bodyRowPropsPlugins]);
 
-    const bodyRowCellOnClickPlugins = useMemo((): MosaicDataTableBodyRowCellOnClickPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowCellOnClickPlugin>(props.plugins, 'body-row-cell-on-click');
+    const bodyRowCellPropsPlugins = useMemo((): MosaicDataTableBodyRowCellPropsPlugin[] => {
+        return filterGridPlugins<MosaicDataTableBodyRowCellPropsPlugin>(props.plugins, 'body-row-cell-props');
     }, [props.plugins]);
 
-    const bodyRowCellOnClickPlugin = useCallback((event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>, row: any) => {
-        for (const plugin of bodyRowCellOnClickPlugins) {
-            plugin.bodyRowCellOnClick(event, columnDef, row, props.gridApi);
-        }
-
-
-    }, [...bodyRowCellOnClickPlugins]);
+    const getBodyRowCellPropsPlugin = useCallback((columnDef: ColumnDef<any>, row: any) => {
+        return bodyRowCellPropsPlugins.reduce((acc: TableCellProps, plugin: MosaicDataTableBodyRowCellPropsPlugin) => {
+            const bodyRowCellProps = plugin.getBodyRowCellProps(columnDef, row, props.gridApi);
+            return {
+                ...acc,
+                ...bodyRowCellProps
+            }
+        }, {});
+    }, [...bodyRowCellPropsPlugins]);
 
 
     return (

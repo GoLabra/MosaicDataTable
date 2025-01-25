@@ -1,14 +1,14 @@
-import { ColumnDef, MosaicDataTableBodyOnClickPlugin, MosaicDataTableBodyRowCellOnClickPlugin, MosaicDataTableBodyRowOnClickPlugin, MosaicDataTableHeadOnClickPlugin, MosaicDataTableHeadRowCellOnClickPlugin, MosaicDataTableHeadRowOnClickPlugin, MosaicDataTableOnClickPlugin } from "../types/table-types"
+import { ColumnDef, GridApi, MosaicDataTableBodyPropsPlugin, MosaicDataTableBodyRowCellPropsPlugin, MosaicDataTableBodyRowPropsPlugin, MosaicDataTableHeadPropsPlugin, MosaicDataTableHeadRowCellPropsPlugin, MosaicDataTableHeadRowPropsPlugin, MosaicDataTablePropsPlugin } from "../types/table-types"
 
 export const EventsPlugin = ({
-   tableOnClick,
-   bodyOnClick,
-   bodyRowOnClick,
-   bodyRowCellOnClick,
-   headOnClick,
-   headRowOnClick,
-   headRowCellOnClick
-}:{
+    tableOnClick,
+    bodyOnClick,
+    bodyRowOnClick,
+    bodyRowCellOnClick,
+    headOnClick,
+    headRowOnClick,
+    headRowCellOnClick
+}: {
     tableOnClick?: (event: React.MouseEvent<HTMLTableElement>) => void,
     bodyOnClick?: (event: React.MouseEvent<HTMLTableSectionElement>) => void,
     bodyRowOnClick?: (event: React.MouseEvent<HTMLTableBodyRowElement>) => void,
@@ -16,54 +16,68 @@ export const EventsPlugin = ({
     headOnClick?: (event: React.MouseEvent<HTMLTableSectionElement>) => void,
     headRowOnClick?: (event: React.MouseEvent<HTMLTableRowElement>) => void,
     headRowCellOnClick?: (event: React.MouseEvent<HTMLTableHeadCellElement>) => void,
-}): MosaicDataTableOnClickPlugin
-                                & MosaicDataTableBodyOnClickPlugin
-                                & MosaicDataTableBodyRowOnClickPlugin
-                                & MosaicDataTableBodyRowCellOnClickPlugin
-                                & MosaicDataTableHeadOnClickPlugin
-                                & MosaicDataTableHeadRowOnClickPlugin
-                                & MosaicDataTableHeadRowCellOnClickPlugin => {
+}): MosaicDataTablePropsPlugin
+    & MosaicDataTableBodyPropsPlugin
+    & MosaicDataTableBodyRowPropsPlugin
+    & MosaicDataTableBodyRowCellPropsPlugin
+    & MosaicDataTableHeadPropsPlugin
+    & MosaicDataTableHeadRowPropsPlugin
+    & MosaicDataTableHeadRowCellPropsPlugin => {
     return {
-        scope: ['on-click', 'body-on-click', 'body-row-on-click', 'body-row-cell-on-click', 'head-on-click', 'head-row-on-click', 'head-row-cell-on-click'] as const,
-        onClick: (event: React.MouseEvent<HTMLTableElement>, gridApi: any) => {
-            tableOnClick?.(event);
+        scope: ['table-props', 'body-props', 'body-row-props', 'body-row-cell-props', 'head-props', 'head-row-props', 'head-row-cell-props'] as const,
+        getTableProps: (gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableElement>) => tableOnClick?.(event)
+            };
         },
-        bodyOnClick: (event: React.MouseEvent<HTMLTableSectionElement>, gridApi: any) => {
-            bodyOnClick?.(event);
+        getBodyProps: (gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableSectionElement>) => bodyOnClick?.(event)
+            }
         },
-        bodyRowOnClick: (event: React.MouseEvent<HTMLTableRowElement>, row: any, gridApi: any) => {
-            bodyRowOnClick?.({
-                ...event,
-                currentTarget: {
-                    ...event.currentTarget,
-                    row
-                }
-            });
+        getBodyRowProps: (row: any, gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableRowElement>) => bodyRowOnClick?.({
+                    ...event,
+                    currentTarget: {
+                        ...event.currentTarget,
+                        row
+                    }
+                })
+            }
         },
-        bodyRowCellOnClick: (event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>, row: any, gridApi: any) => {
-            bodyRowCellOnClick?.({
-                ...event,
-                currentTarget: {
-                    ...event.currentTarget,
-                    columnDef, 
-                    row
-                }
-            });
+        getBodyRowCellProps: (columnDef: ColumnDef<any>, row: any, gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableCellElement>) => bodyRowCellOnClick?.({
+                    ...event,
+                    currentTarget: {
+                        ...event.currentTarget,
+                        columnDef,
+                        row
+                    }
+                })
+            }
         },
-        headOnClick: (event: React.MouseEvent<HTMLTableSectionElement>, gridApi: any) => {
-            headOnClick?.(event);
+        getHeadProps: (gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableSectionElement>) => headOnClick?.(event)
+            }
         },
-        headRowOnClick: (event: React.MouseEvent<HTMLTableRowElement>, gridApi: any) => {
-            headRowOnClick?.(event);
+        getHeadRowProps: (gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableRowElement>) => headRowOnClick?.(event)
+            }
         },
-        headRowCellOnClick: (event: React.MouseEvent<HTMLTableCellElement>, columnDef: ColumnDef<any>, gridApi: any) => {
-            headRowCellOnClick?.({
-                ...event,
-                currentTarget: {
-                    ...event.currentTarget,
-                    columnDef
-                }
-        });
+        getHeadRowCellProps: (columnDef: ColumnDef<any>, gridApi: GridApi) => {
+            return {
+                onClick: (event: React.MouseEvent<HTMLTableCellElement>) => headRowCellOnClick?.({
+                    ...event,
+                    currentTarget: {
+                        ...event.currentTarget,
+                        columnDef
+                    }
+                })
+            }
         }
     }
 }
