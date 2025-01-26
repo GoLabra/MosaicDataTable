@@ -21,7 +21,6 @@ export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataT
         renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
 
             if(row && row['sys_extra_row']){
-                debugger
                 return children;
             }
 

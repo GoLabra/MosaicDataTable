@@ -20,7 +20,7 @@ export const EmptyDataPlugin = ({
 
             return <TableBody>
                 <TableRow>
-                    <TableCell>
+                    <TableCell colSpan={headCells.length} sx={{ borderWidth: 0 }}>
                         <Box sx={{
                             height: '150px',
                             pointerEvents: 'none'
