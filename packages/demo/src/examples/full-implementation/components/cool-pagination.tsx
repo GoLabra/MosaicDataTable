@@ -31,7 +31,6 @@ export const CoolPagination = (props: CoolPaginationProps) => {
                             minWidth: '40px',
                             padding: '0 10px',
                             borderRadius: 1,
-                            //backgroundColor: (theme: any) => theme.palette.mode === 'dark' ? alpha(theme.palette.neutral[900], .6) : alpha(theme.palette.neutral[50], .2),
                             margin: '0 10px',
                         }} />
                     </Tooltip>

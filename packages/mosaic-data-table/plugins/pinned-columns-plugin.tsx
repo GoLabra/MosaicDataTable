@@ -43,16 +43,6 @@ const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, pro
             .reverse();
 
         rightOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
-
-        // return <MosaicDataTableCellRoot key={headCell.id} sx={{
-        //     ...sx,
-        //     position: 'sticky',
-        //     right: rightOffset,
-        //     backgroundColor: (theme: Theme) => theme.palette.background.paper,
-        //     width: headCell.width ?? '40px',
-        //     minWidth: headCell.width ?? '40px',
-        //     zIndex: 1,
-        // }}>{children}</MosaicDataTableCellRoot>
     }
 
     return <MosaicDataTableCellRoot key={headCell.id} {...cellProps} sx={{

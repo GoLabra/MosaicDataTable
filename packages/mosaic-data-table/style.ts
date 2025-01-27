@@ -52,7 +52,7 @@ export const MosaicDataTableCellRoot = styled(TableCell, {
         backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
         borderBottomWidth: 1,
         borderBottomStyle: 'dashed',
-        borderBottomColor: theme.palette.divider!,
+        borderBottomColor: 'var(--mui-palette-divider)',
     }
 });
 
