@@ -43,6 +43,7 @@ export const AbsoluteHeightContainer = ({ children, sx }: AbsoluteHeightContaine
         <>
             <Box
                 ref={childRef}
+                width={1}
                 sx={{
                     ...sx,
                     position: 'absolute',

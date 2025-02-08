@@ -73,6 +73,21 @@ export const useRowExpansionStore = () => {
         });
     }, [setExpansionState]);
 
+    const clear = useCallback((id?: any) => {
+        if(!id){
+            setExpansionState({});
+            return;
+        }
+
+        setExpansionState((prevState) => {
+            return {
+                ...prevState,
+                [id]: null
+            }
+        });
+
+    }, [setExpansionState]);
+
     return useMemo(() => ({
         expansionState,
         isExpanded,
@@ -81,7 +96,8 @@ export const useRowExpansionStore = () => {
         collapse,
         toggle,
         setParams,
-    }), [expansionState, isExpanded, expand, collapse, toggle, setParams]);
+        clear
+    }), [expansionState, isExpanded, expand, collapse, toggle, setParams, clear]);
 }
 
 export const RowExpansionPlugin = (props: {
