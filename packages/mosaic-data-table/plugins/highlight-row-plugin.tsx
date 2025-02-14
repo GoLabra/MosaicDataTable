@@ -15,10 +15,13 @@ export const HighlightRowPlugin = (props: {
             if (!isRowHighlighted) {
                 return children;
             }
-
-            return <DockedDiv sx={{
-                backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
-            }}> {children} </DockedDiv>
+            
+            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}-${JSON.stringify(row)}`, (children: ReactNode) => (
+                <DockedDiv sx={{
+                    backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
+                }}> {children} </DockedDiv>
+            ))(children);
+         
         }
     }
 }   

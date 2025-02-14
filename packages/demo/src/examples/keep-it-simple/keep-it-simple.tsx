@@ -10,6 +10,124 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useSelection } from './hooks/use-selection';
 import dayjs from 'dayjs';
 
+const data = [{
+    id: 1,
+    name: 'Max Mustermann',
+    email: 'max.mustermann@mail.com',
+    rating: 3.5,
+    age: 30,
+    gender: 'male',
+    phone: '+1 (123) 456-7890',
+    address: 'Vienna, Austria',
+    progress: 100,
+    verified: false,
+    registrationDate: new Date(2019, 1, 1),
+    status: 'Active',
+    role: 'Admin',
+    country: 'Austria',
+    countryCode: 'at',
+    city: 'Vienna',
+    language: 'German',
+    tokens: 100,
+}
+, {
+    id: 2,
+    name: 'John Doe',
+    email: 'juan.perez@mail.com',
+    rating: 4.5,
+    age: 25,
+    gender: 'female',
+    phone: '+1 (456) 456-7890',
+    address: 'Washington DC, USA',
+    progress: 100,
+    verified: true,
+    registrationDate: new Date(2022, 1, 1),
+    status: 'Active',
+    role: 'Admin',
+    country: 'USA',
+    countryCode: 'us',
+    city: 'Washington DC',
+    language: 'English',
+    tokens: 72,
+}, {
+    id: 3,
+    name: 'Juan Pérez',
+    email: 'juan.perez@mail.com',
+    rating: 2,
+    age: 22,
+    gender: 'male',
+    phone: '+1 (789) 456-7890',
+    address: 'Madrid, Spain',
+    progress: 50,
+    verified: true,
+    registrationDate: new Date(2021, 1, 1),
+    status: 'Inactive',
+    role: 'User',
+    country: 'Spain',
+    countryCode: 'es',
+    city: 'Madrid',
+    language: 'Spanish',
+    tokens: 12
+}, {
+    id: 4,
+    name: 'Mario Rossi',
+    email: 'mario.rossi@mail.com',
+    rating: 0,
+    age: 22,
+    gender: 'male',
+    phone: '+1 (101) 456-7890',
+    address: '123 Main St, Anytown, USA',
+    progress: 25,
+    verified: true,
+    registrationDate: new Date(2021, 1, 1),
+    status: 'Inactive',
+    role: 'User',
+    country: 'Italy',
+    countryCode: 'it',
+    city: 'Rome',
+    language: 'Italian',
+    tokens: 10,
+}, {
+    id: 5,
+    name: 'Andrei Vinca',
+    email: 'andrei.vinca@outlook.com',
+    rating: 1.5,
+    age: 37,
+    gender: 'male',
+    phone: '+1 (112) 456-7890',
+    progress: 10,
+    address: 'Cluj-Napoca, Romania',
+    verified: true,
+    registrationDate: new Date(2021, 1, 1),
+    status: 'Inactive',
+    role: 'User',
+    country: 'Romania',
+    countryCode: 'ro',
+    city: 'Bucharest',
+    language: 'Romanian',
+    tokens: 99
+}, {
+    id: 6,
+    name: 'Jean Dupont',
+    email: 'jean.dupont@mail.com',
+    rating: 0,
+    age: 22,
+    gender: 'male',
+    phone: '+1 (131) 456-7890',
+    address: 'Paris, France',
+    progress: 12,
+    verified: true,
+    registrationDate: new Date(2021, 1, 1),
+    status: 'Inactive',
+    role: 'User',
+    country: 'France',
+    countryCode: 'fr',
+    city: 'Paris',
+    language: 'French',
+    tokens: 45
+}];
+
+
 export const KeepItSimpleTable = () => {
     const [filter, setFilter] = useState<Filter>({});
     const [order, setOrder] = useState<{ order: Order, sortBy: string }>({ order: 'asc', sortBy: 'name' });
@@ -25,7 +143,7 @@ export const KeepItSimpleTable = () => {
         id: 'id',
         header: 'ID',
         width: 80,
-        cell: (row: any) => <>{row.id}</>,
+        cell: (row: any) => row.id,
     }, {
         id: 'name',
         header: 'Name',
@@ -39,7 +157,7 @@ export const KeepItSimpleTable = () => {
         header: 'E-mail',
         width: 200,
         hasSort: true,
-        cell: (row: any) => <>{row.email}</>,
+        cell: (row: any) => row.email,
     }, {
         id: 'country',
         header: 'Country',
@@ -59,30 +177,30 @@ export const KeepItSimpleTable = () => {
         header: 'City',
         width: 150,
         hasSort: true,
-        cell: (row: any) => <>{row.city}</>,
+        cell: (row: any) => row.city,
     }, {
         id: 'age',
         header: 'Age',
         width: 80,
         hasSort: true,
-        cell: (row: any) => <>{row.age}</>,
+        cell: (row: any) => row.age,
     }, {
         id: 'gender',
         header: 'Gender',
         width: 100,
         hasSort: true,
-        cell: (row: any) => <>{row.gender}</>,
+        cell: (row: any) => row.gender,
     }, {
         id: 'address',
         header: 'Address',
         width: 200,
         hasSort: true,
-        cell: (row: any) => <>{row.address}</>,
+        cell: (row: any) => row.address,
     }, {
         id: 'phone',
         header: 'Phone',
         width: 150,
-        cell: (row: any) => <>{row.phone}</>,
+        cell: (row: any) => row.phone,
     }, {
         id: 'status',
         header: 'Status',
@@ -94,20 +212,20 @@ export const KeepItSimpleTable = () => {
             } else {
                 return (<Chip label="Inactive" color="secondary" size="small" />);
             }
-        },
+        }
     }, {
         id: 'tokens',
         header: 'Tokens',
         width: 100,
         hasSort: true,
         pin: useResponsivePin({ pin: true, breakpoint: 'lg', direction: 'up' }),
-        cell: (row: any) => <>{row.tokens}</>,
+        cell: (row: any) => row.tokens,
     }, {
         id: 'language',
         header: 'Language',
         width: 150,
         hasSort: true,
-        cell: (row: any) => <>{row.language}</>,
+        cell: (row: any) => row.language,
     }, {
         id: 'progress',
         header: 'Progress',
@@ -118,7 +236,7 @@ export const KeepItSimpleTable = () => {
         header: 'verified',
         width: 100,
         hasSort: true,
-        cell: (row: any) => <>{row.verified ? 'Yes' : 'No'}</>,
+        cell: (row: any) => row.verified ? 'Yes' : 'No',
     }, {
         id: 'registrationDate',
         header: 'Registered On',
@@ -131,7 +249,7 @@ export const KeepItSimpleTable = () => {
         header: 'Role',
         width: 120,
         hasSort: true,
-        cell: (row: any) => <>{row.role}</>,
+        cell: (row: any) => row.role,
     }, {
         id: 'rating',
         header: 'Rating',
@@ -140,128 +258,14 @@ export const KeepItSimpleTable = () => {
     },
     ];
 
-    let items = empty ? [] : [{
-        id: 1,
-        name: 'Max Mustermann',
-        email: 'max.mustermann@mail.com',
-        rating: 3.5,
-        age: 30,
-        gender: 'male',
-        phone: '+1 (123) 456-7890',
-        address: 'Vienna, Austria',
-        progress: 100,
-        verified: false,
-        registrationDate: new Date(2019, 1, 1),
-        status: 'Active',
-        role: 'Admin',
-        country: 'Austria',
-        countryCode: 'at',
-        city: 'Vienna',
-        language: 'German',
-        tokens: 100,
-    }, {
-        id: 2,
-        name: 'John Doe',
-        email: 'juan.perez@mail.com',
-        rating: 4.5,
-        age: 25,
-        gender: 'female',
-        phone: '+1 (456) 456-7890',
-        address: 'Washington DC, USA',
-        progress: 100,
-        verified: true,
-        registrationDate: new Date(2022, 1, 1),
-        status: 'Active',
-        role: 'Admin',
-        country: 'USA',
-        countryCode: 'us',
-        city: 'Washington DC',
-        language: 'English',
-        tokens: 72,
-    }, {
-        id: 3,
-        name: 'Juan Pérez',
-        email: 'juan.perez@mail.com',
-        rating: 2,
-        age: 22,
-        gender: 'male',
-        phone: '+1 (789) 456-7890',
-        address: 'Madrid, Spain',
-        progress: 50,
-        verified: true,
-        registrationDate: new Date(2021, 1, 1),
-        status: 'Inactive',
-        role: 'User',
-        country: 'Spain',
-        countryCode: 'es',
-        city: 'Madrid',
-        language: 'Spanish',
-        tokens: 12
-    }, {
-        id: 4,
-        name: 'Mario Rossi',
-        email: 'mario.rossi@mail.com',
-        rating: 0,
-        age: 22,
-        gender: 'male',
-        phone: '+1 (101) 456-7890',
-        address: '123 Main St, Anytown, USA',
-        progress: 25,
-        verified: true,
-        registrationDate: new Date(2021, 1, 1),
-        status: 'Inactive',
-        role: 'User',
-        country: 'Italy',
-        countryCode: 'it',
-        city: 'Rome',
-        language: 'Italian',
-        tokens: 10,
-    }, {
-        id: 5,
-        name: 'Andrei Vinca',
-        email: 'andrei.vinca@outlook.com',
-        rating: 1.5,
-        age: 37,
-        gender: 'male',
-        phone: '+1 (112) 456-7890',
-        progress: 10,
-        address: 'Cluj-Napoca, Romania',
-        verified: true,
-        registrationDate: new Date(2021, 1, 1),
-        status: 'Inactive',
-        role: 'User',
-        country: 'Romania',
-        countryCode: 'ro',
-        city: 'Bucharest',
-        language: 'Romanian',
-        tokens: 99
-    }, {
-        id: 6,
-        name: 'Jean Dupont',
-        email: 'jean.dupont@mail.com',
-        rating: 0,
-        age: 22,
-        gender: 'male',
-        phone: '+1 (131) 456-7890',
-        address: 'Paris, France',
-        progress: 12,
-        verified: true,
-        registrationDate: new Date(2021, 1, 1),
-        status: 'Inactive',
-        role: 'User',
-        country: 'France',
-        countryCode: 'fr',
-        city: 'Paris',
-        language: 'French',
-        tokens: 45
-    }];
+    let items = empty ? [] : data;
 
     const isColumnHighlighted = useCallback((headCellId: string) => {
         return headCellId === 'role';
     }, []);
 
     // Row Actions
-    const todoActions: Action<any>[] = [
+    const todoActions: Action<any>[] = useMemo(() => ([
         {
             id: 'edit',
             render: (field: any) => (<MenuItem id='edit-menu-item' key={`edit-${field}`} > <ListItemIcon><EditIcon /></ListItemIcon> Edit </MenuItem>)
@@ -270,7 +274,7 @@ export const KeepItSimpleTable = () => {
             id: 'remove',
             render: (field: any) => (<MenuItem id='remove-menu-item' key={`remove-${field}`} > <ListItemIcon><DeleteIcon /></ListItemIcon> Remove </MenuItem>)
         },
-    ];
+    ]), []);
 
     const gridPlugins = useGridPlugins(
         // process the 'render' function
@@ -319,10 +323,10 @@ export const KeepItSimpleTable = () => {
         usePluginWithParams(SummaryRowPlugin, {
             visible: showFooter,
             key: 'symmary_row', // needed only if you want to use more than one summary row
-            summaryColumns: {
+            summaryColumns: useMemo(() => ({
                 'name': (column: ColumnDef<any>) => <Typography fontWeight={700}>Total</Typography>,
                 'tokens': (column: ColumnDef<any>) => <Typography fontWeight={700}>338</Typography>,
-            }
+            }), [])
         }),
 
         // add padding to the table cells
@@ -338,7 +342,7 @@ export const KeepItSimpleTable = () => {
         // add row selection functionality (checlbox column)
         usePluginWithParams(RowSelectionPlugin, {
             visible: showRowSelection,
-            onGetRowId: (row: any) => row.id,
+            onGetRowId: useCallback((row: any) => row.id, []),
             onSelectOne: contentManagerSelection.handleSelectOne,
             onDeselectOne: contentManagerSelection.handleDeselectOne,
             selectedIds: contentManagerSelection.selected
@@ -346,7 +350,7 @@ export const KeepItSimpleTable = () => {
 
         usePluginWithParams(RowExpansionPlugin, {
             showExpanderButton: showRowExpansion,
-            onGetRowId: (row: any) => row.id,
+            onGetRowId: useCallback((row: any) => row.id, []),
             expanstionStore: useRowExpansionStore(),
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),

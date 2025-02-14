@@ -1,10 +1,11 @@
 import { GlobalStyles, Table, TableBody, TableContainer, TableProps } from "@mui/material";
-import { PropsWithChildren, useCallback, useEffect, useMemo } from "react";
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from "react";
 import { MosaicDataTableHead } from "./MosaicDataTableHead";
 import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps, MosaicDataTablePropsPlugin } from "./types/table-types";
 import { MosaicDataTableBody } from "./MosaicDataTableBody";
 import { MosaicDataTableRoot } from "./style";
 import { filterGridPlugins } from "./util/filterGridPlugins";
+import { MemoStore } from "./util/MemoStore";
 
 export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicDataTableProps<T>>) => {
 
@@ -31,11 +32,18 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
 
     }, [...bodyCellRenderPlugins, visileHeadCells]);
 
+    const memoStore = useRef(new MemoStore());
+
+    useEffect(() => {
+        memoStore.current.clear();
+    }, [props.items]);
+
     const gridApi: GridApi = useMemo(() => ({
-        getData: () => props.items,
-        getColumns: () => columns,
-        getPlugins: () => props.plugins || []
-    }), [props.items,columns, ...props.plugins??[]]);
+        items: props.items,
+        columns: columns,
+        plugins: props.plugins || [],
+        memoStore: memoStore.current
+    }), [props.items, columns, memoStore, ...props.plugins ??[]]);
 
     // props
     const tablePropsPlugins = useMemo((): MosaicDataTablePropsPlugin[] => {

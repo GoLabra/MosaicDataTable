@@ -3,19 +3,22 @@ import { Action, GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin,
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Box, IconButton, Menu } from "@mui/material";
 
+const sys_actions = {
+    id: 'sys_actions',
+    label: '',
+    width: 40,
+    pin: 'right',
+};
+
 export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
+        displayName: 'RowActionsPlugin',
         scope: ['grid-columns', 'body-cell-content-render'] as const,
         getColumns: (headCells: Array<ColumnDef<any>>) => {
             return [
                 ...headCells,
-                {
-                    id: 'sys_actions',
-                    label: '',
-                    width: 40,
-                    pin: 'right',
-                }
+                sys_actions
             ];
         },
         renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {

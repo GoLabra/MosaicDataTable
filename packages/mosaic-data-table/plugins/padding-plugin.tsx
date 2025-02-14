@@ -28,7 +28,7 @@ export const PaddingPluggin = ({
                 return children;
             }
 
-            return <PaddedBox> {children} </PaddedBox>
+            return gridApi.memoStore.memoFunction(`padding-head${headCell.id}`,(children: ReactNode) => (<PaddedBox> {children} </PaddedBox>))(children);
         },
         renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
             
@@ -36,7 +36,7 @@ export const PaddingPluggin = ({
                 return children;
             }
 
-            return <PaddedBox> {children} </PaddedBox>
+            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}-${JSON.stringify(row)}`, (children: ReactNode) => (<PaddedBox> {children} </PaddedBox>))(children);
         }
     }
 }   

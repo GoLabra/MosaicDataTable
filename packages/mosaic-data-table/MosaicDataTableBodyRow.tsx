@@ -5,16 +5,17 @@ import { SxProps, Theme } from "@mui/material/styles";
 import { filterGridPlugins } from "./util/filterGridPlugins";
 import { MosaicDataTableCellRoot, MosaicDataTableRowRoot } from "./style";
 import { TableCellProps, TableRowProps } from "@mui/material";
+import { MosaicDataTableBodyRowCell } from "./MosaicDataTableBodyRowCell";
 
 
 export function MosaicDataTableBodyRow<T>(props: {
+    key: string;
     row: T | any;
     headCells: ColumnDef<T>[];
     plugins?: MosaicDataTablePlugin[];
     gridApi: GridApi;
 }) {
     const { row, headCells } = props
-
 
     // body-row-style
     const rowStylePlugins = useMemo((): MosaicDataTableBodyRowStylePlugin[] => {
@@ -30,22 +31,6 @@ export function MosaicDataTableBodyRow<T>(props: {
             }
         }, {});
     }, [...rowStylePlugins]);
-
-    // body-cell-style
-    const cellStylePlugins = useMemo((): MosaicDataTableBodyCellStylePlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyCellStylePlugin>(props.plugins, 'body-cell-style');
-    }, [props.plugins]);
-
-    const getCellStyle = useCallback((params: { columnDef: ColumnDef<T>, row: T }): SxProps<Theme> => {
-        return cellStylePlugins.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableBodyCellStylePlugin) => {
-            const cellStyle = plugin.getBodyCellStyle?.(params.columnDef, row, props.gridApi);
-            return {
-                ...acc,
-                ...cellStyle
-            }
-        }, {});
-    }, [cellStylePlugins]);
-
 
     // body-row-render
     const rowRenderPlugins = useMemo((): MosaicDataTableBodyRowRenderPlugin[] => {
@@ -70,33 +55,10 @@ export function MosaicDataTableBodyRow<T>(props: {
         return filterGridPlugins<MosaicDataTableBodyCellRenderPlugin>(props.plugins, 'body-cell-render');
     }, [props.plugins]);
 
-    const getCell = useCallback((params: { columnDef: ColumnDef<T>, row: T, children?: ReactNode }) => {
-
-        const cellStyle = getCellStyle({ columnDef: params.columnDef, row: params.row });
-        const bodyRowCellProps = getBodyRowCellPropsPlugin(params.columnDef, params.row);
-        
-        for (const plugin of cellRenderPlugins) {
-            var cell = plugin.renderBodyCell?.(params.columnDef, params.row, props.gridApi, bodyRowCellProps, cellStyle, params.children);
-            if (cell) {
-                return cell;
-            }
-        }
-
-        return (<MosaicDataTableCellRoot key={params.columnDef.id} align="left" sx={cellStyle} {...bodyRowCellProps} >{params.children}</MosaicDataTableCellRoot>);
-    }, [cellRenderPlugins, getCellStyle]);
-
-
     // body-cell-content-render
     const cellContentRenderPlugins = useMemo((): MosaicDataTableBodyCellContentRenderPlugin[] => {
         return filterGridPlugins<MosaicDataTableBodyCellContentRenderPlugin>(props.plugins, 'body-cell-content-render');
     }, [props.plugins]);
-
-    const getCellContent = useCallback((columnDef: ColumnDef<T>, row: T) => {
-        return cellContentRenderPlugins.reduce((acc: ReactNode | null, plugin: MosaicDataTableBodyCellContentRenderPlugin) => {
-            const cellContent = plugin.renderBodyCellContent?.(columnDef, row, props.gridApi, acc);
-            return cellContent;
-        }, null);
-    }, [cellContentRenderPlugins]);
 
 
     // props
@@ -118,17 +80,6 @@ export function MosaicDataTableBodyRow<T>(props: {
         return filterGridPlugins<MosaicDataTableBodyRowCellPropsPlugin>(props.plugins, 'body-row-cell-props');
     }, [props.plugins]);
 
-    const getBodyRowCellPropsPlugin = useCallback((columnDef: ColumnDef<any>, row: any) => {
-        return bodyRowCellPropsPlugins.reduce((acc: TableCellProps, plugin: MosaicDataTableBodyRowCellPropsPlugin) => {
-            const bodyRowCellProps = plugin.getBodyRowCellProps(columnDef, row, props.gridApi);
-            return {
-                ...acc,
-                ...bodyRowCellProps
-            }
-        }, {});
-    }, [...bodyRowCellPropsPlugins]);
-
-
     return (
         <React.Fragment>
 
@@ -137,15 +88,7 @@ export function MosaicDataTableBodyRow<T>(props: {
                 children: (
                     <>
                         {headCells
-                            .map((h) => {
-                                return (
-                                    getCell({
-                                        columnDef: h,
-                                        row: row,
-                                        children: (<>{getCellContent(h, row)}</>)
-                                    })
-                                )
-                            })
+                            .map((h) => <MosaicDataTableBodyRowCell key={h.id} row={row} headCell={h} plugins={props.plugins} gridApi={props.gridApi} />)
                         }
                     </>
                 )

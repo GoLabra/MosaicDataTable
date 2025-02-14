@@ -1,5 +1,6 @@
 import { ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, TableBodyProps, TableHeadProps, TableProps, TableRowProps, Theme } from '@mui/material'
 import { ReactNode } from 'react'
+import { MemoStore, useMemoStore } from '../util/useMemoStore'
 
 export interface Pagination {
     page: number
@@ -45,6 +46,7 @@ export interface Action<T = any> {
 export interface MosaicDataTablePlugin {
     scope: string | Array<string>;
     onInit?: (gridApi: GridApi) => void;
+    displayName?: string;
 }
 
 type ArrayWithRequired<T extends string> = [T, ...string[]] | [...string[], T] | [...string[], T, ...string[]];
@@ -162,11 +164,11 @@ export interface MosaicDataTableHeadRowCellPropsPlugin extends MosaicDataTablePl
     getHeadRowCellProps: (columnDef: ColumnDef<any>, gridApi: GridApi) => TableCellProps | null | void;
 }
 
-
 export interface GridApi {
-    getData: () => any[];
-    getColumns: () => ColumnDef<any>[];
-    getPlugins: () => MosaicDataTablePlugin[]; 
+    items: any[];
+    columns: ColumnDef<any>[];
+    plugins: MosaicDataTablePlugin[]; 
+    memoStore: MemoStore;
 }
 
 export type GetFunctionParams<T> = T extends (...args: [infer P]) => any ? P : never;

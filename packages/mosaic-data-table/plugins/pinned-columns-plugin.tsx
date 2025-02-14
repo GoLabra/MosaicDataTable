@@ -25,7 +25,7 @@ const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, pro
 
     if (headCell.pin === 'left' || headCell.pin === true) {
 
-        const leftPins = gridApi.getColumns()
+        const leftPins = gridApi.columns
             .filter(i => i.pin === 'left' || i.pin === true);
 
         const beforePins = leftPins.slice(0, leftPins.findIndex(col => col.id === headCell.id));
@@ -36,7 +36,7 @@ const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, pro
     }
 
     if (headCell.pin == 'right' || headCell.pin === true) {
-        const rightPins = gridApi.getColumns()
+        const rightPins = gridApi.columns
             .filter(i => i.pin === 'right' || i.pin === true);
 
         const beforePins = rightPins.slice(rightPins.findIndex(col => col.id === headCell.id) + 1)

@@ -16,9 +16,11 @@ export const HighlightColumnPlugin = (props: {
                 return children;
             }
 
-            return <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
-                backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
-            }}> {children} </DockedDiv>
+            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}`, (children: ReactNode) => (
+                <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
+                    backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
+                }}> {children} </DockedDiv>
+            ))(children);
         },
         renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
             
@@ -26,9 +28,11 @@ export const HighlightColumnPlugin = (props: {
                 return children;
             }
 
-            return <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
-                backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
-            }}> {children} </DockedDiv>
+            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}-${JSON.stringify(row)}`, (children: ReactNode) => (
+                <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
+                    backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
+                }}> {children} </DockedDiv>
+            ))(children);
         }
     }
 }   

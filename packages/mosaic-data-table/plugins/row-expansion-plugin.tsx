@@ -100,6 +100,13 @@ export const useRowExpansionStore = () => {
     }), [expansionState, isExpanded, expand, collapse, toggle, setParams, clear]);
 }
 
+const sys_expansion = {
+    id: 'sys_expansion',
+    label: '',
+    width: 40,
+    pin: 'left'
+};
+
 export const RowExpansionPlugin = (props: {
     showExpanderButton?: boolean,
     onGetRowId: (row: any) => string,
@@ -108,6 +115,7 @@ export const RowExpansionPlugin = (props: {
 }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin & MosaicDataTableBodyRowRenderPlugin => {
 
     return {
+        displayName: 'RowExpansionPlugin',
         scope: ['grid-columns', 'body-cell-content-render', 'body-row-render'] as const,
         getColumns: (headCells: Array<ColumnDef<any>>) => {
 
@@ -116,12 +124,7 @@ export const RowExpansionPlugin = (props: {
             }
 
             return [
-                {
-                    id: 'sys_expansion',
-                    label: '',
-                    width: 40,
-                    pin: 'left'
-                },
+                sys_expansion,
                 ...headCells
             ];
         },
@@ -135,22 +138,8 @@ export const RowExpansionPlugin = (props: {
 
                 const rowId = props.onGetRowId?.(row) ?? null;
                 const isOpen = props.expanstionStore.isExpanded(rowId);
-
-                return (
-                    <Box sx={{ textAlign: 'center' }}>
-
-                        <IconButton
-                            onClick={() => props.expanstionStore.toggle(rowId)}
-                            size="medium"
-                            sx={{ m: 0 }}
-                            aria-label="Actions"
-                            aria-haspopup="menu"
-                            id={`user-menu-btn`}
-                        >
-                            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-
-                        </IconButton>
-                    </Box>)
+                
+                return gridApi.memoStore.memoFunction(`expansion-button-${rowId}`, ExpandButton)(rowId, isOpen, props.expanstionStore.toggle);
             }
 
             return children;
@@ -170,4 +159,21 @@ export const RowExpansionPlugin = (props: {
             </>
         }
     }
+}
+
+const ExpandButton = (rowId: string, isOpen: boolean, toggle: (rowId: string) => void) => {
+    return (<Box sx={{ textAlign: 'center' }}>
+
+        <IconButton
+            onClick={() => toggle(rowId)}
+            size="medium"
+            sx={{ m: 0 }}
+            aria-label="Actions"
+            aria-haspopup="menu"
+            id={`user-menu-btn`}
+        >
+            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+
+        </IconButton>
+    </Box>);
 }

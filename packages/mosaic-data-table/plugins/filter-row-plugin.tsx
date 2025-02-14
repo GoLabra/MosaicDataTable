@@ -35,7 +35,7 @@ export const FilterRowPlugin = ({
                 <MosaicDataTableHeadRow
                     key={`sys_extra_row_${key}`}
                     headCells={columns}
-                    plugins={gridApi.getPlugins()}
+                    plugins={gridApi.plugins}
                     gridApi={gridApi}
                     caller={key}
                     sx={{

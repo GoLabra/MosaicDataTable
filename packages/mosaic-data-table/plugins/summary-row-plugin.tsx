@@ -25,7 +25,7 @@ export const SummaryRowPlugin = ({
                     key={`sys_extra_row_${key}`}
                     row={{ sys_extra_row: true, sys_summary_row: true, key:key }}
                     headCells={columns}
-                    plugins={gridApi.getPlugins()}
+                    plugins={gridApi.plugins}
                     gridApi={gridApi}
                 />
             )

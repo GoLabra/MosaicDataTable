@@ -215,10 +215,11 @@ export const FullImplementationTable = () => {
         usePluginWithParams(SummaryRowPlugin, {
             visible: true,
             key: 'symmary_row', // needed only if you want to use more than one summary row
-            summaryColumns: {
+            summaryColumns: useMemo(() => ({
                 'name': (column: ColumnDef<any>) => <Typography fontWeight={700}>Total</Typography>,
-                'tokens': (column: ColumnDef<any>) => <Typography fontWeight={700}>{contentManagerStore.state.data.reduce((sum, item) => sum + item.tokens, 0)}</Typography>,
-        }}),
+                'tokens': (column: ColumnDef<any>) => <Typography fontWeight={700}>338</Typography>,
+            }), [])
+        }),
 
         // add padding to the table cells
         usePluginWithParams(PaddingPluggin, {}),
@@ -232,7 +233,7 @@ export const FullImplementationTable = () => {
 
         // add row selection functionality (checlbox column)
         usePluginWithParams(RowSelectionPlugin, {
-            onGetRowId: (row: any) => row.id,
+            onGetRowId: useCallback((row: any) => row.id, []),
             onSelectOne: contentManagerSelection.handleSelectOne,
             onDeselectOne: contentManagerSelection.handleDeselectOne,
             selectedIds: contentManagerSelection.selected
@@ -240,7 +241,7 @@ export const FullImplementationTable = () => {
 
         usePluginWithParams(RowExpansionPlugin, {
             showExpanderButton: true,
-            onGetRowId: (row: any) => row.id,
+            onGetRowId: useCallback((row: any) => row.id, []),
             expanstionStore: useRowExpansionStore(),
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),
