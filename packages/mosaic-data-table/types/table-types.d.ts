@@ -1,6 +1,5 @@
 import { ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, TableBodyProps, TableHeadProps, TableProps, TableRowProps, Theme } from '@mui/material'
 import { ReactNode } from 'react'
-import { MemoStore, useMemoStore } from '../util/useMemoStore'
 
 export interface Pagination {
     page: number

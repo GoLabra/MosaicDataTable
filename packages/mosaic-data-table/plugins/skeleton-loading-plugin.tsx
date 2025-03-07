@@ -5,10 +5,12 @@ import { Skeleton, TableBody, TableBodyProps, TableCell, TableRow } from "@mui/m
 
 export const SkeletonLoadingPlugin = ({
     isLoading,
-    rowsWhenEmpty = 5
+    rowsWhenEmpty = 5,
+    maxRowsWhenNotEmpty
 }: {
     isLoading: boolean,
-    rowsWhenEmpty?: number
+    rowsWhenEmpty?: number,
+    maxRowsWhenNotEmpty?: number
 }): MosaicDataTableBodyRenderPlugin & MosaicDataTableGridColumnsPlugin => {
 
     return {
@@ -29,15 +31,13 @@ export const SkeletonLoadingPlugin = ({
             if (!isLoading) {
                 return null;
             }
-
+ 
             return <TableBody>
-                {isLoading && (<SkeleonRows columns={headCells.length} rows={rows?.length || rowsWhenEmpty} />)}
+                {isLoading && (<SkeleonRows columns={headCells.length} rows={ rows?.length === 0 ? rowsWhenEmpty : Math.min(rows.length, maxRowsWhenNotEmpty ?? rows.length)} />)}
             </TableBody>
         }
     }
 }
-
-
 
 
 interface SkeleonRowsProps {
