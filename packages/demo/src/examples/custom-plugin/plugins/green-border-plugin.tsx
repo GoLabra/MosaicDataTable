@@ -4,10 +4,10 @@ import { ReactNode } from "react";
 
 export const GreenBorderPlugin: MosaicDataTableBodyCellContentRenderPlugin & MosaicDataTableHeadCellContentRenderPlugin =  {
     scope: ['body-cell-content-render', 'head-cell-content-render'] as const,
-    renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+    renderBodyCellContent: ({children}) => {
         return <Box sx={{ border: '5px solid #028d00 !important;' }}>{children}</Box>;
     },
-    renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, children?: ReactNode) => {
+    renderHeadCellContent: ({children}) => {
         if(!children){
             return null;
         }

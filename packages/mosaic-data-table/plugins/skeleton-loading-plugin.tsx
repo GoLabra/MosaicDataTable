@@ -15,18 +15,20 @@ export const SkeletonLoadingPlugin = ({
 
     return {
         scope: ['body-render', 'grid-columns'] as const,
-        getColumns: (headCells: Array<ColumnDef>) => {
+        getColumns: ({headCells, memoStore}) => {
 
             if (!isLoading) {
                 return headCells;
             }
 
-            return headCells.map((headCell: ColumnDef) => ({
+            return memoStore.memoFunction('skeleton-columns', (headCells: Array<ColumnDef<any>>) => {
+                return headCells.map((headCell: ColumnDef) => ({
                     ...headCell,
                     pin: undefined
                 }));
+            })(headCells);
         },
-        renderBody: (headCells: Array<ColumnDef<any>>, rows: any[], gridApi: GridApi, bodyProps: TableBodyProps, children?: ReactNode) => {
+        renderBody: ({headCells, rows}) => {
 
             if (!isLoading) {
                 return null;

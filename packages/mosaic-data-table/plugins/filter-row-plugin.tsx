@@ -25,7 +25,7 @@ export const FilterRowPlugin = ({
 
     return {
         scope: ['head-extra-row-end', 'head-cell-content-render'] as const,
-        getHeadExtraRowEnd: (columns: Array<ColumnDef<any>>, gridApi: GridApi) => {
+        getHeadExtraRowEnd: ({columns, gridApi}) => {
 
             if (!visible) {
                 return null;
@@ -35,8 +35,7 @@ export const FilterRowPlugin = ({
                 <MosaicDataTableHeadRow
                     key={`sys_extra_row_${key}`}
                     headCells={columns}
-                    plugins={gridApi.plugins}
-                    gridApi={gridApi}
+                    gridApi={{current:gridApi}}
                     caller={key}
                     sx={{
                         '> th': {
@@ -54,26 +53,26 @@ export const FilterRowPlugin = ({
                 />
             )
         },
-        renderHeadCellContent: (column: ColumnDef<any>, gridApi: GridApi, caller: string, children?: ReactNode) => {
+        renderHeadCellContent: ({headcell, gridApi, caller, children}) => {
 
             if (caller == key) {
 
-                const filterDef = filterColumns[column.id]
+                const filterDef = filterColumns[headcell.id]
                 if (!filterDef) {
-                    return <DockedWrapper key={column.id} className="MosaicDataTable-filter-row-docked">{children}</DockedWrapper>;
+                    return <DockedWrapper key={headcell.id} className="MosaicDataTable-filter-row-docked">{children}</DockedWrapper>;
                 }
 
                 const typeDef = typeof filterDef === 'string' ? filterDef : filterDef.type;
                 const selectOptions = typeof filterDef != 'string' && filterDef.type == 'select' ? filterDef.selectOptions : undefined;
                 const defaultOperator = typeof filterDef != 'string' ? filterDef.defaultOperator : undefined;
                 const operators = typeof filterDef != 'string' ? filterDef.operators : undefined;
-                const filterValue = filter?.[column.id];
+                const filterValue = filter?.[headcell.id];
 
                 return (
-                    <DockedWrapper key={column.id} className="MosaicDataTable-filter-row-docked">
+                    <DockedWrapper key={headcell.id} className="MosaicDataTable-filter-row-docked">
 
                         <Box
-                            key={column.id}
+                            key={headcell.id}
                             sx={{
                                 width: '100%',
                                 margin: '3px',
@@ -82,7 +81,7 @@ export const FilterRowPlugin = ({
                                 backgroundColor: 'var(--mui-palette-background-paper)'
                             }}>
                             <ColumnFilter
-                                key={`columnFilter-${column.id}`}
+                                key={`columnFilter-${headcell.id}`}
                                 type={typeDef}
                                 selectOptions={selectOptions}
                                 options={operators}
@@ -92,14 +91,14 @@ export const FilterRowPlugin = ({
 
                                     if(!columnFilter){
                                         const newFilter = { ...filter };
-                                        delete newFilter[column.id];
+                                        delete newFilter[headcell.id];
                                         filterChanged(newFilter);
                                         return;
                                     }
 
                                     filterChanged({
                                         ...filter,
-                                        [column.id]: columnFilter
+                                        [headcell.id]: columnFilter
                                     })
                                 }} />
                         </Box>

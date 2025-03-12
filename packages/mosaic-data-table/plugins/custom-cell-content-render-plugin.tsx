@@ -4,13 +4,13 @@ import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin } from "
 
 export const CustomBodyCellContentRenderPlugin: MosaicDataTableBodyCellContentRenderPlugin = {
     scope: 'body-cell-content-render',
-    renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+    renderBodyCellContent: ({headcell, gridApi, row, rowId}) => { 
 
         if(row && row['sys_extra_row']){
             return null;
         }
 
-        const value = headCell.cell?.(row);
+        const value = gridApi.memoStore.memoFunction(`colum-content-${headcell.id}-${rowId}`, headcell.cell)(row);
         return value;
     }
 }

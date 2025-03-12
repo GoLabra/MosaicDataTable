@@ -18,25 +18,25 @@ export const PaddingPluggin = ({
     return {
         scope: ['head-cell-content-render', 'body-cell-content-render'],
 
-        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string,children?: ReactNode) => {
+        renderHeadCellContent: ({headcell, gridApi, caller,children}) => {
 
             if(caller != 'mosaic-data-table'){
                 return children;
             }
             
-            if(skipCellHeads?.includes(headCell.id)){
+            if(skipCellHeads?.includes(headcell.id)){
                 return children;
             }
 
-            return gridApi.memoStore.memoFunction(`padding-head${headCell.id}`,(children: ReactNode) => (<PaddedBox> {children} </PaddedBox>))(children);
+            return gridApi.memoStore.memoFunction(`padding-head${headcell.id}`,(children: ReactNode) => (<PaddedBox> {children} </PaddedBox>))(children);
         },
-        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: ({headcell, rowId, gridApi, children}) => {
             
-            if(skipCellHeads?.includes(headCell.id)){
+            if(skipCellHeads?.includes(headcell.id)){
                 return children;
             }
 
-            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}-${JSON.stringify(row)}`, (children: ReactNode) => (<PaddedBox> {children} </PaddedBox>))(children);
+            return gridApi.memoStore.memoFunction(`padding-body${headcell.id}-${rowId}`, (children: ReactNode) => (<PaddedBox> {children} </PaddedBox>))(children);
         }
     }
 }   

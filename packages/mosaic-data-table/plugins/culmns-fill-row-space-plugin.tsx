@@ -10,14 +10,14 @@ const columns_fill_row_space = {
 export const ColumnsFillRowSpacePlugin: MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin = {
     displayName: 'ColumnsFillRowSpacePlugin',
     scope: ['grid-columns', 'body-cell-content-render'] as const,
-    getColumns: (columns: Array<ColumnDef<any>>) => {
-        return [
-            ...columns,
+    getColumns: ({ headCells, memoStore }) => {
+        return memoStore.memoFunction('columns-fill-row-space-columns', (headCells: Array<ColumnDef<any>>) => [
+            ...headCells,
             columns_fill_row_space
-        ];
+        ])(headCells);
     },
-    renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
-        if (headCell.id == 'columns-fill-row-space') {
+    renderBodyCellContent: ({ headcell, gridApi, children }) => {
+        if (headcell.id == 'columns-fill-row-space') {
             return gridApi.memoStore.memoFunction(`columns-fill-row-space`, () => (<></>))();
         }
 

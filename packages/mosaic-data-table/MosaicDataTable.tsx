@@ -4,63 +4,69 @@ import { MosaicDataTableHead } from "./MosaicDataTableHead";
 import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps, MosaicDataTablePropsPlugin } from "./types/table-types";
 import { MosaicDataTableBody } from "./MosaicDataTableBody";
 import { MosaicDataTableRoot } from "./style";
-import { filterGridPlugins } from "./util/filterGridPlugins";
+import { filterGridPlugins, getPluginMap } from "./util/filterGridPlugins";
 import { MemoStore } from "./util/MemoStore";
 
 export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicDataTableProps<T>>) => {
 
     useEffect(() => {
         props.plugins?.forEach((plugin) => {
-            plugin.onInit?.(gridApi);
+            plugin.onInit?.(gridApi.current);
         });
     }, [props.plugins]);
 
+    const memoStore = useRef(new MemoStore());
+    const pluginMap = useMemo(() => getPluginMap(props.plugins), [...props.plugins ?? []]);
+    
     const visileHeadCells = useMemo((): Array<ColumnDef<any>> => {
         return props.headCells.filter((headCell) => headCell.visible ?? true);
     }, [props.headCells]);
-
-    // grid-columns
-    const bodyCellRenderPlugins = useMemo((): MosaicDataTableGridColumnsPlugin[] => {
-        return filterGridPlugins<MosaicDataTableGridColumnsPlugin>(props.plugins, 'grid-columns');
-    }, [props.plugins]);
-
+    
     const columns = useMemo((): Array<ColumnDef<any>> => {
-        return bodyCellRenderPlugins.reduce((acc: Array<ColumnDef<any>>, plugin: MosaicDataTableGridColumnsPlugin): Array<ColumnDef<any>> => {
-            const cellContent = plugin.getColumns?.(acc);
+        return pluginMap.gridColumns.reduce((acc: Array<ColumnDef<any>>, plugin: MosaicDataTableGridColumnsPlugin): Array<ColumnDef<any>> => {
+            const cellContent = plugin.getColumns?.({ headCells: acc, memoStore: memoStore.current });
             return cellContent ?? [];
         }, visileHeadCells);
 
-    }, [...bodyCellRenderPlugins, visileHeadCells]);
+    }, [...pluginMap.gridColumns, visileHeadCells]);
 
-    const memoStore = useRef(new MemoStore());
 
     useEffect(() => {
         memoStore.current.clear();
     }, [props.items]);
 
-    const gridApi: GridApi = useMemo(() => ({
-        items: props.items,
-        columns: columns,
-        plugins: props.plugins || [],
-        memoStore: memoStore.current
-    }), [props.items, columns, memoStore, ...props.plugins ??[]]);
+    const gridApi = useRef<GridApi>({} as GridApi);
+    gridApi.current.items = props.items;
+    gridApi.current.columns = columns;
+    gridApi.current.plugins = props.plugins || [];
+    gridApi.current.pluginMap = pluginMap;
+    gridApi.current.memoStore = memoStore.current;
+
+
+    // const gridApi: GridApi = useMemo(() => ({
+    //     items: props.items,
+    //     columns: columns,
+    //     plugins: props.plugins || [],
+    //     pluginMap: pluginMap,
+    //     memoStore: memoStore.current
+    // }), [props.items, columns, memoStore, pluginMap]);
 
     // props
-    const tablePropsPlugins = useMemo((): MosaicDataTablePropsPlugin[] => {
-        return filterGridPlugins<MosaicDataTablePropsPlugin>(props.plugins, 'table-props');
-    }, [props.plugins]);
+    // const tablePropsPlugins = useMemo((): MosaicDataTablePropsPlugin[] => {
+    //     return filterGridPlugins<MosaicDataTablePropsPlugin>(props.plugins, 'table-props');
+    // }, [props.plugins]);
 
     const tableProps = useMemo(() => {
 
-        return tablePropsPlugins.reduce((acc: TableProps, plugin: MosaicDataTablePropsPlugin) => {
-            const tableProps = plugin.getTableProps(gridApi);
+        return pluginMap.tableProps.reduce((acc: TableProps, plugin: MosaicDataTablePropsPlugin) => {
+            const tableProps = plugin.getTableProps({gridApi:gridApi.current});
             return {
                 ...acc,
                 ...tableProps
             }
         }, {});
 
-    }, [...tablePropsPlugins]);
+    }, [...pluginMap.tableProps]);
 
     return (<>
 
@@ -82,13 +88,11 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
                      
                         <MosaicDataTableHead
                             headCells={columns}
-                            plugins={props.plugins}
                             gridApi={gridApi}
                         />
 
                         <MosaicDataTableBody
                             columns={columns}
-                            plugins={props.plugins}
                             gridApi={gridApi}
                             items={props.items}
                         />

@@ -6,7 +6,7 @@ import { Box, IconButton, Menu } from "@mui/material";
 const sys_actions = {
     id: 'sys_actions',
     label: '',
-    width: 40,
+    width: 46,
     pin: 'right',
 };
 
@@ -15,19 +15,20 @@ export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataT
     return {
         displayName: 'RowActionsPlugin',
         scope: ['grid-columns', 'body-cell-content-render'] as const,
-        getColumns: (headCells: Array<ColumnDef<any>>) => {
-            return [
+        getColumns: ({headCells, memoStore}) => {
+            return memoStore.memoFunction('sys_actions-columns', (headCells: Array<ColumnDef<any>>) => [
                 ...headCells,
                 sys_actions
-            ];
+            ])(headCells);
         },
-        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContentColumnScope: 'sys_actions',
+        renderBodyCellContent: ({headcell, row, rowId, gridApi, children}) => {
 
             if(row && row['sys_extra_row']){
                 return children;
             }
 
-            if (headCell.id == 'sys_actions') {
+            if (headcell.id == 'sys_actions') {
                 return (<Box sx={{ textAlign: 'center' }}>
                     <ActionButton actions={props.actions} row={row} />
                 </Box>)
@@ -61,7 +62,7 @@ const ActionButton = (props: ActionButtonProps) => {
         <IconButton
             onClick={(event) => handleClick(event, props.row)}
             size="medium"
-            sx={{ m: 0 }}
+            sx={{ m: '0 3px' }}
             aria-label="Actions"
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="menu"

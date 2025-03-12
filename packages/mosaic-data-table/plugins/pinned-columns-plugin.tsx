@@ -6,11 +6,11 @@ import { MosaicDataTableCellRoot } from "../style";
 
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
     scope: ['body-cell-render', 'head-cell-render'] as const,
-    renderBodyCell: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
-        return getCell(headCell, gridApi, '', props, sx, children, cellProps);
+    renderBodyCell: ({headcell, rowId, gridApi, props, sx, children, cellProps}) => {
+        return gridApi.memoStore.memoFunction(`pinned-columns-body-${rowId}-${headcell.id}`, getCell)(headcell, gridApi, '', props, sx, children, cellProps);
     },
-    renderHeadCell: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
-        return getCell(headCell, gridApi, caller, props, sx, children, cellProps);
+    renderHeadCell: ({headcell, gridApi, caller, props, sx, children, cellProps}) => {
+        return gridApi.memoStore.memoFunction(`pinned-columns-head-${headcell.id}`, getCell)(headcell, gridApi, caller, props, sx, children, cellProps);
     }
 }
 

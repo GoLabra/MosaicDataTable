@@ -25,17 +25,17 @@ export const EventsPlugin = ({
     & MosaicDataTableHeadRowCellPropsPlugin => {
     return {
         scope: ['table-props', 'body-props', 'body-row-props', 'body-row-cell-props', 'head-props', 'head-row-props', 'head-row-cell-props'] as const,
-        getTableProps: (gridApi: GridApi) => {
+        getTableProps: () => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableElement>) => tableOnClick?.(event)
             };
         },
-        getBodyProps: (gridApi: GridApi) => {
+        getBodyProps: () => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableSectionElement>) => bodyOnClick?.(event)
             }
         },
-        getBodyRowProps: (row: any, gridApi: GridApi) => {
+        getBodyRowProps: ({row}) => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableRowElement>) => bodyRowOnClick?.({
                     ...event,
@@ -46,7 +46,7 @@ export const EventsPlugin = ({
                 })
             }
         },
-        getBodyRowCellProps: (columnDef: ColumnDef<any>, row: any, gridApi: GridApi) => {
+        getBodyRowCellProps: ({columnDef, row, gridApi}) => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableCellElement>) => bodyRowCellOnClick?.({
                     ...event,
@@ -58,17 +58,17 @@ export const EventsPlugin = ({
                 })
             }
         },
-        getHeadProps: (gridApi: GridApi) => {
+        getHeadProps: ({gridApi}) => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableSectionElement>) => headOnClick?.(event)
             }
         },
-        getHeadRowProps: (gridApi: GridApi) => {
+        getHeadRowProps: ({gridApi}) => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableRowElement>) => headRowOnClick?.(event)
             }
         },
-        getHeadRowCellProps: (columnDef: ColumnDef<any>, gridApi: GridApi) => {
+        getHeadRowCellProps: ({columnDef, gridApi}) => {
             return {
                 onClick: (event: React.MouseEvent<HTMLTableCellElement>) => headRowCellOnClick?.({
                     ...event,

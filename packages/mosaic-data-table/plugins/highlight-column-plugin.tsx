@@ -10,25 +10,25 @@ export const HighlightColumnPlugin = (props: {
     return {
         scope: ['head-cell-content-render', 'body-cell-content-render'] as const,
 
-        renderHeadCellContent: (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, children?: ReactNode) => {
+        renderHeadCellContent: ({headcell, gridApi, caller, children}) => {
 
-            if (!headCell.highlight && !props.isColumnHighlighted?.(headCell.id)) {
+            if (!headcell.highlight && !props.isColumnHighlighted?.(headcell.id)) {
                 return children;
             }
 
-            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}`, (children: ReactNode) => (
+            return gridApi.memoStore.memoFunction(`padding-body${headcell.id}`, (children: ReactNode) => (
                 <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
                     backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
                 }}> {children} </DockedDiv>
             ))(children);
         },
-        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: ({headcell, rowId, gridApi, children}) => {
             
-            if (!headCell.highlight && !props.isColumnHighlighted?.(headCell.id)) {
+            if (!headcell.highlight && !props.isColumnHighlighted?.(headcell.id)) {
                 return children;
             }
 
-            return gridApi.memoStore.memoFunction(`padding-body${headCell.id}-${JSON.stringify(row)}`, (children: ReactNode) => (
+            return gridApi.memoStore.memoFunction(`padding-body-${headcell.id}-${rowId}`, (children: ReactNode) => (
                 <DockedDiv className="MuiTableCellDockedDiv-root" sx={{
                     backgroundColor: 'var(--mui-palette-MosaicDataTable-highlight)'
                 }}> {children} </DockedDiv>

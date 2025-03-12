@@ -2,62 +2,43 @@ import { TableCell, TableHead, TableHeadProps, TableRow } from '@mui/material'
 import { SxProps, Theme } from '@mui/material/styles'
 import { ReactNode, useCallback, useMemo } from 'react'
 import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTablePlugin, GridApi, MosaicDataTableHeadPropsPlugin } from './types/table-types'
-import { filterGridPlugins } from './util/filterGridPlugins'
-import { MosaicDataTableCellRoot } from './style'
 import { MosaicDataTableHeadRow } from './MosaicDataTableHeadRow'
 
 interface MosaicDataTableHeadProps<T> {
     headCells: ColumnDef<T>[];
-    plugins?: MosaicDataTablePlugin[];
-    gridApi: GridApi;
+    gridApi: React.MutableRefObject<GridApi>
 }
 export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
     const { headCells } = props
 
-    // extra-row-start
-    const extraRowStartPlugins = useMemo((): MosaicDataTableHeadExtraRowStartPlugin[] => {
-        return filterGridPlugins<MosaicDataTableHeadExtraRowStartPlugin>(props.plugins, 'head-extra-row-start');
-    }, [props.plugins]);
-
     const getExtraRowsStart = useMemo(() => {
 
-        return extraRowStartPlugins.map((plugin) => {
-            var row = plugin.getHeadExtraRowStart?.(props.headCells, props.gridApi);
+        return props.gridApi.current.pluginMap.headExtraRowStart.map((plugin) => {
+            var row = plugin.getHeadExtraRowStart?.({ columns: props.headCells, gridApi: props.gridApi.current });
             return row;
         });
 
-    }, [...extraRowStartPlugins, props.headCells, props.gridApi]);
-
-
-    // extra-row-end
-    const extraRowEndPlugins = useMemo((): MosaicDataTableHeadExtraRowEndPlugin[] => {
-        return filterGridPlugins<MosaicDataTableHeadExtraRowEndPlugin>(props.plugins, 'head-extra-row-end');
-    }, [props.plugins]);
+    }, [...props.gridApi.current.pluginMap.headExtraRowStart, props.headCells]);
 
     const getExtraRowsEnd = useMemo(() => {
 
-        return extraRowEndPlugins.map((plugin) => {
-            var row = plugin.getHeadExtraRowEnd?.(props.headCells, props.gridApi);
+        return props.gridApi.current.pluginMap.headExtraRowEnd.map((plugin) => {
+            var row = plugin.getHeadExtraRowEnd?.({ columns: props.headCells, gridApi: props.gridApi.current });
             return row;
         });
 
-    }, [...extraRowEndPlugins, props.headCells, props.gridApi]);
+    }, [...props.gridApi.current.pluginMap.headExtraRowEnd, props.headCells]);
 
-
-    // props
-    const headPropsPlugins = useMemo((): MosaicDataTableHeadPropsPlugin[] => {
-        return filterGridPlugins<MosaicDataTableHeadPropsPlugin>(props.plugins, 'head-props');
-    }, [props.plugins]);
 
     const headProps = useMemo(() => {
-        return headPropsPlugins.reduce((acc: TableHeadProps, plugin: MosaicDataTableHeadPropsPlugin) => {
-            const headProps = plugin.getHeadProps(props.gridApi);
+        return props.gridApi.current.pluginMap.headProps.reduce((acc: TableHeadProps, plugin: MosaicDataTableHeadPropsPlugin) => {
+            const headProps = plugin.getHeadProps({ gridApi: props.gridApi.current });
             return {
                 ...acc,
                 ...headProps
             }
         }, {})
-    }, [...headPropsPlugins]);
+    }, [...props.gridApi.current.pluginMap.headProps]);
     
     return (
         <TableHead {...headProps}>
@@ -66,7 +47,6 @@ export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
 
             <MosaicDataTableHeadRow 
                 headCells={props.headCells}
-                plugins={props.plugins}
                 gridApi={props.gridApi}
                 caller="mosaic-data-table"
             />

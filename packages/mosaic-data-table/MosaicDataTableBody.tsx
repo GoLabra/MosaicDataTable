@@ -1,73 +1,64 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { GridApi, ColumnDef, MosaicDataTablePlugin, MosaicDataTableBodyRenderPlugin, MosaicDataTableBodyExtraRowEndPlugin, MosaicDataTableBodyExtraRowStartPlugin, MosaicDataTableBodyPropsPlugin } from "./types/table-types";
 import React from "react";
-import { TableBody, TableBodyProps, TableProps } from "@mui/material";
+import { TableBody, TableBodyProps } from "@mui/material";
 import { filterGridPlugins } from "./util/filterGridPlugins";
 import { MosaicDataTableBodyRow } from "./MosaicDataTableBodyRow";
+import { hash } from "./util/hash-functinon";
 
 interface MosaicDataTableBodyProps<T> {
     columns: ColumnDef<T>[];
-    plugins?: MosaicDataTablePlugin[];
-    gridApi: GridApi;
+    gridApi: React.MutableRefObject<GridApi>;
     items: T[];
 }
 export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
-    // body-render
-    const bodyRenderPlugins = useMemo((): MosaicDataTableBodyRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRenderPlugin>(props.plugins, 'body-render');
-    }, [props.plugins]);
 
     const getTableBody = useCallback((params: { children?: React.ReactNode }) => {
-        for (const plugin of bodyRenderPlugins) {
-            var body = plugin.renderBody?.(props.columns, props.items, props.gridApi, bodyProps, params.children);
+        for (const plugin of props.gridApi.current.pluginMap.bodyRender) { 
+            var body = plugin.renderBody?.({ headCells: props.columns, rows: props.items, gridApi: props.gridApi.current, props: bodyProps, children: params.children });
             if (body) {
                 return body
             }
         }
 
         return (<TableBody {...bodyProps}>{params.children}</TableBody>);
-    }, [...bodyRenderPlugins, props.items, props.columns, props.gridApi]);
-
-    // extra-row-start
-    const extraRowStartPlugins = useMemo((): MosaicDataTableBodyExtraRowStartPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyExtraRowStartPlugin>(props.plugins, 'body-extra-row-start');
-    }, [props.plugins]);
+    }, [...props.gridApi.current.pluginMap.bodyRender, props.items, props.columns, props.gridApi]);
 
     const getExtraRowsStart = useMemo(() => {
-        return extraRowStartPlugins.map((plugin) => {
-            var row = plugin.getBodyExtraRowStart?.(props.columns, props.items, props.gridApi);
+        return props.gridApi.current.pluginMap.bodyExtraRowStart.map((plugin) => {
+            var row = plugin.getBodyExtraRowStart?.({ columns: props.columns, row: props.items, gridApi: props.gridApi.current });
             return row;
         });
-    }, [...extraRowStartPlugins, props.items, props.columns, props.gridApi]);
+    }, [...props.gridApi.current.pluginMap.bodyExtraRowStart, props.items, props.columns, props.gridApi]);
 
 
     // extra-row-end
-    const extraRowEndPlugins = useMemo((): MosaicDataTableBodyExtraRowEndPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyExtraRowEndPlugin>(props.plugins, 'body-extra-row-end');
-    }, [props.plugins]);
+    // const extraRowEndPlugins = useMemo((): MosaicDataTableBodyExtraRowEndPlugin[] => {
+    //     return filterGridPlugins<MosaicDataTableBodyExtraRowEndPlugin>(props.plugins, 'body-extra-row-end');
+    // }, [props.plugins]);
 
     const getExtraRowsEnd = useMemo(() => {
-        return extraRowEndPlugins.map((plugin) => {
-            var row = plugin.getBodyExtraRowEnd?.(props.columns, props.items, props.gridApi);
+        return props.gridApi.current.pluginMap.bodyExtraRowEnd.map((plugin) => {
+            var row = plugin.getBodyExtraRowEnd?.({ columns: props.columns, row: props.items, gridApi: props.gridApi.current });
             return row;
         });
 
-    }, [...extraRowEndPlugins, props.items, props.columns, props.gridApi]);
+    }, [...props.gridApi.current.pluginMap.bodyExtraRowEnd, props.items, props.columns, props.gridApi]);
 
     // events
-    const bodyPropsPlugins = useMemo((): MosaicDataTableBodyPropsPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyPropsPlugin>(props.plugins, 'body-props');
-    }, [props.plugins]);
+    // const bodyPropsPlugins = useMemo((): MosaicDataTableBodyPropsPlugin[] => {
+    //     return filterGridPlugins<MosaicDataTableBodyPropsPlugin>(props.plugins, 'body-props');
+    // }, [props.plugins]);
 
     const bodyProps = useMemo(() => {
-        return bodyPropsPlugins.reduce((acc: TableBodyProps, plugin: MosaicDataTableBodyPropsPlugin) => {
-            const bodyProps = plugin.getBodyProps(props.gridApi);
+        return props.gridApi.current.pluginMap.bodyProps.reduce((acc: TableBodyProps, plugin: MosaicDataTableBodyPropsPlugin) => { 
+            const bodyProps = plugin.getBodyProps({ gridApi: props.gridApi.current});
             return {
                 ...acc,
                 ...bodyProps
             }
         }, {});
-    }, [...bodyPropsPlugins]);
+    }, [...props.gridApi.current.pluginMap.bodyProps]);
 
     return (
         <React.Fragment>
@@ -77,16 +68,19 @@ export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
 
                     {getExtraRowsStart}
 
-                    {(props.items ?? []).map((row) => (
-                        <MosaicDataTableBodyRow
-                            key={JSON.stringify(row)}
+                    {(props.items ?? []).map((row) => {
+
+                        const rowKey = hash(JSON.stringify(row));
+
+                        return (<MosaicDataTableBodyRow
+                            key={rowKey}
                             row={row}
+                            rowId={rowKey}
                             headCells={props.columns}
-                            plugins={props.plugins}
                             gridApi={props.gridApi}
-                        />
-                    ))}
-                    
+                        />)
+                    }
+                    )}
                     {getExtraRowsEnd}
                 </>
             })}

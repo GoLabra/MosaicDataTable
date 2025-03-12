@@ -1,99 +1,70 @@
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableBodyCellStylePlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableBodyRowStylePlugin, MosaicDataTablePlugin, MosaicDataTableBodyRowPropsPlugin, MosaicDataTableBodyRowCellPropsPlugin } from "./types/table-types";
+import { ReactNode, useCallback, useMemo } from "react";
+import { GridApi, ColumnDef, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableBodyRowStylePlugin, MosaicDataTablePlugin, MosaicDataTableBodyRowPropsPlugin, } from "./types/table-types";
 import React from "react";
 import { SxProps, Theme } from "@mui/material/styles";
 import { filterGridPlugins } from "./util/filterGridPlugins";
-import { MosaicDataTableCellRoot, MosaicDataTableRowRoot } from "./style";
-import { TableCellProps, TableRowProps } from "@mui/material";
+import { MosaicDataTableRowRoot } from "./style";
+import { TableRowProps } from "@mui/material";
 import { MosaicDataTableBodyRowCell } from "./MosaicDataTableBodyRowCell";
+import { useMemoDebugger } from "./util/use-debug";
 
 
 export function MosaicDataTableBodyRow<T>(props: {
     key: string;
     row: T | any;
+    rowId: string;
     headCells: ColumnDef<T>[];
-    plugins?: MosaicDataTablePlugin[];
-    gridApi: GridApi;
+    gridApi: React.MutableRefObject<GridApi>;
 }) {
     const { row, headCells } = props
 
-    // body-row-style
-    const rowStylePlugins = useMemo((): MosaicDataTableBodyRowStylePlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowStylePlugin>(props.plugins, 'body-row-style');
-    }, [props.plugins]);
-
     const getRowStyle = useMemo((): SxProps<Theme> => {
-        return rowStylePlugins.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableBodyRowStylePlugin) => {
-            const rowStyle = plugin.getBodyRowStyle?.(row, props.gridApi);
+        return props.gridApi.current.pluginMap.bodyRowStyle.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableBodyRowStylePlugin) => {
+            const rowStyle = plugin.getBodyRowStyle?.({ row, gridApi: props.gridApi.current });
             return {
                 ...acc,
                 ...rowStyle
             }
         }, {});
-    }, [...rowStylePlugins]);
+    }, [...props.gridApi.current.pluginMap.bodyRowStyle]);
 
-    // body-row-render
-    const rowRenderPlugins = useMemo((): MosaicDataTableBodyRowRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowRenderPlugin>(props.plugins, 'body-row-render');
-    }, [props.plugins]);
-
-    const getRow = useCallback((params: { row: any, children?: ReactNode }) => {
-
-        for (const plugin of rowRenderPlugins) {
-            var bodyRow = plugin.renderBodyRow?.(row, props.gridApi, bodyRowPropsPlugin, getRowStyle, params.children);
-            if (bodyRow) {
-                return bodyRow;
-            }
-        }
-
-        return (<MosaicDataTableRowRoot key={row} hover tabIndex={-1} sx={getRowStyle} {...bodyRowPropsPlugin} >{params.children}</MosaicDataTableRowRoot>); 
-    }, [...rowRenderPlugins, getRowStyle]);
-
-
-    // body-cell-render
-    const cellRenderPlugins = useMemo((): MosaicDataTableBodyCellRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyCellRenderPlugin>(props.plugins, 'body-cell-render');
-    }, [props.plugins]);
-
-    // body-cell-content-render
-    const cellContentRenderPlugins = useMemo((): MosaicDataTableBodyCellContentRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyCellContentRenderPlugin>(props.plugins, 'body-cell-content-render');
-    }, [props.plugins]);
-
-
-    // props
-    const bodyRowPropsPlugins = useMemo((): MosaicDataTableBodyRowPropsPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowPropsPlugin>(props.plugins, 'body-row-props');
-    }, [props.plugins]);
-
-    const bodyRowPropsPlugin = useMemo(() => { 
-        return bodyRowPropsPlugins.reduce((acc: TableRowProps, plugin: MosaicDataTableBodyRowPropsPlugin) => {
-            const bodyRowProps = plugin.getBodyRowProps(row, props.gridApi);
+    const bodyRowPropsPlugin = useMemo(() => {
+        return props.gridApi.current.pluginMap.bodyRowProps.reduce((acc: TableRowProps, plugin: MosaicDataTableBodyRowPropsPlugin) => {
+            const bodyRowProps = plugin.getBodyRowProps({ row, gridApi: props.gridApi.current });
             return {
                 ...acc,
                 ...bodyRowProps
             }
         }, {});
-    }, [...bodyRowPropsPlugins]);
+    }, [...props.gridApi.current.pluginMap.bodyRowProps]);
 
-    const bodyRowCellPropsPlugins = useMemo((): MosaicDataTableBodyRowCellPropsPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowCellPropsPlugin>(props.plugins, 'body-row-cell-props');
-    }, [props.plugins]);
+    const getRow = useCallback((params: { children?: ReactNode }) => {
+
+        for (const plugin of props.gridApi.current.pluginMap.bodyRowRender) {
+            var bodyRow = plugin.renderBodyRow?.({ row, gridApi: props.gridApi.current, props: bodyRowPropsPlugin, sx: getRowStyle, children: params.children });
+            if (bodyRow) {
+                return bodyRow;
+            }
+        }
+
+        return (<MosaicDataTableRowRoot key={row} hover tabIndex={-1} sx={getRowStyle} {...bodyRowPropsPlugin} >{params.children}</MosaicDataTableRowRoot>);
+    }, [...props.gridApi.current.pluginMap.bodyRowRender, getRowStyle]);
+
 
     return (
         <React.Fragment>
-
             {getRow({
-                row: row,
-                children: (
-                    <>
-                        {headCells
-                            .map((h) => <MosaicDataTableBodyRowCell key={h.id} row={row} headCell={h} plugins={props.plugins} gridApi={props.gridApi} />)
-                        }
-                    </>
-                )
+                children: (<>{headCells
+                    .map((h) => <MosaicDataTableBodyRowCell
+                        key={h.id}
+                        row={row}
+                        rowId={props.rowId}
+                        headCell={h}
+                        gridApi={props.gridApi}
+                    />)
+                }
+                </>)
             })}
-
         </React.Fragment>
     )
 }

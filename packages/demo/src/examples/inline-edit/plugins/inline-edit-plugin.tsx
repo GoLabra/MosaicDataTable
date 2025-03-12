@@ -51,21 +51,21 @@ export const InlineEditPlugin = (props: {
 
     return {
         scope: ['body-cell-content-render', 'body-row-cell-props'],
-        renderBodyCellContent: (columnDef: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: ({headcell, row, children}) => {
 
             const rowId = props.onGetRowId(row);
-            if (props.inlineEditStore.isCellInEditMode(columnDef, rowId) == false) {
+            if (props.inlineEditStore.isCellInEditMode(headcell, rowId) == false) {
                 return children;
             }
 
             return (<input
-                key={`inline-edit-${columnDef.id}-${rowId}`}
+                key={`inline-edit-${headcell.id}-${rowId}`}
                 type="text"
                 autoFocus={true}
-                defaultValue={columnDef.cell!(row) as string}
+                defaultValue={headcell.cell!(row) as string}
                 onBlur={(event) => {
-                    props.onCellValueChanged(rowId, columnDef.id, event.target.value);
-                    props.inlineEditStore.clearEditableCell(columnDef, rowId);
+                    props.onCellValueChanged(rowId, headcell.id, event.target.value);
+                    props.inlineEditStore.clearEditableCell(headcell, rowId);
                 }}
                 style={{
                     width: '100%',
@@ -75,7 +75,7 @@ export const InlineEditPlugin = (props: {
                  
                 />);
         },
-        getBodyRowCellProps: (columnDef: ColumnDef<any>, row: any, gridApi: GridApi) => {
+        getBodyRowCellProps: ({columnDef, row, gridApi}) => {
 
             if (columnDef.id == 'sys_actions') {
                 return null;

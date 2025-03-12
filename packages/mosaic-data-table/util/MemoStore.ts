@@ -41,7 +41,7 @@ export class MemoStore {
                 return this.store[key]?.result;
             }
 
-            const newResult = fn(...args);
+            const newResult = fn?.(...args);
             this.store = {
                 ...this.store,
                 [key]: {

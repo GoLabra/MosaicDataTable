@@ -7,7 +7,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { MosaicDataTableCellRoot, MosaicDataTableRowRoot } from "../style";
 
 export const useRowExpansionStore = () => {
-    const [expansionState, setExpansionState] = useState<Record<string, {isOpen: boolean;params: any;}>>({});
+    const [expansionState, setExpansionState] = useState<Record<string, { isOpen: boolean; params: any; }>>({});
 
     const isExpanded = useCallback((rowId: string): boolean => {
 
@@ -16,8 +16,8 @@ export const useRowExpansionStore = () => {
 
     }, [expansionState]);
 
-    const getExpansionInfo = useCallback((rowId: string): {isOpen: boolean;params: any;} => {
-        const value = expansionState[rowId] ?? {isOpen: false, params: null};
+    const getExpansionInfo = useCallback((rowId: string): { isOpen: boolean; params: any; } => {
+        const value = expansionState[rowId] ?? { isOpen: false, params: null };
         return value;
     }, [expansionState]);
 
@@ -57,7 +57,7 @@ export const useRowExpansionStore = () => {
         });
     }, [setExpansionState]);
 
-    const setParams = useCallback(({rowId, params, openImmediately = true}:{rowId: string, params: any, openImmediately?: boolean}) => {
+    const setParams = useCallback(({ rowId, params, openImmediately = true }: { rowId: string, params: any, openImmediately?: boolean }) => {
         setExpansionState((prevState) => {
             return {
                 ...prevState,
@@ -74,7 +74,7 @@ export const useRowExpansionStore = () => {
     }, [setExpansionState]);
 
     const clear = useCallback((id?: any) => {
-        if(!id){
+        if (!id) {
             setExpansionState({});
             return;
         }
@@ -103,7 +103,7 @@ export const useRowExpansionStore = () => {
 const sys_expansion = {
     id: 'sys_expansion',
     label: '',
-    width: 40,
+    width: 46,
     pin: 'left'
 };
 
@@ -117,48 +117,56 @@ export const RowExpansionPlugin = (props: {
     return {
         displayName: 'RowExpansionPlugin',
         scope: ['grid-columns', 'body-cell-content-render', 'body-row-render'] as const,
-        getColumns: (headCells: Array<ColumnDef<any>>) => {
+        getColumns: ({ headCells, memoStore }) => {
 
-            if((props.showExpanderButton ?? true) == false){
+            if ((props.showExpanderButton ?? true) == false) {
                 return headCells
             }
 
-            return [
+            return memoStore.memoFunction('expansion-columns', (headCells: Array<ColumnDef<any>>) => [
                 sys_expansion,
                 ...headCells
-            ];
+            ])(headCells);
         },
-        renderBodyCellContent: (headCell: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContentColumnScope: 'sys_expansion',
+        renderBodyCellContent: ({ headcell, row, rowId, gridApi, children }) => {
 
-            if(row && row['sys_extra_row']){
+            if (row && row['sys_extra_row']) {
                 return children;
             }
 
-            if (headCell.id == 'sys_expansion') {
+            if (headcell.id == 'sys_expansion') {
 
                 const rowId = props.onGetRowId?.(row) ?? null;
                 const isOpen = props.expanstionStore.isExpanded(rowId);
-                
+
                 return gridApi.memoStore.memoFunction(`expansion-button-${rowId}`, ExpandButton)(rowId, isOpen, props.expanstionStore.toggle);
             }
 
             return children;
         },
-        renderBodyRow: (row: any, gridApi: GridApi, rowProps: TableRowProps, sx: any, children?: ReactNode) => {
+        renderBodyRow: ({ row, gridApi, props: rowProps, sx, children }) => {
             const rowId = props.onGetRowId?.(row) ?? null;
             const expansionInfo = props.expanstionStore.getExpansionInfo(rowId);
 
-            return <>
-                <MosaicDataTableRowRoot key={rowId} hover tabIndex={-1} sx={sx} {...rowProps}>{children}</MosaicDataTableRowRoot>
-
-                {expansionInfo?.isOpen && <MosaicDataTableRowRoot key={`${rowId}-expansion`} tabIndex={-1}>
-                    <MosaicDataTableCellRoot colSpan={100}>
-                        {props.getExpansionNode(row, expansionInfo.params)}
-                    </MosaicDataTableCellRoot>
-                </MosaicDataTableRowRoot>}
-            </>
+            return gridApi.memoStore.memoFunction(`expansion-row-${rowId}`, Expander)(row, rowId, children, sx, rowProps, expansionInfo, props.getExpansionNode);
         }
     }
+}
+
+const Expander = (row: any, rowId: string, children: ReactNode, sx: SxProps<Theme>, rowProps: TableRowProps, expansionInfo: { isOpen: boolean, params: any }, getExpansionNode: (row: any, params: any) => ReactNode) => {
+    
+    return (
+        <>
+            <MosaicDataTableRowRoot key={rowId} hover tabIndex={-1} sx={sx} {...rowProps}>{children}</MosaicDataTableRowRoot>
+
+            {expansionInfo?.isOpen && <MosaicDataTableRowRoot key={`${rowId}-expansion`} tabIndex={-1}>
+                <MosaicDataTableCellRoot colSpan={100}>
+                    {getExpansionNode(row, expansionInfo.params)}
+                </MosaicDataTableCellRoot>
+            </MosaicDataTableRowRoot>}
+        </>
+    )
 }
 
 const ExpandButton = (rowId: string, isOpen: boolean, toggle: (rowId: string) => void) => {
@@ -167,7 +175,7 @@ const ExpandButton = (rowId: string, isOpen: boolean, toggle: (rowId: string) =>
         <IconButton
             onClick={() => toggle(rowId)}
             size="medium"
-            sx={{ m: 0 }}
+            sx={{ m: '0 3px' }}
             aria-label="Actions"
             aria-haspopup="menu"
             id={`user-menu-btn`}

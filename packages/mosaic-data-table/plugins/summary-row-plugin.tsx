@@ -14,7 +14,7 @@ export const SummaryRowPlugin = ({
 
     return {
         scope: ['body-extra-row-end', 'body-cell-content-render'] as const,
-        getBodyExtraRowEnd: (columns: Array<ColumnDef<any>>, items: any, gridApi: GridApi) => {
+        getBodyExtraRowEnd: ({columns, gridApi}) => {
 
             if (!visible) {
                 return null;
@@ -24,18 +24,18 @@ export const SummaryRowPlugin = ({
                 <MosaicDataTableBodyRow
                     key={`sys_extra_row_${key}`}
                     row={{ sys_extra_row: true, sys_summary_row: true, key:key }}
+                    rowId={`sys_extra_row_${key}`}
                     headCells={columns}
-                    plugins={gridApi.plugins}
-                    gridApi={gridApi}
+                    gridApi={{current:gridApi}}
                 />
             )
         },
-        renderBodyCellContent: (column: ColumnDef<any>, row: any, gridApi: GridApi, children?: ReactNode) => {
+        renderBodyCellContent: ({headcell, row, rowId, gridApi, children}) => {
 
             if (row && row['sys_summary_row'] && row['key'] == key) {
 
-                const contentHandler = summaryColumns[column.id];
-                const content = typeof contentHandler === 'function' ? contentHandler(column) : contentHandler;
+                const contentHandler = summaryColumns[headcell.id];
+                const content = typeof contentHandler === 'function' ? contentHandler(headcell) : contentHandler;
 
                 return content;
             }

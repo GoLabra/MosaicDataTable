@@ -1,85 +1,63 @@
-import { FC, ReactNode, useCallback, useMemo, useState } from "react";
+import { ReactNode, useMemo } from "react";
 import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableBodyCellStylePlugin, MosaicDataTableBodyRowRenderPlugin, MosaicDataTableBodyRowStylePlugin, MosaicDataTablePlugin, MosaicDataTableBodyRowPropsPlugin, MosaicDataTableBodyRowCellPropsPlugin } from "./types/table-types";
 import React from "react";
 import { SxProps, Theme } from "@mui/material/styles";
-import { filterGridPlugins } from "./util/filterGridPlugins";
-import { MosaicDataTableCellRoot, MosaicDataTableRowRoot } from "./style";
-import { TableCellProps, TableRowProps } from "@mui/material";
-import { useMemoDebugger } from "./util/use-debug";
-import { renderToStaticMarkup } from 'react-dom/server';
+import { filterGridPlugins, filterGridPluginsByColumnScope } from "./util/filterGridPlugins";
+import { MosaicDataTableCellRoot } from "./style";
+import { TableCellProps } from "@mui/material";
 
 export function MosaicDataTableBodyRowCell<T>(props: {
     row: T | any;
+    rowId: string;
     headCell: ColumnDef<T>;
-    plugins?: MosaicDataTablePlugin[];
-    gridApi: GridApi;
+    gridApi: React.MutableRefObject<GridApi>
 }) {
 
     const sColumn = useMemo(() => {
         return JSON.stringify(props.headCell);
     }, [props.headCell]);
 
-    // body-cell-style
-    const cellStylePlugins = useMemo((): MosaicDataTableBodyCellStylePlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyCellStylePlugin>(props.plugins, 'body-cell-style');
-    }, [props.plugins]);
-
     const cellStyle = useMemo((): SxProps<Theme> => {
-        return cellStylePlugins.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableBodyCellStylePlugin) => {
-            const cellStyle = plugin.getBodyCellStyle?.(props.headCell, props.row, props.gridApi);
+        return props.gridApi.current.pluginMap.bodyCellStyle.reduce((acc: SxProps<Theme>, plugin: MosaicDataTableBodyCellStylePlugin) => {
+            const cellStyle = plugin.getBodyCellStyle?.({ headcell: props.headCell, row: props.row, gridApi: props.gridApi.current });
             return {
                 ...acc,
                 ...cellStyle
             }
         }, {});
-    }, [cellStylePlugins, sColumn, props.row]);
-
-    // props
-    const bodyRowCellPropsPlugins = useMemo((): MosaicDataTableBodyRowCellPropsPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyRowCellPropsPlugin>(props.plugins, 'body-row-cell-props');
-    }, [props.plugins]);
+    }, [...props.gridApi.current.pluginMap.bodyCellStyle, sColumn, props.row]);
 
     const bodyRowCellProps = useMemo(() => {
-        return bodyRowCellPropsPlugins.reduce((acc: TableCellProps, plugin: MosaicDataTableBodyRowCellPropsPlugin) => {
-            const bodyRowCellProps = plugin.getBodyRowCellProps(props.headCell, props.row, props.gridApi);
+        return props.gridApi.current.pluginMap.bodyRowCellProps.reduce((acc: TableCellProps, plugin: MosaicDataTableBodyRowCellPropsPlugin) => {
+            const bodyRowCellProps = plugin.getBodyRowCellProps({ columnDef: props.headCell, row: props.row, gridApi: props.gridApi.current });
             return {
                 ...acc,
                 ...bodyRowCellProps
             }
         }, {});
-    }, [...bodyRowCellPropsPlugins, sColumn, props.row]);
+    }, [...props.gridApi.current.pluginMap.bodyRowCellProps, sColumn, props.row]);
 
-    // body-cell-content-render
-    const cellContentRenderPlugins = useMemo((): MosaicDataTableBodyCellContentRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyCellContentRenderPlugin>(props.plugins, 'body-cell-content-render');
-    }, [props.plugins]);
+    const contentRenderPlugins = useMemo((): MosaicDataTableBodyCellContentRenderPlugin[] => {
+        return filterGridPluginsByColumnScope<MosaicDataTableBodyCellContentRenderPlugin>(props.gridApi.current.pluginMap.bodyCellContentRender, 'renderBodyCellContentColumnScope', props.headCell.id);
+    }, [...props.gridApi.current.pluginMap.bodyCellContentRender, props.headCell.id]);
 
-    const CellContent = cellContentRenderPlugins.reduce((acc: ReactNode | null, plugin: MosaicDataTableBodyCellContentRenderPlugin) => {
-        return useMemo(() => {
-            return plugin.renderBodyCellContent?.(props.headCell, props.row, props.gridApi, acc)
-        }, [plugin, acc]);
-    }, null);
-
-    const cellContent = useMemo(() => CellContent, [CellContent]); 
-
-
-    // body-cell-render
-    const cellRenderPlugins = useMemo((): MosaicDataTableBodyCellRenderPlugin[] => {
-        return filterGridPlugins<MosaicDataTableBodyCellRenderPlugin>(props.plugins, 'body-cell-render');
-    }, [props.plugins]);
+    const cellContent = useMemo(() => {
+        return contentRenderPlugins.reduce((acc: ReactNode | null, plugin: MosaicDataTableBodyCellContentRenderPlugin) => {
+            return plugin.renderBodyCellContent?.({ headcell: props.headCell, row: props.row, rowId: props.rowId, gridApi: props.gridApi.current, children: acc })
+        }, null);
+    }, [...contentRenderPlugins, sColumn]);
 
     const cell = useMemo(() => {
 
-        for (const plugin of cellRenderPlugins) {
-            var cell = plugin.renderBodyCell?.(props.headCell, props.row, props.gridApi, bodyRowCellProps, cellStyle, cellContent);
+        for (const plugin of props.gridApi.current.pluginMap.bodyCellRender) {
+            var cell = plugin.renderBodyCell?.({ headcell: props.headCell, row: props.row, rowId: props.rowId, gridApi: props.gridApi.current, props: bodyRowCellProps, sx: cellStyle, children: cellContent });
             if (cell) {
                 return cell;
             }
         }
 
         return (<MosaicDataTableCellRoot key={props.headCell.id} align="left" sx={cellStyle} {...bodyRowCellProps} >{cellContent}</MosaicDataTableCellRoot>);
-    }, [cellRenderPlugins, bodyRowCellProps, cellStyle, sColumn, props.row, cellContent]);
-
+    }, [...props.gridApi.current.pluginMap.bodyCellRender, bodyRowCellProps, cellStyle, sColumn, props.row, cellContent]);
 
     return (
         <React.Fragment>
