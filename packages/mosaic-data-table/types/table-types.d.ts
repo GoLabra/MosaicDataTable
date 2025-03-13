@@ -167,6 +167,7 @@ export interface MosaicDataTableHeadRowCellPropsPlugin extends MosaicDataTablePl
 export interface GridApi {
     items: any[];
     columns: ColumnDef<any>[];
+    columnsHash: string;
     plugins: MosaicDataTablePlugin[]; 
     pluginMap: PluginMap;
     memoStore: MemoStore;

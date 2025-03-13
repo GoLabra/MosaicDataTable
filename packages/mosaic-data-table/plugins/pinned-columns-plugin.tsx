@@ -7,14 +7,14 @@ import { MosaicDataTableCellRoot } from "../style";
 export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
     scope: ['body-cell-render', 'head-cell-render'] as const,
     renderBodyCell: ({headcell, rowId, gridApi, props, sx, children, cellProps}) => {
-        return gridApi.memoStore.memoFunction(`pinned-columns-body-${rowId}-${headcell.id}`, getCell)(headcell, gridApi, '', props, sx, children, cellProps);
+        return gridApi.memoStore.memoFunction(`pinned-columns-body-${rowId}-${headcell.id}`, getCell)(headcell, gridApi.columns, '', props, sx, children, cellProps);
     },
     renderHeadCell: ({headcell, gridApi, caller, props, sx, children, cellProps}) => {
-        return gridApi.memoStore.memoFunction(`pinned-columns-head-${headcell.id}`, getCell)(headcell, gridApi, caller, props, sx, children, cellProps);
+        return gridApi.memoStore.memoFunction(`pinned-columns-head-${headcell.id}`, getCell)(headcell, gridApi.columns, caller, props, sx, children, cellProps);
     }
 }
 
-const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
+const getCell = (headCell: ColumnDef<any>, headCells: Array<ColumnDef<any>>, caller: string, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
 
     if (!headCell.pin) {
         return null;
@@ -25,7 +25,7 @@ const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, pro
 
     if (headCell.pin === 'left' || headCell.pin === true) {
 
-        const leftPins = gridApi.columns
+        const leftPins = headCells
             .filter(i => i.pin === 'left' || i.pin === true);
 
         const beforePins = leftPins.slice(0, leftPins.findIndex(col => col.id === headCell.id));
@@ -36,7 +36,7 @@ const getCell = (headCell: ColumnDef<any>, gridApi: GridApi, caller: string, pro
     }
 
     if (headCell.pin == 'right' || headCell.pin === true) {
-        const rightPins = gridApi.columns
+        const rightPins = headCells
             .filter(i => i.pin === 'right' || i.pin === true);
 
         const beforePins = rightPins.slice(rightPins.findIndex(col => col.id === headCell.id) + 1)

@@ -71,7 +71,7 @@ export const MosaicDataTableHeadCell = <T,>(props: {
             {...cellProps}
         >{cellContent}</MosaicDataTableCellRoot>);
 
-    }, [...props.gridApi.current.pluginMap.headCellRender, props.caller, cellContent, cellProps, cellStyle]);
+    }, [...props.gridApi.current.pluginMap.headCellRender, props.gridApi.current.columnsHash, props.caller, cellContent, cellProps, cellStyle]);
 
     return (
         <React.Fragment>

@@ -57,7 +57,7 @@ export function MosaicDataTableBodyRowCell<T>(props: {
         }
 
         return (<MosaicDataTableCellRoot key={props.headCell.id} align="left" sx={cellStyle} {...bodyRowCellProps} >{cellContent}</MosaicDataTableCellRoot>);
-    }, [...props.gridApi.current.pluginMap.bodyCellRender, bodyRowCellProps, cellStyle, sColumn, props.row, cellContent]);
+    }, [...props.gridApi.current.pluginMap.bodyCellRender, props.gridApi.current.columnsHash, bodyRowCellProps, cellStyle, sColumn, props.row, cellContent]);
 
     return (
         <React.Fragment>

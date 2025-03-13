@@ -6,6 +6,7 @@ import { MosaicDataTableBody } from "./MosaicDataTableBody";
 import { MosaicDataTableRoot } from "./style";
 import { filterGridPlugins, getPluginMap } from "./util/filterGridPlugins";
 import { MemoStore } from "./util/MemoStore";
+import { hash } from "./util/hash-functinon";
 
 export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicDataTableProps<T>>) => {
 
@@ -30,6 +31,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
 
     }, [...pluginMap.gridColumns, visileHeadCells]);
 
+    const columnsHash = useMemo(() => hash(JSON.stringify(columns)), [columns]);
 
     useEffect(() => {
         memoStore.current.clear();
@@ -38,6 +40,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
     const gridApi = useRef<GridApi>({} as GridApi);
     gridApi.current.items = props.items;
     gridApi.current.columns = columns;
+    gridApi.current.columnsHash = columnsHash;
     gridApi.current.plugins = props.plugins || [];
     gridApi.current.pluginMap = pluginMap;
     gridApi.current.memoStore = memoStore.current;
