@@ -28,16 +28,16 @@ export const MosaicDataTableHeadCell = <T,>(props: {
 
     const cellProps = useMemo(() => {
         return props.gridApi.current.pluginMap.headRowCellProps.reduce((acc: TableCellProps, plugin: MosaicDataTableHeadRowCellPropsPlugin) => {
-            const bodyRowCellProps = plugin.getHeadRowCellProps({ columnDef: props.headCell, gridApi: props.gridApi.current });
+            const headRowCellProps = plugin.getHeadRowCellProps({ columnDef: props.headCell, gridApi: props.gridApi.current });
             return {
                 ...acc,
-                ...bodyRowCellProps
+                ...headRowCellProps
             }
         }, {});
     }, [...props.gridApi.current.pluginMap.headRowCellProps, sColumn]);
 
     const contentRenderPlugins = useMemo((): MosaicDataTableHeadCellContentRenderPlugin[] => {
-            return filterGridPluginsByColumnScope<MosaicDataTableHeadCellContentRenderPlugin>(props.gridApi.current.pluginMap.bodyCellContentRender, 'renderHeadCellContentColumnScope', props.headCell.id);
+            return filterGridPluginsByColumnScope<MosaicDataTableHeadCellContentRenderPlugin>(props.gridApi.current.pluginMap.headCellContentRender, 'renderHeadCellContentColumnScope', props.headCell.id);
         }, [...props.gridApi.current.pluginMap.headCellContentRender, props.headCell.id]);
 
     const cellContent = useMemo(() => {
