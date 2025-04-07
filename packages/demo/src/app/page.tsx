@@ -2,6 +2,7 @@
 import { Typography } from '@mui/material';
 import { FullImplementationTable } from '@/examples/full-implementation/full-implementation';
 import { Suspense } from 'react';
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 export default function Home() {
 
@@ -12,7 +13,9 @@ export default function Home() {
             </Typography>
 
             <Suspense fallback={<div>Loading...</div>}>
-                <FullImplementationTable />
+                <NuqsAdapter>
+                    <FullImplementationTable />
+                </NuqsAdapter>
             </Suspense>
         </>
     );

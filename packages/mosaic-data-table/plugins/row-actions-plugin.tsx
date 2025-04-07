@@ -10,21 +10,33 @@ const sys_actions = {
     pin: 'right',
 };
 
-export const RowActionsPlugin = (props: { actions: Action<any>[] }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
+export const RowActionsPlugin = (props: {
+    actions: Action<any>[],
+    visible?: boolean
+}): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
         displayName: 'RowActionsPlugin',
         scope: ['grid-columns', 'body-cell-content-render'] as const,
-        getColumns: ({headCells, memoStore}) => {
+        getColumns: ({ headCells, memoStore }) => {
+
+            if((props.visible ?? true) == false){
+                return headCells;
+            }
+
             return memoStore.memoFunction('sys_actions-columns', (headCells: Array<ColumnDef<any>>) => [
                 ...headCells,
                 sys_actions
             ])(headCells);
         },
         renderBodyCellContentColumnScope: 'sys_actions',
-        renderBodyCellContent: ({headcell, row, rowId, gridApi, children}) => {
+        renderBodyCellContent: ({ headcell, row, rowId, gridApi, children }) => {
 
-            if(row && row['sys_extra_row']){
+            if((props.visible ?? true) == false){
+                return children;
+            }
+
+            if (row && row['sys_extra_row']) {
                 return children;
             }
 

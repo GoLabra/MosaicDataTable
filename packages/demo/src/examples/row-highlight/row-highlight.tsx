@@ -1,11 +1,14 @@
 'use client';
 
-import { Box, ListItemIcon, MenuItem, Typography } from '@mui/material';
+import { Box, Button, ListItemIcon, MenuItem, Typography } from '@mui/material';
 import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, useGridPlugins, Action, HighlightRowPlugin } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useCallback, useState } from 'react';
 
 export const RowHighlightTable = () => {
+
+    const [id, setId] = useState(1);
 
     const headCells: ColumnDef[] = [{
         id: 'id',
@@ -54,7 +57,7 @@ export const RowHighlightTable = () => {
         }),
 
         usePluginWithParams(HighlightRowPlugin, {
-            isRowHighlighted: (row: any) => row.id == 1,
+            isRowHighlighted: useCallback((row: any) => row.id == id, [id])
         }),
     );
 
@@ -63,6 +66,16 @@ export const RowHighlightTable = () => {
             <Typography variant="h5" component="h5" sx={{ mb: 2 }}>
                 Row Highlight
             </Typography>
+
+            <Button onClick={ () => {
+
+if(id == 1){
+    setId(2);
+} else {
+    setId(1);
+}
+
+            } }>Toggle Row Highlight ({id})</Button>
 
             <MosaicDataTable
                 caption="Row Highlight table" // not visible. used for accessibility

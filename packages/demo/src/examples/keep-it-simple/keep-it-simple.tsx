@@ -1444,6 +1444,7 @@ export const KeepItSimpleTable = () => {
     const [showFooter, setShowFooter] = useState<boolean>(true);
     const [showRowSelection, setShowRowSelection] = useState<boolean>(true);
     const [showRowExpansion, setShowRowExpansion] = useState<boolean>(true);
+    const [showRowActions, setShowRowActions] = useState<boolean>(true); 
 
     const headCells: ColumnDef[] = [{
         id: 'id',
@@ -1666,7 +1667,8 @@ export const KeepItSimpleTable = () => {
 
         // add actions column
         usePluginWithParams(RowActionsPlugin, {
-            actions: todoActions
+            actions: todoActions,
+            visible: showRowActions
         }),
 
         // add column highlighting functionality
@@ -1697,6 +1699,7 @@ export const KeepItSimpleTable = () => {
                 <FormControlLabel control={<Checkbox checked={showFooter} onChange={(event) => setShowFooter(event.target.checked)} />} label="Show Footer" />
                 <FormControlLabel control={<Checkbox checked={empty} onChange={(event) => setEmpty(event.target.checked)} />} label="Simulate Empty Table" />
                 <FormControlLabel control={<Checkbox checked={loading} onChange={(event) => setLoading(event.target.checked)} />} label="Simulate Loading" />
+                <FormControlLabel control={<Checkbox checked={showRowActions} onChange={(event) => setShowRowActions(event.target.checked)} />} label="Row Actions" />  
             </Stack>
 
             <MosaicDataTable
