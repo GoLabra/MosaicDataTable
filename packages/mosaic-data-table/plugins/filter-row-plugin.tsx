@@ -130,7 +130,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
     });
     
     const onChange = useCallback((newValue: FilterValue) => {
-        if(!newValue?.value){
+        if(newValue?.value == null || newValue?.value == undefined){
             props.onChange(null);
         } else {
             props.onChange(newValue);
@@ -280,7 +280,7 @@ const SelectInput = (props: InputProps) => {
             }
         }}
         {...other}
-        value={props.value ?? ''}
+        value={props.value || ''}
     >
         <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         {props.selectOptions!.map((option, index) => (

@@ -2447,13 +2447,16 @@ mitt@^3.0.1:
     "@mui/icons-material" "^6.1.8"
     "@mui/material" "^6.1.8"
     "@mui/material-nextjs" "^6.1.8"
+    "@mui/x-date-pickers" "^7.11.0"
+    dayjs "^1.11.11"
     mosaic-data-table "*"
     next "^15.0.0"
+    nuqs "^2.4.1"
     react "^18"
     react-dom "^18"
 
 mosaic-data-table@*, "mosaic-data-table@file:/home/andrei/projects/MosaicDataTable/packages/mosaic-data-table":
-  version "0.0.50"
+  version "0.0.51"
   resolved "file:packages/mosaic-data-table"
 
 ms@^2.1.1, ms@^2.1.3:
