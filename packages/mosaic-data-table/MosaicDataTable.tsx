@@ -1,5 +1,5 @@
 import { GlobalStyles, Table, TableBody, TableContainer, TableProps } from "@mui/material";
-import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from "react";
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, HTMLAttributes } from "react";
 import { MosaicDataTableHead } from "./MosaicDataTableHead";
 import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps, MosaicDataTablePropsPlugin } from "./types/table-types";
 import { MosaicDataTableBody } from "./MosaicDataTableBody";
@@ -8,20 +8,25 @@ import { filterGridPlugins, getPluginMap } from "./util/filterGridPlugins";
 import { MemoStore } from "./util/MemoStore";
 import { hash } from "./util/hash-functinon";
 
-export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicDataTableProps<T>>) => {
+type MosaicDataTableExtendedProps<T> = MosaicDataTableProps<T> & 
+    Omit<HTMLAttributes<HTMLDivElement>, keyof MosaicDataTableProps<T>>;
+
+export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicDataTableExtendedProps<T>>) => {
+
+	const { caption, items, headCells, plugins, children, ...rest } = props;
 
     useEffect(() => {
-        props.plugins?.forEach((plugin) => {
+        plugins?.forEach((plugin) => {
             plugin.onInit?.(gridApi.current);
         });
-    }, [props.plugins]);
+    }, [plugins]);
 
     const memoStore = useRef(new MemoStore());
-    const pluginMap = useMemo(() => getPluginMap(props.plugins), [...props.plugins ?? []]);
+    const pluginMap = useMemo(() => getPluginMap(plugins), [...plugins ?? []]);
     
     const visileHeadCells = useMemo((): Array<ColumnDef<any>> => {
-        return props.headCells.filter((headCell) => headCell.visible ?? true);
-    }, [props.headCells]);
+        return headCells.filter((headCell) => headCell.visible ?? true);
+    }, [headCells]);
     
     const columns = useMemo((): Array<ColumnDef<any>> => {
         return pluginMap.gridColumns.reduce((acc: Array<ColumnDef<any>>, plugin: MosaicDataTableGridColumnsPlugin): Array<ColumnDef<any>> => {
@@ -35,29 +40,29 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
 
     useEffect(() => {
         memoStore.current.clear();
-    }, [props.items]);
+    }, [items]);
 
     const gridApi = useRef<GridApi>({} as GridApi);
-    gridApi.current.items = props.items;
+    gridApi.current.items = items;
     gridApi.current.columns = columns;
     gridApi.current.columnsHash = columnsHash;
-    gridApi.current.plugins = props.plugins || [];
+    gridApi.current.plugins = plugins || [];
     gridApi.current.pluginMap = pluginMap;
     gridApi.current.memoStore = memoStore.current;
 
 
     // const gridApi: GridApi = useMemo(() => ({
-    //     items: props.items,
+    //     items: items,
     //     columns: columns,
-    //     plugins: props.plugins || [],
+    //     plugins: plugins || [],
     //     pluginMap: pluginMap,
     //     memoStore: memoStore.current
-    // }), [props.items, columns, memoStore, pluginMap]);
+    // }), [items, columns, memoStore, pluginMap]);
 
     // props
     // const tablePropsPlugins = useMemo((): MosaicDataTablePropsPlugin[] => {
-    //     return filterGridPlugins<MosaicDataTablePropsPlugin>(props.plugins, 'table-props');
-    // }, [props.plugins]);
+    //     return filterGridPlugins<MosaicDataTablePropsPlugin>(plugins, 'table-props');
+    // }, [plugins]);
 
     const tableProps = useMemo(() => {
 
@@ -82,7 +87,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
             }
         }} />
 
-        <MosaicDataTableRoot {...props.root}>
+        <MosaicDataTableRoot {...rest}>
      
                 <TableContainer>
                
@@ -97,7 +102,7 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
                         <MosaicDataTableBody
                             columns={columns}
                             gridApi={gridApi}
-                            items={props.items}
+                            items={items}
                         />
                         
                     </Table>

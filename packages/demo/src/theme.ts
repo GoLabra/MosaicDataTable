@@ -37,6 +37,13 @@ const theme = createTheme({
         fontFamily: roboto.style.fontFamily,
     },
     components: {
+		MosaicDataTable: {
+			styleOverrides: {
+				root: {
+
+				}
+			}
+		},
         MuiAlert: {
             styleOverrides: {
                 root: {

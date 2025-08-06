@@ -1,4 +1,4 @@
-import { ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, TableBodyProps, TableHeadProps, TableProps, TableRowProps, Theme } from '@mui/material'
+import { BoxProps, ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, TableBodyProps, TableHeadProps, TableProps, TableRowProps, Theme } from '@mui/material'
 import { ReactNode } from 'react'
 
 export interface Pagination {
@@ -7,11 +7,10 @@ export interface Pagination {
     count: number
 }
 
-export interface MosaicDataTableProps<T = any> {
+export interface MosaicDataTableProps<T = any> extends HTMLAttributes {
     caption?: string;
     items: T[];
     headCells: ColumnDef<T>[];
-    root?: any
     plugins?: MosaicDataTablePlugin[];
 }
 
