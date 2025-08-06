@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin } from "../types/table-types";
+import { Box } from "@mui/material";
 
 
 export const CustomBodyCellContentRenderPlugin: MosaicDataTableBodyCellContentRenderPlugin = {
@@ -10,7 +11,11 @@ export const CustomBodyCellContentRenderPlugin: MosaicDataTableBodyCellContentRe
             return null;
         }
 
-        const value = gridApi.memoStore.memoFunction(`colum-content-${headcell.id}-${rowId}`, headcell.cell)(row);
+        const value = gridApi.memoStore.memoFunction(`colum-content-${headcell.id}-${rowId}`, (colDef: (row: any) => ReactNode | undefined, row: any) => (
+			<Box className="MosaicDataTable-cell-data">
+				{colDef?.(row)}
+			</Box>
+		))(headcell.cell, row);
         return value;
     }
 }
