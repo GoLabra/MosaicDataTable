@@ -1,4 +1,4 @@
-import { TableCell, TableCellProps, TableHead, TableRow, TableRowProps } from '@mui/material'
+import { Box, TableCell, TableCellProps, TableHead, TableRow, TableRowProps } from '@mui/material'
 import { SxProps, Theme } from '@mui/material/styles'
 import React, { ReactNode, useCallback, useMemo } from 'react'
 import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadRowCellPropsPlugin, MosaicDataTableHeadRowPropsPlugin, GridApi } from './types/table-types'
@@ -42,11 +42,12 @@ export const MosaicDataTableHeadCell = <T,>(props: {
 
     const cellContent = useMemo(() => {
         const initialContent = props.caller == 'mosaic-data-table' ? typeof props.headCell.header === 'function' ? props.headCell.header() : props.headCell.header : '';
+		const initialBoxContent = (<Box className="MosaicDataTable-headcell-data">{initialContent}</Box>)
 
         return props.gridApi.current.pluginMap.headCellContentRender.reduce((acc: ReactNode | null, plugin: MosaicDataTableHeadCellContentRenderPlugin) => {
             const cellContent = plugin.renderHeadCellContent?.({ headcell: props.headCell, gridApi: props.gridApi.current, caller: props.caller, children: acc });
             return cellContent;
-        }, initialContent);
+        }, initialBoxContent);
 
     }, [...contentRenderPlugins, props.caller]);
 
