@@ -87,7 +87,10 @@ export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicD
             }
         }} />
 
-        <MosaicDataTableRoot {...rest}>
+        <MosaicDataTableRoot 
+			{...rest}
+			className={`MosaicDataTable-root ${rest.className || ''}`}
+			>
      
                 <TableContainer>
                
