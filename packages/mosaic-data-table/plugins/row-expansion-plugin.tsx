@@ -6,8 +6,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { MosaicDataTableCellRoot, MosaicDataTableRowRoot } from "../style";
 
-export const useRowExpansionStore = () => {
-    const [expansionState, setExpansionState] = useState<Record<string, { isOpen: boolean; params: any; }>>({});
+type ExpansionState<T> = {
+    isOpen: boolean;
+    params: T;
+};
+
+export const useRowExpansionStore = <T = any>() => {
+    const [expansionState, setExpansionState] = useState<Record<string, ExpansionState<T>>>({});
 
     const isExpanded = useCallback((rowId: string): boolean => {
 
@@ -16,7 +21,7 @@ export const useRowExpansionStore = () => {
 
     }, [expansionState]);
 
-    const getExpansionInfo = useCallback((rowId: string): { isOpen: boolean; params: any; } => {
+    const getExpansionInfo = useCallback((rowId: string): { isOpen: boolean; params: T; } => {
         const value = expansionState[rowId] ?? { isOpen: false, params: null };
         return value;
     }, [expansionState]);
@@ -57,7 +62,7 @@ export const useRowExpansionStore = () => {
         });
     }, [setExpansionState]);
 
-    const setParams = useCallback(({ rowId, params, openImmediately = true }: { rowId: string, params: any, openImmediately?: boolean }) => {
+    const setParams = useCallback(({ rowId, params, openImmediately = true }: { rowId: string, params: Partial<T>, openImmediately?: boolean }) => {
         setExpansionState((prevState) => {
             return {
                 ...prevState,
