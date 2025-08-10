@@ -21,6 +21,7 @@ export interface RowDetailStore<T = any> {
 	toggle: (key: string) => void;
 	setParams: (key: string, params: T, openImmediately?: boolean) => void;
 	getExpansionInfo: (key: string) => DetailState<T>;
+	clear: (key: string) => void;
 }
 
 export function createRowDetailStore<T>(): RowDetailStore {
@@ -104,6 +105,10 @@ export function createRowDetailStore<T>(): RowDetailStore {
 			});
 			notifyKey(key);
 		  },
+		  clear(key: string){
+			rowDetailStore.delete(key);
+			notifyKey(key);
+		  },
 		  getExpansionInfo(key: string) {
 			return rowDetailStore.get(key) ?? DEFAULT_EXPANSION_INFO;
 		  }
@@ -112,7 +117,7 @@ export function createRowDetailStore<T>(): RowDetailStore {
 	return api;
 }
 
-function useRowExpansion<T = any>(store: RowDetailStore, key: string): DetailState<T> {
+export function useRowDetails<T = any>(store: RowDetailStore, key: string): DetailState<T> {
 	return useSyncExternalStore(
 	  (notify) => store.subscribeKey(key, notify),
 	  () => store.getExpansionInfo(key),
@@ -178,7 +183,7 @@ export const RowDetailPlugin = (props: {
 
 const Expander = (props: {row: any, rowId: string, children: ReactNode, sx: SxProps<Theme>, rowProps: TableRowProps, rowDetailStore: RowDetailStore, getExpansionNode: (row: any, params: any) => ReactNode}) => {
     
-	const expansionInfo = useRowExpansion(props.rowDetailStore, props.rowId);
+	const expansionInfo = useRowDetails(props.rowDetailStore, props.rowId);
 	
     return (
         <>
@@ -195,7 +200,7 @@ const Expander = (props: {row: any, rowId: string, children: ReactNode, sx: SxPr
 
 const ExpandButton = (props: {rowId: string, rowDetailStore: RowDetailStore}) => {
 
-	const expansionInfo = useRowExpansion(props.rowDetailStore, props.rowId);
+	const expansionInfo = useRowDetails(props.rowDetailStore, props.rowId);
 
     return (<Box sx={{ textAlign: 'center' }}>
 

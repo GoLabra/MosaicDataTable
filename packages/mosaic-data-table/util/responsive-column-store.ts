@@ -8,16 +8,6 @@ const DEFAULT_SNAPSHOT = Object.freeze(new Map<ColumnDef<any>, {}>());
 // Vanilla media query manager (deduped), store, and hook colocated in this file
 export type MatchesSnapshot = Record<string, boolean>
 
-// export interface MediaQueryStore {
-// 	subscribe: (listener: () => void) => () => void;
-// 	getSnapshot: () => MatchesSnapshot;
-// 	add: (alias: Breakpoint | number, q: string) => boolean;
-// 	remove: (alias: Breakpoint | number) => boolean;
-// 	clear: () => void;
-// 	list: () => (Breakpoint | number)[];
-// 	dispose: () => void;
-// }
-
 export function responsiveColumnStore(initialQueries: string[] = []) {
 	//let snapshot: MatchesSnapshot = DEFAULT_SNAPSHOT;
 

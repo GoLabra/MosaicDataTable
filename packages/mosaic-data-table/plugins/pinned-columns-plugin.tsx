@@ -4,7 +4,7 @@ import { TableBodyProps, TableCell, TableCellProps, useMediaQuery } from "@mui/m
 import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 import { createMediaQueryListManager } from "../util/createMediaQueryListManager";
-import { responsiveColumnStore, MatchesSnapshot, useMediaQueryStore } from "../util/responsive-store";
+import { responsiveColumnStore, MatchesSnapshot, useMediaQueryStore } from "../util/responsive-column-store";
 
 export const PinnedColumnsPlugin = (): MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin => {
 
