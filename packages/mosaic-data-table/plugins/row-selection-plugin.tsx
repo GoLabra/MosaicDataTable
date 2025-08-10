@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
+import { ReactNode, useSyncExternalStore } from "react";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellContentRenderPlugin, MosaicDataTableGridColumnsPlugin, Listener } from "../types/table-types";
 import { Box, Checkbox } from "@mui/material";
 
 const sys_selection_column = {
@@ -9,12 +9,89 @@ const sys_selection_column = {
     pin: 'left'
 };
 
+export interface RowSelectionStore<T = any> {
+	subscribeKey: (key: string, listener: Listener) => () => void;
+	isOpen: (key: string) => boolean;
+	open: (key: string) => void;
+	close: (key: string) => void;
+	toggle: (key: string) => void;
+}
+export function createRowSelectionStore<T>(): RowSelectionStore {
+
+	const rowDetailStore = new Map<string, boolean>(); 
+	const listenersByKey = new Map<string, Set<Listener>>();
+
+	const notifyKey = (key: string) => {
+		const ls = listenersByKey.get(key);
+		if (!ls) {
+			return;
+		}
+		ls.forEach((l) => l());
+	};
+
+	const api = {
+		subscribeKey(key: string, listener: Listener) {
+			let set = listenersByKey.get(key);
+			if (!set) {
+				set = new Set();
+				listenersByKey.set(key, set);
+			}
+			set.add(listener);
+			return () => {
+			  const s = listenersByKey.get(key);
+			  if (!s) {
+				return;
+			  }
+			  s.delete(listener);
+			  if (s.size === 0) {
+				listenersByKey.delete(key);
+			  }
+			};
+		  },
+		  isOpen(key: string) {
+			return rowDetailStore.get(key) || false;
+		  },
+		  open(key: string) {
+			const rowDetailState = rowDetailStore.get(key);
+			if (rowDetailState) {
+				return;
+			}
+			rowDetailStore.set(key, true);
+			notifyKey(key);
+		  },
+		  close(key: string) {
+			const rowDetailState = rowDetailStore.get(key);
+			if (!rowDetailState) {
+				return;
+			}
+			rowDetailStore.delete(key);
+			notifyKey(key);
+		  },
+		  toggle(key: string) {
+			const rowDetailState = rowDetailStore.get(key) ?? false;
+			rowDetailStore.set(key, !rowDetailState);
+			notifyKey(key);
+		  }
+	};
+
+	return api;
+}
+
+function useRowSelection<T = any>(store: RowSelectionStore, key: string): boolean {
+	return useSyncExternalStore(
+	  (notify) => store.subscribeKey(key, notify),
+	  () => store.isOpen(key),
+	  () => false
+	);
+  }
+
 export const RowSelectionPlugin = (props: {
     visible?: boolean,
     onGetRowId: (row: any) => string,
     onSelectOne: (id: any) => void,
     onDeselectOne: (id: any) => void,
-    selectedIds: Array<any>
+
+	rowSelectionStore: RowSelectionStore,
 }): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellContentRenderPlugin => {
 
     return {
@@ -31,7 +108,6 @@ export const RowSelectionPlugin = (props: {
                 sys_selection_column,
                 ...headCells
             ])(headCells);
-
         },
         renderBodyCellContentColumnScope: 'sys_selection',
         renderBodyCellContent: ({ headcell, row, gridApi, children }) => {
@@ -41,12 +117,8 @@ export const RowSelectionPlugin = (props: {
             }
 
             if (headcell.id == 'sys_selection') {
-
                 const rowId = props.onGetRowId?.(row) ?? null;
-                const isSelected = !!props.selectedIds.find((id) => id == rowId, [rowId]);
-
-                const result = gridApi.memoStore.memoFunction(`sys_selection${rowId}`, getCheckbox);
-                return result(rowId, isSelected, props.onSelectOne, props.onDeselectOne);
+				return (<RowCheckBox rowId={rowId} onSelectOne={props.onSelectOne} onDeselectOne={props.onDeselectOne} store={props.rowSelectionStore} />);
             }
 
             return children;
@@ -55,16 +127,26 @@ export const RowSelectionPlugin = (props: {
 }
 
 
+interface CheckboxProps {
+	rowId: string;
+	onSelectOne: (id: any) => void;
+	onDeselectOne: (id: any) => void;
+	store: RowSelectionStore
+}
+const RowCheckBox = (props: CheckboxProps) => {
 
-const getCheckbox = (rowId: string, isSelected: boolean, onSelectOne: (id: any) => void, onDeselectOne: (id: any) => void) => {
-    return (<Box key={rowId} sx={{ textAlign: 'center' }}>
+	const checked = useRowSelection(props.store, props.rowId);
+
+    return (<Box key={props.rowId} sx={{ textAlign: 'center' }}>
         <Checkbox
-            checked={isSelected}
+            checked={checked}
             onChange={(event: any) => {
                 if (event.target.checked) {
-                    onSelectOne?.(rowId);
+					props.store.open(props.rowId);
+                    props.onSelectOne?.(props.rowId);
                 } else {
-                    onDeselectOne?.(rowId);
+					props.store.close(props.rowId);
+                    props.onDeselectOne?.(props.rowId);
                 }
             }}
             sx={{

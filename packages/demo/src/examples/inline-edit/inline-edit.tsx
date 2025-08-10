@@ -5,11 +5,11 @@ import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, Mosa
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { InlineEditPlugin, useInlineEditPluginStore } from './plugins/inline-edit-plugin';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export const InlineEditTable = () => {
 
-    const headCells: ColumnDef[] = [{
+    const headCells: ColumnDef[] = useMemo(() =>[{
         id: 'id',
         header: 'ID',
         cell: (row: any) => row.id,
@@ -18,7 +18,7 @@ export const InlineEditTable = () => {
         id: 'name',
         header: 'Name',
         cell: (row: any) => row.name,
-    }];
+	}], []);
 
     const [items, setItems] = useState([{
         id: 1,
@@ -32,7 +32,7 @@ export const InlineEditTable = () => {
     }]);
 
     // Row Actions
-    const todoActions: Action<any>[] = [
+    const todoActions: Action<any>[] = useMemo(() => [
         {
             id: 'edit',
             render: (field: any) => (<MenuItem id='edit-menu-item' key={`edit-${field}`} > <ListItemIcon><EditIcon /></ListItemIcon> Edit </MenuItem>)
@@ -41,7 +41,7 @@ export const InlineEditTable = () => {
             id: 'remove',
             render: (field: any) => (<MenuItem id='remove-menu-item' key={`remove-${field}`} > <ListItemIcon><DeleteIcon /></ListItemIcon> Remove </MenuItem>)
         },
-    ];
+	], []);
 
     // The order of the plugins is (sometimes) important.
     const gridPlugins = useGridPlugins(

@@ -1,6 +1,8 @@
 import { BoxProps, ComponentsOverrides, ComponentsProps, ComponentsVariants, SxProps, TableBodyProps, TableHeadProps, TableProps, TableRowProps, Theme } from '@mui/material'
 import { ReactNode } from 'react'
 
+export type Listener = () => void;
+
 export interface Pagination {
     page: number
     rowsPerPage: number
@@ -21,6 +23,12 @@ export interface EnhancedTableProps<T = any> {
     sx?: SxProps<Theme>
 }
 
+export interface PinProps {
+    pin: 'left' | 'right' | boolean
+    responsiveBreakpoint?: Breakpoint | number;
+    direction?: 'up' | 'down'
+}
+
 export interface ColumnDef<T = any> {
     id: string,
     header: string | (() => string | ReactNode), 
@@ -30,7 +38,7 @@ export interface ColumnDef<T = any> {
     //plugin needed
     highlight?: boolean;
     cell?: (row: T) => ReactNode;
-    pin?: 'left' | 'right' | boolean;
+    pin?: PinProps | PinProps["pin"];
     hasSort?: boolean;
 }
 

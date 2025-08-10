@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import { RowHighlightTable } from '@/examples/row-highlight/row-highlight';
 import { CustomPluginTable } from '@/examples/custom-plugin/custom-plugin';
-import { RowExpansionTable } from '@/examples/row-expansion/row-expansion';
+import { RowExpansionTable } from '@/examples/row-detail/row-detail';
 import { EventsTable } from '@/examples/events/events';
 import { InlineEditTable } from '@/examples/inline-edit/inline-edit';
 

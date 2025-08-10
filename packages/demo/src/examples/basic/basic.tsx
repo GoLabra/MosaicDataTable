@@ -1,13 +1,14 @@
 'use client';
 
-import { ListItemIcon, MenuItem } from '@mui/material';
+import { Button, ListItemIcon, MenuItem } from '@mui/material';
 import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, useGridPlugins, Action } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useMemo, useState } from 'react';
 
 export const BasicTable = () => {
 
-    const headCells: ColumnDef[] = [{
+    const headCells: ColumnDef[] = useMemo(() =>[{
         id: 'id',
         header: 'ID',
         cell: (row: any) => row.id,
@@ -15,19 +16,19 @@ export const BasicTable = () => {
         id: 'name',
         header: 'Name',
         cell: (row: any) => row.name,
-    }];
+    }], []);
 
 
-    const items = [{
+    const items = useMemo(() => [{
         id: 1,
         name: 'John Doe'
     }, {
         id: 2,
         name: 'Jane Doe'
-    }]
+    }], []);
 
      // Row Actions
-     const todoActions: Action<any>[] = [
+     const todoActions: Action<any>[] = useMemo(() => [
         {
             id: 'edit',
             render: (field: any) => (<MenuItem id='edit-menu-item' key={`edit-${field}`} > <ListItemIcon><EditIcon /></ListItemIcon> Edit </MenuItem>)
@@ -35,8 +36,8 @@ export const BasicTable = () => {
         {
             id: 'remove',
             render: (field: any) => (<MenuItem id='remove-menu-item' key={`remove-${field}`} > <ListItemIcon><DeleteIcon /></ListItemIcon> Remove </MenuItem>)
-        },
-    ];
+        }
+    ], []);
 
     const gridPlugins = useGridPlugins(
         // process the 'render' function
@@ -55,11 +56,11 @@ export const BasicTable = () => {
     );
 
     return (
-        <MosaicDataTable
-            caption="Keep it simple table" // not visible. used for accessibility
-            plugins={gridPlugins}
-            headCells={headCells}
-            items={items}
-        />
+		<MosaicDataTable
+			caption="Keep it simple table" // not visible. used for accessibility
+			plugins={gridPlugins}
+			headCells={headCells}
+			items={items}
+		/>
     );
 }

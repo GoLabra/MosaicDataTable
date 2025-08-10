@@ -14,6 +14,11 @@ export const Menu = () => {
                 </Link>
             </ListItem>
             <ListItem>
+                <Link href="/cellSelection" component={NextLink}>
+                    <ListItemText primary="Cell Selection" />
+                </Link>
+            </ListItem>
+            <ListItem>
                 <Link href="/basic" component={NextLink}>
                     <ListItemText primary="Basic" />
                 </Link>

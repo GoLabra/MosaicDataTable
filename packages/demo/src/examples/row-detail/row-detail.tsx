@@ -1,17 +1,17 @@
 'use client';
 
 import { Box, Button, ListItemIcon, MenuItem, Typography } from '@mui/material';
-import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, RowExpansionPlugin, useGridPlugins, useRowExpansionStore, Action, AbsoluteHeightContainer } from 'mosaic-data-table';
+import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, RowDetailPlugin, useGridPlugins, useRowExpansionStore, Action, AbsoluteHeightContainer, createRowDetailStore } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const RowExpansionTable = () => {
 
-    // this is where the grid will keep track of the expansion state
-    const rowExpansionStore = useRowExpansionStore();
+	const rowDetailStore = useMemo(() => createRowDetailStore<any>(), []);
 
-    const headCells: ColumnDef[] = [{
+
+	const headCells: ColumnDef[] = useMemo(() =>[{
         id: 'id',
         header: 'ID',
         cell: (row: any) => row.id,
@@ -22,17 +22,17 @@ export const RowExpansionTable = () => {
     }, {
         id: 'expand',
         header: '',
-        cell: (row: any) => (<Button onClick={() => rowExpansionStore.toggle(row.id)} size="small" sx={{ m: 0 }} aria-label="Actions" aria-haspopup="menu" id={`user-menu-btn`}>
+        cell: (row: any) => (<Button onClick={() => rowDetailStore.toggle(row.id)} size="small" sx={{ m: 0 }} aria-label="Actions" aria-haspopup="menu" id={`user-menu-btn`}>
             Custom Toggle        </Button>)
     }, {
         id: 'expand_with_params',
         header: '',
-        cell: (row: any) => (<Button onClick={() => rowExpansionStore.setParams({ rowId: row.id, params: { "param1": true }, openImmediately: true })} size="small" sx={{ m: 0 }} aria-label="Actions" aria-haspopup="menu" id={`user-menu-btn`}>
+        cell: (row: any) => (<Button onClick={() => rowDetailStore.setParams(row.id, { "param1": true },true )} size="small" sx={{ m: 0 }} aria-label="Actions" aria-haspopup="menu" id={`user-menu-btn`}>
             With Params        </Button>)
-    }];
+    }], [rowDetailStore.toggle, rowDetailStore.setParams]);
 
 
-    const items = [{
+    const items = useMemo(() => [{
         id: 1,
         name: 'John Doe'
     }, {
@@ -41,10 +41,10 @@ export const RowExpansionTable = () => {
     }, {
         id: 3,
         name: 'Max Mustermann'
-    }]
+    }], []);
 
     // Row Actions
-    const todoActions: Action<any>[] = [
+    const todoActions: Action<any>[] = useMemo(() => [
         {
             id: 'edit',
             render: (field: any) => (<MenuItem id='edit-menu-item' key={`edit-${field}`} > <ListItemIcon><EditIcon /></ListItemIcon> Edit </MenuItem>)
@@ -52,8 +52,8 @@ export const RowExpansionTable = () => {
         {
             id: 'remove',
             render: (field: any) => (<MenuItem id='remove-menu-item' key={`remove-${field}`} > <ListItemIcon><DeleteIcon /></ListItemIcon> Remove </MenuItem>)
-        },
-    ];
+        }
+    ], []);
 
     const gridPlugins = useGridPlugins(
         // process the 'render' function
@@ -67,10 +67,10 @@ export const RowExpansionTable = () => {
             actions: todoActions
         }),
 
-        usePluginWithParams(RowExpansionPlugin, {
+        usePluginWithParams(RowDetailPlugin, {
             showExpanderButton: true,
             onGetRowId: (row: any) => row.id,
-            expanstionStore: rowExpansionStore,
+            rowDetailStore: rowDetailStore,
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>
                 Hello {row.name}!
                 {params?.param1 && <div>Param1 is true</div>}

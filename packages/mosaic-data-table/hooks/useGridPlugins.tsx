@@ -5,7 +5,7 @@ export const useGridPlugins = (...plugins: MosaicDataTablePlugin[]) => {
 
     const gridPlugins = useMemo(() => {
         return plugins;
-    }, [plugins]);
+    }, [...plugins]);
 
     return gridPlugins;
 }

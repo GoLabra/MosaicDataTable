@@ -2,13 +2,14 @@
 
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
-import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Typography } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useResponsivePin, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions } from 'mosaic-data-table';
+import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Typography, useMediaQuery, Theme } from '@mui/material';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions, RowDetailPlugin, createRowDetailStore, createResponsivePin, createRowSelectionStore } from 'mosaic-data-table';
 import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useSelection } from './hooks/use-selection';
 import dayjs from 'dayjs';
+import { create } from 'domain';
 
 const data = [{
     id: 1,
@@ -1446,7 +1447,9 @@ export const KeepItSimpleTable = () => {
     const [showRowExpansion, setShowRowExpansion] = useState<boolean>(true);
     const [showRowActions, setShowRowActions] = useState<boolean>(true); 
 
-    const headCells: ColumnDef[] = [{
+	const isActive = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+
+    const headCells: ColumnDef[] = useMemo(() =>[{
         id: 'id',
         header: 'ID',
         width: 80,
@@ -1457,7 +1460,7 @@ export const KeepItSimpleTable = () => {
         width: 200,
         hasSort: true,
         cell: (row: any) => (<Stack direction="row" alignItems="center" gap={1}><Avatar  {...stringAvatar(row.name)} />{row.name}</Stack>),
-        pin: useResponsivePin({ pin: 'left', breakpoint: 'sm', direction: 'up' }),
+		pin: createResponsivePin('left', 'sm', 'up'),
         highlight: true,
     }, {
         id: 'email',
@@ -1470,7 +1473,7 @@ export const KeepItSimpleTable = () => {
         header: 'Country',
         width: 150,
         hasSort: true,
-        pin: useResponsivePin({ pin: 'left', breakpoint: 'md', direction: 'up' }),
+		pin: createResponsivePin('left', 'md', 'up'),
         cell: (row: any) => <Stack direction="row" alignItems="center" gap={1}><CountryIcon country={row.countryCode}
             sx={{
                 fontSize: 24,
@@ -1525,7 +1528,7 @@ export const KeepItSimpleTable = () => {
         header: 'Tokens',
         width: 100,
         hasSort: true,
-        pin: useResponsivePin({ pin: true, breakpoint: 'lg', direction: 'up' }),
+		pin: createResponsivePin(true, 'lg', 'up'),
         cell: (row: any) => row.tokens,
     }, {
         id: 'language',
@@ -1550,7 +1553,7 @@ export const KeepItSimpleTable = () => {
         width: 210,
         hasSort: true,
         cell: (row: any) => <>{dayjs(row.registrationDate).format('MMM DD, YYYY, hh:mm:ss A')}</>,
-        visible: useResponsiveHeadCellVisible({ breakpoint: 'md', direction: 'up' }),
+        //visible: useResponsiveHeadCellVisible({ breakpoint: 'md', direction: 'up' }),
     }, {
         id: 'role',
         header: 'Role',
@@ -1562,8 +1565,7 @@ export const KeepItSimpleTable = () => {
         header: 'Rating',
         width: 180,
         cell: (row: any) => <Rating name="half-rating" defaultValue={row.rating} precision={0.5} readOnly />,
-    },
-    ];
+    }], []);
 
     let items = empty ? [] : data;
 
@@ -1652,13 +1654,15 @@ export const KeepItSimpleTable = () => {
             onGetRowId: useCallback((row: any) => row.id, []),
             onSelectOne: contentManagerSelection.handleSelectOne,
             onDeselectOne: contentManagerSelection.handleDeselectOne,
-            selectedIds: contentManagerSelection.selected
+            //selectedIds: contentManagerSelection.selected
+
+			rowSelectionStore: useMemo(() => createRowSelectionStore<any>(), [])
         }),
 
-        usePluginWithParams(RowExpansionPlugin, {
+        usePluginWithParams(RowDetailPlugin, {
             showExpanderButton: showRowExpansion,
             onGetRowId: useCallback((row: any) => row.id, []),
-            expanstionStore: useRowExpansionStore(),
+            rowDetailStore: useMemo(() => createRowDetailStore<any>(), []),
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),
 
@@ -1677,7 +1681,7 @@ export const KeepItSimpleTable = () => {
         }),
 
         // Required for pinned columns when the table is scrolled. Marking a column as pinned alone isn’t enough; this plugin ensures the column stays in place.
-        PinnedColumnsPlugin,
+        usePluginWithParams(PinnedColumnsPlugin, { }),
 
         // add skeleton loading state visualization
         usePluginWithParams(SkeletonLoadingPlugin, {
@@ -1694,7 +1698,7 @@ export const KeepItSimpleTable = () => {
         <>
             <Stack alignItems="center" direction="row" justifyContent="flex-end" flexWrap="wrap" sx={{marginBottom: 5}} >
                 <FormControlLabel control={<Checkbox checked={showFilter} onChange={(event) => setShowFilter(event.target.checked)} />} label="Show Filters" />
-                <FormControlLabel control={<Checkbox checked={showRowExpansion} onChange={(event) => setShowRowExpansion(event.target.checked)} />} label="Show Row Expansion" />
+                <FormControlLabel control={<Checkbox checked={showRowExpansion} onChange={(event) => setShowRowExpansion(event.target.checked)} />} label="Show Row Detail" />
                 <FormControlLabel control={<Checkbox checked={showRowSelection} onChange={(event) => setShowRowSelection(event.target.checked)} />} label="Show Row Selection" />
                 <FormControlLabel control={<Checkbox checked={showFooter} onChange={(event) => setShowFooter(event.target.checked)} />} label="Show Footer" />
                 <FormControlLabel control={<Checkbox checked={empty} onChange={(event) => setEmpty(event.target.checked)} />} label="Simulate Empty Table" />

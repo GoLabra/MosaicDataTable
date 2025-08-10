@@ -1,77 +1,103 @@
-import { ReactNode } from "react";
-import { GridApi, ColumnDef, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin } from "../types/table-types";
+import { ReactNode, useEffect, useMemo, useSyncExternalStore } from "react";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin, PinProps } from "../types/table-types";
 import { TableBodyProps, TableCell, TableCellProps, useMediaQuery } from "@mui/material";
 import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
+import { createMediaQueryListManager } from "../util/createMediaQueryListManager";
+import { responsiveColumnStore, MatchesSnapshot, useMediaQueryStore } from "../util/responsive-store";
 
-export const PinnedColumnsPlugin: MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin = {
-    scope: ['body-cell-render', 'head-cell-render'] as const,
-    renderBodyCell: ({headcell, rowId, gridApi, props, sx, children, cellProps}) => {
-        return gridApi.memoStore.memoFunction(`pinned-columns-body-${rowId}-${headcell.id}`, getCell)(headcell, gridApi.columns, '', props, sx, children, cellProps);
-    },
-    renderHeadCell: ({headcell, gridApi, caller, props, sx, children, cellProps}) => {
-        return gridApi.memoStore.memoFunction(`pinned-columns-head-${headcell.id}`, getCell)(headcell, gridApi.columns, caller, props, sx, children, cellProps);
-    }
+export const PinnedColumnsPlugin = (): MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin => {
+
+	const mediaQueryStore = responsiveColumnStore();
+
+	return {
+		scope: ['body-cell-render', 'head-cell-render'] as const,
+		renderBodyCell: ({ headcell, rowId, gridApi, props, sx, children, cellProps }) => {
+
+			if (!headcell.pin) {
+				return null;
+			}
+
+			return (<PinnedCell
+				mediaQueryStore={mediaQueryStore}
+				headCell={headcell}
+				headCells={gridApi.columns}
+				caller={'body-cell-render'}
+				props={props}
+				sx={sx}
+				children={children}
+				cellProps={cellProps} />);
+			// return gridApi.memoStore.memoFunction(`pinned-columns-body-${rowId}-${headcell.id}`, getCell)(headcell, gridApi.columns, '', props, sx, children, cellProps);
+		},
+		renderHeadCell: ({ headcell, gridApi, caller, props, sx, children, cellProps }) => {
+
+			if (!headcell.pin) {
+				return null;
+			}
+
+			return (<PinnedCell
+				mediaQueryStore={mediaQueryStore}
+				headCell={headcell}
+				headCells={gridApi.columns}
+				caller={caller}
+				props={props}
+				sx={sx}
+				children={children}
+				cellProps={cellProps}
+			/>);
+			// return gridApi.memoStore.memoFunction(`pinned-columns-head-${headcell.id}`, getCell)(headcell, gridApi.columns, caller, props, sx, children, cellProps);
+		}
+	}
 }
 
-const getCell = (headCell: ColumnDef<any>, headCells: Array<ColumnDef<any>>, caller: string, props: TableCellProps, sx: SxProps<Theme>, children?: ReactNode, cellProps?: TableCellProps) => {
+interface PinnedCellProps {
+	mediaQueryStore: ReturnType<typeof responsiveColumnStore>,
+	headCell: ColumnDef<any>,
+	headCells: Array<ColumnDef<any>>
+	caller: string
+	props: TableCellProps
+	sx: SxProps<Theme>
+	children?: ReactNode
+	cellProps?: TableCellProps
+}
+const PinnedCell = (props: PinnedCellProps) => {
 
-    if (!headCell.pin) {
-        return null;
-    }
+	const mediaStatus = useMediaQueryStore(props.mediaQueryStore);
 
-    let leftOffset: number | undefined = undefined;
-    let rightOffset: number | undefined = undefined;
+    props.mediaQueryStore.registerPinnedColumn(props.headCell);
 
-    if (headCell.pin === 'left' || headCell.pin === true) {
+    useEffect(() => {
+        if (
+            props.headCell.pin &&
+            typeof props.headCell.pin === 'object' &&
+            'responsiveBreakpoint' in props.headCell.pin
+        ) {
+            mediaStatus.add(
+                props.headCell.pin.responsiveBreakpoint as Required<PinProps>["responsiveBreakpoint"],
+                props.headCell.pin.direction
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.headCell]);
 
-        const leftPins = headCells
-            .filter(i => i.pin === 'left' || i.pin === true);
+    const pinProps = props.mediaQueryStore.getSnapshot().get(props.headCell) ?? {};
 
-        const beforePins = leftPins.slice(0, leftPins.findIndex(col => col.id === headCell.id));
-
-        leftOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
-
-
-    }
-
-    if (headCell.pin == 'right' || headCell.pin === true) {
-        const rightPins = headCells
-            .filter(i => i.pin === 'right' || i.pin === true);
-
-        const beforePins = rightPins.slice(rightPins.findIndex(col => col.id === headCell.id) + 1)
-            .reverse();
-
-        rightOffset = beforePins.reduce((acc, col) => acc + col.width!, 0);
-    }
-
-    return <MosaicDataTableCellRoot key={headCell.id} {...cellProps} sx={{
-        position: 'sticky',
-        left: leftOffset,
-        right: rightOffset,
-        backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
-        width: headCell.width ?? '40px',
-        minWidth: headCell.width ?? '40px',
-        zIndex: 1,
-        ...sx,
-        ...props
-    }}>{children}</MosaicDataTableCellRoot>
+	return <MosaicDataTableCellRoot key={props.headCell.id} {...props.cellProps} sx={{
+		...pinProps,
+		backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+		width: props.headCell.width ?? '40px',
+		minWidth: props.headCell.width ?? '40px',
+		
+		...props.sx,
+		...props.props
+	}}>{props.children}</MosaicDataTableCellRoot>
 }
 
+export const createResponsivePin = (pin: PinProps["pin"], responsiveBreakpoint: PinProps["responsiveBreakpoint"], direction?: PinProps["direction"]) => {
+	return {
+		pin,
+		responsiveBreakpoint,
+		direction
+	}
+}
 
-interface ResponsivePinProps {
-    pin: 'left' | 'right' | boolean
-    breakpoint: Breakpoint | number;
-    direction?: 'up' | 'down'
-}
-export const useResponsivePin = ({
-    pin,
-    breakpoint,
-    direction = 'up'
-}: ResponsivePinProps): 'left' | 'right' | boolean | undefined => {
-    const isActive = useMediaQuery((theme: Theme) => theme.breakpoints[direction](breakpoint));
-    if (isActive) {
-        return pin;
-    }
-    return undefined;
-}
