@@ -92,14 +92,11 @@ export function createRowDetailStore<T>(): RowDetailStore {
 		  },
 		  setParams(key: string, params: Partial<T>, openImmediately = true) {
 			const rowDetailState = rowDetailStore.get(key);
-			if (!rowDetailState) {
-				return;
-			}
 			rowDetailStore.set(key, {
 				...rowDetailState,
-				isOpen: openImmediately ?? rowDetailState.isOpen ?? false,
+				isOpen: openImmediately ?? (rowDetailState?.isOpen ?? false) ?? false,
 				params: {
-					...rowDetailState.params,
+					...(rowDetailState?.params ?? {}) as T,
 					...params
 				}
 			});
@@ -161,11 +158,7 @@ export const RowDetailPlugin = (props: {
             }
 
             if (headcell.id == 'sys_expansion') {
-
                 const rowId = props.onGetRowId?.(row) ?? null;
-                const isOpen = props.rowDetailStore.isOpen(rowId);
-
-                // return gridApi.memoStore.memoFunction(`expansion-button-${rowId}`, ExpandButton)(rowId, props.rowDetailStore, props.rowDetailStore.toggle);
 				return (<ExpandButton rowId={rowId} rowDetailStore={props.rowDetailStore} />);
             }
 
@@ -173,9 +166,6 @@ export const RowDetailPlugin = (props: {
         },
         renderBodyRow: ({ row, gridApi, props: rowProps, sx, children }) => {
             const rowId = props.onGetRowId?.(row) ?? null;
-            
-            // return gridApi.memoStore.memoFunction(`expansion-row-${rowId}`, Expander)(row, rowId, children, sx, rowProps, props.rowDetailStore, props.getExpansionNode);
-
 			return (<Expander row={row} rowId={rowId} children={children} sx={sx} rowProps={rowProps} rowDetailStore={props.rowDetailStore} getExpansionNode={props.getExpansionNode} />);
         }
     }
