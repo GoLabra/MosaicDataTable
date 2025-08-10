@@ -3,7 +3,7 @@
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
 import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Box, Typography, Button } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useRowExpansionStore, FilterRowPlugin, DefaultStringFilterOptions, DefaultNumberDateFilterOptions, createRowSelectionStore, createResponsivePin } from 'mosaic-data-table';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useRowExpansionStore, FilterRowPlugin, DefaultStringFilterOptions, DefaultNumberDateFilterOptions, createRowSelectionStore, createResponsivePin, createFilterRowStore } from 'mosaic-data-table';
 import { use, useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -170,7 +170,8 @@ export const FullImplementationTable = () => {
         // add filter row
         usePluginWithParams(FilterRowPlugin, {
             visible: true,
-            filter: contentManagerSearch.state.filter,
+            // filter: contentManagerSearch.state.filter,
+			store: useMemo(() => createFilterRowStore<any>(contentManagerSearch.state.filter), []),
             filterChanged: contentManagerSearch.handleFilterChange,
             key: 'filter_row',
             filterColumns: useMemo<any>(() => ({

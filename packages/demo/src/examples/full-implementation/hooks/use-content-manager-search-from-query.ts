@@ -17,7 +17,7 @@ export const useContentManagerSearchFromQuery = (props: UseContentManagerSearchF
     const [rowsPerPage, setRowsPerPage] = useQueryState('rpp', parseAsInteger.withDefault(props.initialRowsPerPage))
     const [sortBy, setSortBy] = useQueryState('s', parseAsString.withDefault(props.initialSortBy))
     const [order, setOrderBy] = useQueryState('o', parseAsString.withDefault(props.initialOrder))
-    const [filter, setFilter] = useQueryState('f', parseAsJson<Filter>(null!));
+    const [filter, setFilter] = useQueryState('f', parseAsJson<Filter>((v) => v as Filter));
 
     const handlePageChange = useCallback((value: number): void => {
         setPage(value);

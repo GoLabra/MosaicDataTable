@@ -3,7 +3,7 @@
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
 import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Typography, useMediaQuery, Theme } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions, RowDetailPlugin, createRowDetailStore, createResponsivePin, createRowSelectionStore } from 'mosaic-data-table';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useRowExpansionStore, SummaryRowPlugin, FilterRowPlugin, DefaultStringFilterOptions, Filter, DefaultNumberDateFilterOptions, RowDetailPlugin, createRowDetailStore, createResponsivePin, createRowSelectionStore, createFilterRowStore } from 'mosaic-data-table';
 import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -1592,7 +1592,8 @@ export const KeepItSimpleTable = () => {
 
         usePluginWithParams(FilterRowPlugin, {
             visible: showFilter,
-            filter: filter,
+            //filter: filter,
+			store: useMemo(() => createFilterRowStore<any>(), []),
             filterChanged: setFilter,
             key: 'filter_row',
             filterColumns: useMemo<any>(() => ({

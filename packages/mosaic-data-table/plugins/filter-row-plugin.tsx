@@ -1,5 +1,5 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { GridApi, ColumnDef,  MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadCellContentRenderPlugin } from "../types/table-types";
+import React, { ReactNode, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { GridApi, ColumnDef,  MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTableHeadCellContentRenderPlugin, Listener } from "../types/table-types";
 import { MosaicDataTableHeadRow } from "../MosaicDataTableHeadRow";
 import { Box,  debounce, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, styled, TextField, TextFieldProps } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -8,35 +8,117 @@ import { DockedDiv } from "../style";
 import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import { useLocalizationContext } from "@mui/x-date-pickers/internals";
 
-export const FilterRowPlugin = ({
-    visible = true,
-    filter,
-    filterChanged,
-    filterColumns,
-    key
-}: {
+
+
+export interface FilterRowStore {
+	subscribeKey: (key: string, listener: Listener) => () => void;
+	getSnapshot: () => Filter;
+	getFilter: (key: string) => FilterValue | null | undefined;
+	setFilter: (key: string, filter: FilterValue) => void;
+	clear: (key?: string) => void;
+}
+export function createFilterRowStore<T>(initialFilter?: Filter): FilterRowStore {
+
+	const store = new Map<string, FilterValue>(); 
+
+	if(initialFilter){
+		Object.entries(initialFilter).forEach(([key, value]) => {
+			store.set(key, value);
+		});
+	}
+	const listenersByKey = new Map<string, Set<Listener>>();
+
+	const notifyKey = (key: string) => {
+		const ls = listenersByKey.get(key);
+		if (!ls) {
+			return;
+		}
+		ls.forEach((l) => l());
+	};
+
+	const notifyAll = () => {
+		for (const listeners of listenersByKey.values()) {
+			listeners.forEach((l) => l());
+		}
+	};
+	
+	const api = {
+		subscribeKey(key: string, listener: Listener) {
+			let set = listenersByKey.get(key);
+			if (!set) {
+				set = new Set();
+				listenersByKey.set(key, set);
+			}
+			set.add(listener);
+			return () => {
+			  const s = listenersByKey.get(key);
+			  if (!s) {
+				return;
+			  }
+			  s.delete(listener);
+			  if (s.size === 0) {
+				listenersByKey.delete(key);
+			  }
+			};
+		  },
+		  getSnapshot() {
+			return Object.fromEntries(store.entries());
+		  },
+		  getFilter(key: string) {
+			return store.get(key);
+		  },
+		  setFilter(key: string, filter: FilterValue) {
+			store.set(key, filter);
+			notifyKey(key);
+		  },
+		  clear(key?: string){
+			if(key){
+				store.delete(key);
+				notifyKey(key);
+				return;
+			}
+
+			store.clear();
+			notifyAll();
+		  }
+	};
+
+	return api;
+}
+
+function useRowFilter<T = any>(store: FilterRowStore, key: string): FilterValue<T> | null | undefined {
+	return useSyncExternalStore(
+	  (notify) => store.subscribeKey(key, notify),
+	  () => {
+		const val = store.getFilter(key);
+		return val;
+	  },	
+	  () => null
+	);
+  }
+
+export const FilterRowPlugin = (props: {
     visible?: boolean,
     filterChanged: (filter: Filter) => void,
-    filter: Filter,
-
     filterColumns: Record<string, ColumnDefFilter | Exclude<ColumnDefFilter['type'], 'select'>>,
-    key: string
+    key: string,
+	store: FilterRowStore
 }): MosaicDataTableHeadExtraRowEndPlugin & MosaicDataTableHeadCellContentRenderPlugin => {
 
     return {
         scope: ['head-extra-row-end', 'head-cell-content-render'] as const,
         getHeadExtraRowEnd: ({columns, gridApi}) => {
 
-            if (!visible) {
+            if (!props.visible) {
                 return null;
             }
 
             return (
                 <MosaicDataTableHeadRow
-                    key={`sys_extra_row_${key}`}
+                    key={`sys_extra_row_${props.key}`}
                     headCells={columns}
                     gridApi={{current:gridApi}}
-                    caller={key}
+                    caller={props.key}
                     sx={{
                         '> th': {
 
@@ -55,115 +137,109 @@ export const FilterRowPlugin = ({
         },
         renderHeadCellContent: ({headcell, gridApi, caller, children}) => {
 
-            if (caller == key) {
+            if (caller != props.key) {
+				return children;
+			}
 
-                const filterDef = filterColumns[headcell.id]
-                if (!filterDef) {
-                    return <DockedWrapper key={headcell.id} className="MosaicDataTable-filter-row-docked">{children}</DockedWrapper>;
-                }
+			const filterDef = props.filterColumns[headcell.id]
+			if (!filterDef) {
+				return <DockedWrapper key={headcell.id} className="MosaicDataTable-filter-row-docked">{children}</DockedWrapper>;
+			}
 
-                const typeDef = typeof filterDef === 'string' ? filterDef : filterDef.type;
-                const selectOptions = typeof filterDef != 'string' && filterDef.type == 'select' ? filterDef.selectOptions : undefined;
-                const defaultOperator = typeof filterDef != 'string' ? filterDef.defaultOperator : undefined;
-                const operators = typeof filterDef != 'string' ? filterDef.operators : undefined;
-                const filterValue = filter?.[headcell.id];
+			const typeDef = typeof filterDef === 'string' ? filterDef : filterDef.type;
+			const selectOptions = typeof filterDef != 'string' && filterDef.type == 'select' ? filterDef.selectOptions : undefined;
+			const defaultOperator = typeof filterDef != 'string' ? filterDef.defaultOperator : undefined;
+			const operators = typeof filterDef != 'string' ? filterDef.operators : undefined;
 
-                return (
-                    <DockedWrapper key={headcell.id} className="MosaicDataTable-filter-row-docked">
+			return (
+				<DockedWrapper key={headcell.id} className="MosaicDataTable-filter-row-docked">
 
-                        <Box
-                            key={headcell.id}
-                            sx={{
-                                width: '100%',
-                                margin: '3px',
-                                padding: '3px',
-                                borderRadius: '3px',
-                                backgroundColor: 'var(--mui-palette-background-paper)'
-                            }}>
-                            <ColumnFilter
-                                key={`columnFilter-${headcell.id}`}
-                                type={typeDef}
-                                selectOptions={selectOptions}
-                                options={operators}
-                                defaultOperator={defaultOperator}
-                                value={filterValue}
-                                onChange={(columnFilter) => {
+					<Box
+						key={headcell.id}
+						sx={{
+							width: '100%',
+							margin: '3px',
+							padding: '3px',
+							borderRadius: '3px',
+							backgroundColor: 'var(--mui-palette-background-paper)'
+						}}>
+						<ColumnFilter
+							key={`columnFilter-${headcell.id}`}
+							id={headcell.id}
+							type={typeDef}
+							selectOptions={selectOptions}
+							options={operators}
+							defaultOperator={defaultOperator}
+							store={props.store}
+							onChange={(columnFilter) => {
 
-                                    if(!columnFilter){
-                                        const newFilter = { ...filter };
-                                        delete newFilter[headcell.id];
-                                        filterChanged(newFilter);
-                                        return;
-                                    }
+								if(!columnFilter){
+									props.store.clear(headcell.id);
+								}
 
-                                    filterChanged({
-                                        ...filter,
-                                        [headcell.id]: columnFilter
-                                    })
-                                }} />
-                        </Box>
+								props.filterChanged(props.store.getSnapshot())
+							}} />
+					</Box>
 
-                    </DockedWrapper>)
-            }
-            return children;
+				</DockedWrapper>)
         }
     }
 }
 
 
 interface ColumnFilterProps {
+	id: string,
     type: ColumnDefFilter['type'],
     options?: ColumnDefFilter['operators'],
-    value?: FilterValue,
     onChange: (filter?: FilterValue | null) => void
 
     selectOptions?: Extract<ColumnDefFilter, { type: 'select' }>['selectOptions'],
     defaultOperator?: string,
+
+	store: FilterRowStore
 }
 const ColumnFilter = (props: ColumnFilterProps) => {
 
-    const { value, options } = props;
+	const filterValue = useRowFilter(props.store, props.id);
 
-    const [internalValue, setInternalValue] = useState<FilterValue>({
-        operator: value?.operator ?? props.defaultOperator ?? options?.[0]?.value ?? '',
-        value: value?.value
-    });
+    const [lastOperator, setLastOperator] = useState<string>(filterValue?.operator ?? props.defaultOperator ?? props.options?.[0]?.value ?? '');
     
+	useEffect(() => {
+		if(!filterValue){
+			return;
+		}
+
+		if(!filterValue.operator){
+			return;
+		}
+
+		setLastOperator(filterValue.operator);
+	}, [filterValue]);
+
     const onChange = useCallback((newValue: FilterValue) => {
         if(newValue?.value == null || newValue?.value == undefined){
+			props.store.clear(props.id);
             props.onChange(null);
         } else {
+			props.store.setFilter(props.id, newValue);
             props.onChange(newValue);
         }
 
-        setInternalValue(newValue);
+        setLastOperator(newValue.operator);
         
     }, [props.onChange]);
 
-    useEffect(() => {
-
-        if(!value){
-            setInternalValue({
-                ...internalValue,
-                value: null
-            });
-            return;
-        }
-
-        setInternalValue(value);
-    }, [value]);
-
     return (<Stack direction="row" alignItems="center">
 
-        {options && <ColumnDefFilterButtonOptions
+        {props.options && <ColumnDefFilterButtonOptions
             key={`column-def-filter-button-options-${props.type}`}
-            value={internalValue.operator}
+            value={lastOperator}
             defaultOperator={props.defaultOperator}
-            operators={options}
+            operators={props.options}
             onChange={(newValue) => {
                 onChange({
                     operator: newValue,
-                    value: internalValue.value,
+                    value: filterValue?.value,
                 });
             }}
         />}
@@ -171,11 +247,11 @@ const ColumnFilter = (props: ColumnFilterProps) => {
         <FreeInput
             key={`free-input-${props.type}`}
             type={props.type}
-            value={internalValue?.value}
+            value={filterValue?.value}
             selectOptions={props.selectOptions}
             onChange={(newValue) => {
                 onChange({
-                    operator: internalValue.operator,
+                    operator: lastOperator,
                     value: newValue,
                 });
             }}
@@ -191,14 +267,9 @@ interface FreeInputProps {
     onChange: (value: string | number) => void;
 }
 const FreeInput = (props: FreeInputProps) => {
+
     const InputComp = filterInputMap[props.type];
-
-    const [internalValue, setInternalValue] = useState<string | number | undefined>(props.value);
-    const memoizedDebounce = useMemo(() => debounce((value: string | number) => props.onChange(value), 300), [props.onChange]);
-
-    useEffect(() => {
-        setInternalValue(props.value);
-    }, [props.value]);
+    const debounceOnChange = useMemo(() => debounce((value: string | number) => props.onChange(value), 600), [props.onChange]);
 
     if (!InputComp) {
         console.log(`No input component for type ${props.type}`);
@@ -214,10 +285,9 @@ const FreeInput = (props: FreeInputProps) => {
         <InputComp
             key={`input-${props.type}`}
             selectOptions={props.selectOptions}
-            value={internalValue}
+            value={props.value}
             onChange={(value: any) => {
-                setInternalValue(value.target.value);
-                memoizedDebounce(value.target.value);
+                debounceOnChange(value.target.value);
             }}
         />
         </Box>
@@ -230,18 +300,16 @@ export interface InputProps {
     selectOptions?: Extract<ColumnDefFilter, { type: 'select' }>['selectOptions'];
 }
 const TextInput = (props: InputProps & TextFieldProps) => {
-
-    const {selectOptions, ...other} = props;
     
     return (<TextField id="outlined-basic" variant="standard" fullWidth
         
         slotProps={{
                 input: {
-                        disableUnderline: true,
+					disableUnderline: true,
             }
         }}
-        {...other}
-        value={props.value ?? ''}
+        onChange={props.onChange}
+        defaultValue={props.value}
     />)
 }
 
@@ -519,8 +587,8 @@ export type ColumnDefFilter = IColumnDefFilter | {
     defaultOperator?: string,
 };
 
-export type FilterValue = {
+export type FilterValue<T = any> = {
     operator: string,
-    value: any
+    value: T
 }
-export type Filter = Record<string, FilterValue>
+export type Filter<T = any> = Record<string, FilterValue<T>>
