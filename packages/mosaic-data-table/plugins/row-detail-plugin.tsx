@@ -30,11 +30,17 @@ export function createRowDetailStore<T>(): RowDetailStore {
 	const listenersByKey = new Map<string, Set<Listener>>();
 
 	const notifyKey = (key: string) => {
-		const ls = listenersByKey.get(key);
-		if (!ls) {
+		const listeners = listenersByKey.get(key);
+		if (!listeners) {
 			return;
 		}
-		ls.forEach((l) => l());
+		listeners.forEach((l) => l());
+	};
+
+	const notifyAll = () => {
+		for (const listeners of listenersByKey.values()) {
+			listeners.forEach((l) => l());
+		}
 	};
 
 	const api = {
@@ -103,8 +109,14 @@ export function createRowDetailStore<T>(): RowDetailStore {
 			notifyKey(key);
 		  },
 		  clear(key: string){
-			rowDetailStore.delete(key);
-			notifyKey(key);
+			if(key){
+				rowDetailStore.delete(key);
+				notifyKey(key);
+				return;
+			}
+
+			rowDetailStore.clear();
+			notifyAll();
 		  },
 		  getExpansionInfo(key: string) {
 			return rowDetailStore.get(key) ?? DEFAULT_EXPANSION_INFO;
