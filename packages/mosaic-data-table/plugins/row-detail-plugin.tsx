@@ -21,7 +21,7 @@ export interface RowDetailStore<T = any> {
 	toggle: (key: string) => void;
 	setParams: (key: string, params: T, openImmediately?: boolean) => void;
 	getExpansionInfo: (key: string) => DetailState<T>;
-	clear: (key: string) => void;
+	clear: (key?: string) => void;
 }
 
 export function createRowDetailStore<T>(): RowDetailStore {
@@ -108,7 +108,7 @@ export function createRowDetailStore<T>(): RowDetailStore {
 			});
 			notifyKey(key);
 		  },
-		  clear(key: string){
+		  clear(key?: string){
 			if(key){
 				rowDetailStore.delete(key);
 				notifyKey(key);
