@@ -217,7 +217,7 @@ const ColumnFilter = (props: ColumnFilterProps) => {
 	}, [filterValue]);
 
     const onChange = useCallback((newValue: FilterValue) => {
-        if(newValue?.value == null || newValue?.value == undefined){
+        if(newValue?.value == null || newValue?.value == undefined || newValue.value === ''){
 			props.store.clear(props.id);
             props.onChange(null);
         } else {
