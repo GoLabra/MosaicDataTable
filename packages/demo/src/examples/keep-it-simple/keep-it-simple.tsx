@@ -1447,8 +1447,6 @@ export const KeepItSimpleTable = () => {
     const [showRowExpansion, setShowRowExpansion] = useState<boolean>(true);
     const [showRowActions, setShowRowActions] = useState<boolean>(true); 
 
-	const isActive = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
-
     const headCells: ColumnDef[] = useMemo(() =>[{
         id: 'id',
         header: 'ID',

@@ -1,17 +1,25 @@
 import { ReactNode, useEffect, useMemo, useSyncExternalStore } from "react";
-import { GridApi, ColumnDef, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin, PinProps } from "../types/table-types";
+import { GridApi, ColumnDef, MosaicDataTableBodyCellRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTablePlugin, PinProps, MosaicDataTableGridColumnsPlugin } from "../types/table-types";
 import { TableBodyProps, TableCell, TableCellProps, useMediaQuery } from "@mui/material";
 import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 import { createMediaQueryListManager } from "../util/createMediaQueryListManager";
 import { responsiveColumnStore, MatchesSnapshot, useMediaQueryStore } from "../util/responsive-column-store";
 
-export const PinnedColumnsPlugin = (): MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin => {
+export const PinnedColumnsPlugin = (): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin => {
 
 	const mediaQueryStore = responsiveColumnStore();
 
 	return {
-		scope: ['body-cell-render', 'head-cell-render'] as const,
+		scope: ['grid-columns', 'body-cell-render', 'head-cell-render'] as const,
+		getColumns: ({ headCells, memoStore }) => {
+
+			memoStore.memoFunction('sys_columns_pinned', (headCells: Array<ColumnDef<any>>) => {
+				mediaQueryStore.clearRegisteredColumns();	
+			})(headCells);
+
+            return headCells;
+        },
 		renderBodyCell: ({ headcell, rowId, gridApi, props, sx, children, cellProps }) => {
 
 			if (!headcell.pin) {

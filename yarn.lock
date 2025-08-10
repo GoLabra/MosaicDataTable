@@ -2486,7 +2486,7 @@ mitt@^3.0.1:
     react-dom "^18"
 
 mosaic-data-table@*, "mosaic-data-table@file:/home/andrei/projects/MosaicDataTable/packages/mosaic-data-table":
-  version "0.0.64"
+  version "0.0.66"
   resolved "file:packages/mosaic-data-table"
 
 ms@^2.1.1, ms@^2.1.3:

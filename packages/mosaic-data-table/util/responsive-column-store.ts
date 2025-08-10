@@ -5,12 +5,9 @@ import { ColumnDef, PinProps } from "../types/table-types";
 
 const DEFAULT_SNAPSHOT = Object.freeze(new Map<ColumnDef<any>, {}>());
 
-// Vanilla media query manager (deduped), store, and hook colocated in this file
 export type MatchesSnapshot = Record<string, boolean>
 
 export function responsiveColumnStore(initialQueries: string[] = []) {
-	//let snapshot: MatchesSnapshot = DEFAULT_SNAPSHOT;
-
 	let pinnedColumnsProps = new Map<ColumnDef<any>, {}>();
 	const listeners = new Set<() => void>();
 
@@ -47,6 +44,10 @@ export function responsiveColumnStore(initialQueries: string[] = []) {
         }
     }
 
+	const clearRegisteredColumns = () => {
+		pinnedColumnsProps.clear();
+	}
+
 	const add = (alias: Breakpoint | number, q: string): boolean => {
 		return mgr.add(alias, q);
 	}
@@ -56,6 +57,7 @@ export function responsiveColumnStore(initialQueries: string[] = []) {
 		getSnapshot,
 		add,
 		registerPinnedColumn,
+		clearRegisteredColumns,
 		remove: mgr.remove,
 		clear: mgr.clear,
 		list: mgr.list,
