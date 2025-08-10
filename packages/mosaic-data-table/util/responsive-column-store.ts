@@ -10,6 +10,7 @@ export type MatchesSnapshot = Record<string, boolean>
 export function responsiveColumnStore(initialQueries: string[] = []) {
 	let pinnedColumnsProps = new Map<ColumnDef<any>, {}>();
 	const listeners = new Set<() => void>();
+	let lastSnapshot: MatchesSnapshot = {};
 
 	const notifyAll = () => {
 		for (const listener of listeners) {
@@ -18,7 +19,7 @@ export function responsiveColumnStore(initialQueries: string[] = []) {
 	};
 
 	const mgr = createMediaQueryListManager((snap) => {
-		
+		lastSnapshot = snap;
 		const newPinnedColumnsProps = new Map<ColumnDef<any>, {}>();
 		const allColumns = Array.from(pinnedColumnsProps.keys());
 		pinnedColumnsProps.forEach((_, column) => {
@@ -40,7 +41,7 @@ export function responsiveColumnStore(initialQueries: string[] = []) {
 		
 		if (!pinnedColumnsProps.has(column)) {
 			const allColumns = Array.from(pinnedColumnsProps.keys());
-            pinnedColumnsProps.set(column, getColumnProps(column, [...allColumns, column], {}));  
+            pinnedColumnsProps.set(column, getColumnProps(column, [...allColumns, column], lastSnapshot));  
         }
     }
 
