@@ -1,4 +1,4 @@
-import { GlobalStyles, Table, TableBody, TableContainer, TableProps } from "@mui/material";
+import { BoxProps, GlobalStyles, Table, TableBody, TableContainer, TableProps } from "@mui/material";
 import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, HTMLAttributes } from "react";
 import { MosaicDataTableHead } from "./MosaicDataTableHead";
 import { GridApi, ColumnDef, MosaicDataTableBodyRenderPlugin, MosaicDataTableGridColumnsPlugin, MosaicDataTableProps, MosaicDataTablePropsPlugin } from "./types/table-types";
@@ -9,7 +9,8 @@ import { MemoStore } from "./util/MemoStore";
 import { hash } from "./util/hash-functinon";
 
 type MosaicDataTableExtendedProps<T> = MosaicDataTableProps<T> & 
-    Omit<HTMLAttributes<HTMLDivElement>, keyof MosaicDataTableProps<T>>;
+										BoxProps &
+   									    Omit<HTMLAttributes<HTMLDivElement>, keyof MosaicDataTableProps<T>>;
 
 export const MosaicDataTable = <T extends any,>(props: PropsWithChildren<MosaicDataTableExtendedProps<T>>) => {
 
