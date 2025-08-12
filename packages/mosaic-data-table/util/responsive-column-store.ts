@@ -1,64 +1,170 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
-import { createMediaQueryListManager } from "./createMediaQueryListManager";
+import { createMediaQueryListManager, MatchesSnapshot } from "./createMediaQueryListManager";
 import { Breakpoint, useTheme } from "@mui/material";
-import { ColumnDef, PinProps } from "../types/table-types";
+import { ColumnDef, Listener, PinProps } from "../types/table-types";
 
-const DEFAULT_SNAPSHOT = Object.freeze(new Map<ColumnDef<any>, {}>());
+const DEFAULT_SNAPSHOT = Object.freeze(new Map<string, {}>());
 
-export type MatchesSnapshot = Record<string, boolean>
+export type MatchesSnapshotMap = Map<string, boolean>
+
+export type RegisteredColumn = {
+	id: string;
+	width: number;
+	pin: PinProps | PinProps["pin"];
+	mediaQuery?: string;
+	mediaAlias?: string;
+}
 
 export function responsiveColumnStore(initialQueries: string[] = []) {
-	let pinnedColumnsProps = new Map<ColumnDef<any>, {}>();
-	const listeners = new Set<() => void>();
-	let lastSnapshot: MatchesSnapshot = {};
 
+	let pinnedColumns = new Map<string, RegisteredColumn>(); 
+	let pinnedColumnsProps = new Map<string, {}>();
+	let mediaAlias = new Map<string, string>();
+
+	//const listeners = new Set<() => void>();
+	const listenersByKey = new Map<string, Set<Listener>>();
+	let snapshot: MatchesSnapshotMap = new Map<string, boolean>();
+
+	
 	const notifyAll = () => {
-		for (const listener of listeners) {
-			listener();
+		for (const listeners of listenersByKey.values()) {
+			listeners.forEach((l) => l());
 		}
 	};
 
-	const mgr = createMediaQueryListManager((snap) => {
-		lastSnapshot = snap;
-		const newPinnedColumnsProps = new Map<ColumnDef<any>, {}>();
-		const allColumns = Array.from(pinnedColumnsProps.keys());
-		pinnedColumnsProps.forEach((_, column) => {
-			newPinnedColumnsProps.set(column, getColumnProps(column, allColumns, snap));
-		});
-		pinnedColumnsProps = newPinnedColumnsProps;
+	const notifyKey = (key: string) => {
+		const listeners = listenersByKey.get(key);
+		if (!listeners) {
+			return;
+		}
+		listeners.forEach((l) => l());
+	};
 
+	const mgr = createMediaQueryListManager((snap) => {
+		snapshot = getAliasSnapshot(snap);
+		processProps(snapshot);
 		notifyAll();
 	}, initialQueries);
 
-	const subscribe = (listener: () => void) => {
-		listeners.add(listener);
-		return () => { listeners.delete(listener); };
+	const getAliasSnapshot = (snap: MatchesSnapshot) => {
+		const snapshot = new Map<string, boolean>();
+		for(const mediaKey of Object.keys(snap)){
+			const media = snap[mediaKey];
+
+			const alias = mediaAlias.get(mediaKey);
+			if(!alias){
+				continue;
+			}
+			snapshot.set(alias, media);
+		}
+		return snapshot;
+	}
+
+	const processProps = (snap: MatchesSnapshotMap) => {
+		const newPinnedColumnsProps = new Map<string, {}>();
+		const allColumns = Array.from(pinnedColumns.values());
+		pinnedColumns.forEach((column, id) => {
+			newPinnedColumnsProps.set(id, getColumnProps(column, allColumns, snap));
+		});
+		pinnedColumnsProps = newPinnedColumnsProps;
+	}
+
+	const subscribe = (key: string, listener: () => void) => {
+		let set = listenersByKey.get(key);
+			if (!set) {
+				set = new Set();
+				listenersByKey.set(key, set);
+			}
+			set.add(listener);
+			return () => {
+			  const s = listenersByKey.get(key);
+			  if (!s) {
+				return;
+			  }
+			  s.delete(listener);
+			  if (s.size === 0) {
+				listenersByKey.delete(key);
+			  }
+			};
+		  
 	};
 
 	const getSnapshot = () => pinnedColumnsProps;
 
-    const registerPinnedColumn = (column: ColumnDef<any>) => {
-		
-		if (!pinnedColumnsProps.has(column)) {
-			const allColumns = Array.from(pinnedColumnsProps.keys());
-            pinnedColumnsProps.set(column, getColumnProps(column, [...allColumns, column], lastSnapshot));  
-        }
-    }
-
-	const clearRegisteredColumns = () => {
-		pinnedColumnsProps.clear();
+	const getSsrSnapshot = () => {
+		processProps(snapshot);
+		return pinnedColumnsProps;
 	}
 
-	const add = (alias: Breakpoint | number, q: string): boolean => {
-		return mgr.add(alias, q);
+	const registerPinnedColumn = (column: RegisteredColumn, columnOrder: string[]) => {
+		if (pinnedColumns.has(column.id)) {
+			return;
+		}
+
+		pinnedColumns.set(column.id, column);
+		updateColumnOrder(columnOrder);
+		processProps(snapshot);
+	}
+
+    const registerForResponsiveChanges = (column: RegisteredColumn) => {
+		
+		
+
+		if(column.mediaQuery){
+			mediaAlias.set(column.mediaQuery, column.mediaAlias!);
+			mgr.add(column.mediaQuery);
+		}
+
+		const snapshot = getAliasSnapshot(mgr.snapshot);
+		processProps(snapshot);
+		notifyKey(column.id);
+    }
+
+	const updateColumnOrder = (headCellsIds: string[]) => {
+
+		if (pinnedColumns.size === 0 || headCellsIds.length === 0) {
+			return;
+		}
+
+		const newOrderIds = headCellsIds.filter((id) => pinnedColumns.has(id));
+		// const remainingIds: string[] = [];
+		// pinnedColumns.forEach((_, id) => {
+		// 	if (!headCellsIds.includes(id)) {
+		// 		remainingIds.push(id);
+		// 	}
+		// });
+
+		//const newOrderIds = [...orderedKnownIds, ...remainingIds];
+
+		// Check if order actually changes
+		const currentOrderIds = Array.from(pinnedColumns.keys());
+		const isSameOrder =
+			currentOrderIds.length === newOrderIds.length &&
+			currentOrderIds.every((id, index) => id === newOrderIds[index]);
+
+		if (isSameOrder) {
+			return;
+		}
+
+		const reordered = new Map<string, RegisteredColumn>();
+		for (const id of newOrderIds) {
+			const col = pinnedColumns.get(id);
+			if (col) {
+				reordered.set(id, col);
+			}
+		}
+
+		pinnedColumns = reordered;
 	}
 
 	return {
 		subscribe,
 		getSnapshot,
-		add,
+		getSsrSnapshot,
+		// add,
 		registerPinnedColumn,
-		clearRegisteredColumns,
+		registerForResponsiveChanges,
+		updateColumnOrder,
 		remove: mgr.remove,
 		clear: mgr.clear,
 		list: mgr.list,
@@ -67,7 +173,7 @@ export function responsiveColumnStore(initialQueries: string[] = []) {
 }
 
 
-export const getColumnProps = (headCell: ColumnDef<any>, headCells: ColumnDef<any>[], snapshot: MatchesSnapshot) => {
+export const getColumnProps = (headCell: RegisteredColumn, headCells: RegisteredColumn[], snapshot: MatchesSnapshotMap) => {
 
 	let leftOffset: number | undefined = undefined;
 	let rightOffset: number | undefined = undefined;
@@ -110,8 +216,11 @@ export const getColumnProps = (headCell: ColumnDef<any>, headCells: ColumnDef<an
 	return pinProps;
 }
 
+export const isResponsivePin = (pin?: PinProps | PinProps["pin"]): pin is PinProps => {
+	return pin != null && typeof pin === 'object' && 'responsiveBreakpoint' in pin;
+}
 
-export const getPinnedStatus = (snapshot: MatchesSnapshot, pin?: PinProps | PinProps["pin"]): 'left' | 'right' | boolean | undefined => {
+export const getPinnedStatus = (snapshot: MatchesSnapshotMap, pin?: PinProps | PinProps["pin"]): 'left' | 'right' | boolean | undefined => {
 	if(pin == null) {
 		return undefined;
 	}
@@ -122,7 +231,7 @@ export const getPinnedStatus = (snapshot: MatchesSnapshot, pin?: PinProps | PinP
 		return pin;
 	}
 
-	const isPinned = snapshot[pin.responsiveBreakpoint];
+	const isPinned = snapshot.get(pin.responsiveBreakpoint);
 	if(isPinned){
 		return pin.pin;
 	}
@@ -130,23 +239,51 @@ export const getPinnedStatus = (snapshot: MatchesSnapshot, pin?: PinProps | PinP
 	return undefined;
 }
 
-export function useMediaQueryStore(store: ReturnType<typeof responsiveColumnStore>) {
+export function useMediaQueryStore(store: ReturnType<typeof responsiveColumnStore>, column: ColumnDef<any>, columnOrder: string[]) {
 
 	const breakpoints = useTheme().breakpoints;
 	
+	const responsivePin = useMemo(() => {
+		if (
+			column.pin &&
+			typeof column.pin === 'object' &&
+			'responsiveBreakpoint' in column.pin
+		) {
+			const breakpoint = column.pin.responsiveBreakpoint as Required<PinProps>["responsiveBreakpoint"];
+			const direction = column.pin.direction;
+			return {
+				breakpoint,
+				direction: direction ?? 'down'
+			};
+		}
+		return undefined;
+	}, [column]);
+
+	const registeredColumn = useMemo(() => {
+		const media = responsivePin ? breakpoints[responsivePin.direction](responsivePin.breakpoint) : undefined;
+		return {
+			id: column.id,
+			width: column.width!,
+			pin: column.pin!,
+			mediaQuery: media,
+			mediaAlias: responsivePin?.breakpoint
+		};
+	}, [column, responsivePin]);
+
+	store.registerPinnedColumn(registeredColumn, columnOrder);
+
 	const snapshot = useSyncExternalStore(
-		(notify) => store.subscribe(notify),
-		() => store.getSnapshot(),
-		() => DEFAULT_SNAPSHOT
+		(notify) => store.subscribe(column.id, notify),
+		() => store.getSnapshot().get(column.id),
+		() => store.getSnapshot().get(column.id)
 	);
 
-	const add = useCallback((breakpoint: Required<PinProps["responsiveBreakpoint"]>, direction: PinProps["direction"]) => { 
-		const query = breakpoints[direction ?? 'down'](breakpoint);
-		store.add(breakpoint, query);
-	}, [store.add]);
+	const registerForResponsiveChanges = useCallback(() => {
+		store.registerForResponsiveChanges(registeredColumn);
+	}, [registeredColumn]);
 
 	return useMemo(()=> ({
-		snapshot: snapshot,
-		add
-	}), [snapshot]);
+		registerForResponsiveChanges,
+		props: snapshot,
+	}), [registerForResponsiveChanges, snapshot]);
 }

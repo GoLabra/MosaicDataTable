@@ -53,6 +53,10 @@ export class MemoStore {
         }
     };
 
+	public getState = (key: string) => {
+		return this.store[key]?.result;
+	}
+
     public clear = (key?: string) => {
         
         if (!key) {

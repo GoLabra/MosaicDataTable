@@ -1,6 +1,6 @@
 import { Breakpoint } from "@mui/material";
 
-type MatchesSnapshot = Record<string, boolean>;
+export type MatchesSnapshot = Record<string, boolean>;
 
 export function createMediaQueryListManager(
 	onChange: (snapshot: MatchesSnapshot) => void,
@@ -8,10 +8,10 @@ export function createMediaQueryListManager(
 ) {
 	if (typeof window === 'undefined' || !window.matchMedia) {
 		return {
-			add: (_alias: Breakpoint | number, _q: string) => false,
-			remove: (_q: Breakpoint | number) => false,
+			add: (_q: string) => false,
+			remove: (_q: string) => false,
 			clear: () => { },
-			list: () => [] as (Breakpoint | number)[],
+			list: () => [] as string[],
 			snapshot: {},
 			dispose: () => { }
 		};
@@ -21,26 +21,27 @@ export function createMediaQueryListManager(
         const trimmed = q.trim();
         return trimmed.replace(/^@media\s*/i, '');
     };
-	const mqlByQuery = new Map<Breakpoint | number, MediaQueryList>();
-	const handlerByQuery = new Map<Breakpoint | number, (e?: MediaQueryListEvent) => void>();
+	const mqlByQuery = new Map<string, MediaQueryList>();
+	const handlerByQuery = new Map<string, (e?: MediaQueryListEvent) => void>();
 	const snapshot: MatchesSnapshot = {};
 
 	const notify = (changed?: string[]) => {
 		onChange({...snapshot});
 	};
 
-	const attach = (alias: Breakpoint | number, query: string): boolean => {
-		const q = normalize(query);
-		if (mqlByQuery.has(alias)) {
+	const attach = (query: string): boolean => {
+		if (mqlByQuery.has(query)) {
 			return false;
 		}
+		
+		const q = normalize(query);
 
 		const mql = window.matchMedia(q);
-		mqlByQuery.set(alias, mql);
-		snapshot[alias] = mql.matches;
+		mqlByQuery.set(query, mql);
+		snapshot[query] = mql.matches;
 
 		const handler = (_e?: MediaQueryListEvent) => {
-			snapshot[alias] = _e?.matches ?? false;
+			snapshot[query] = _e?.matches ?? false;
 			notify([q])
 		};
 
@@ -52,14 +53,14 @@ export function createMediaQueryListManager(
 			mql.addListener(handler);
 		}
 
-		handlerByQuery.set(alias, handler);
+		handlerByQuery.set(query, handler);
 		return true;
 	};
 
-	const detach = (alias: Breakpoint | number): boolean => {
+	const detach = (query: string): boolean => {
 		
-		const mql = mqlByQuery.get(alias);
-		const handler = handlerByQuery.get(alias);
+		const mql = mqlByQuery.get(query);
+		const handler = handlerByQuery.get(query);
 		if (!mql || !handler) {
 			return false;
 		}
@@ -70,20 +71,20 @@ export function createMediaQueryListManager(
 			// @ts-ignore legacy
 			mql.removeListener(handler);
 		}
-		mqlByQuery.delete(alias);
-		handlerByQuery.delete(alias);
+		mqlByQuery.delete(query);
+		handlerByQuery.delete(query);
 		return true;
 	};
 
 	// API
-	const add = (alias: Breakpoint | number, q: string) => {
-		if(!attach(alias, q)){
+	const add = (q: string) => {
+		if(!attach(q)){
 			return false;
 		}
-		notify();
+		//notify();
 		return true;
 	};
-	const remove = (alias: Breakpoint | number) => detach(alias);
+	const remove = (query: string) => detach(query);
 	const clear = () => { for (const q of [...mqlByQuery.keys()]) detach(q); };
 	const list = () => [...mqlByQuery.keys()];
 	const dispose = () => clear();

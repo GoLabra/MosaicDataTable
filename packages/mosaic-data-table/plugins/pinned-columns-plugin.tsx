@@ -4,22 +4,14 @@ import { TableBodyProps, TableCell, TableCellProps, useMediaQuery } from "@mui/m
 import { alpha, Breakpoint, SxProps, Theme } from "@mui/material/styles";
 import { MosaicDataTableCellRoot } from "../style";
 import { createMediaQueryListManager } from "../util/createMediaQueryListManager";
-import { responsiveColumnStore, MatchesSnapshot, useMediaQueryStore } from "../util/responsive-column-store";
+import { responsiveColumnStore, useMediaQueryStore } from "../util/responsive-column-store";
 
-export const PinnedColumnsPlugin = (): MosaicDataTableGridColumnsPlugin & MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin => {
+export const PinnedColumnsPlugin = (): MosaicDataTableBodyCellRenderPlugin & MosaicDataTableHeadCellRenderPlugin => {
 
 	const mediaQueryStore = responsiveColumnStore();
 
 	return {
-		scope: ['grid-columns', 'body-cell-render', 'head-cell-render'] as const,
-		getColumns: ({ headCells, memoStore }) => {
-
-			memoStore.memoFunction('sys_columns_pinned', (headCells: Array<ColumnDef<any>>) => {
-				mediaQueryStore.clearRegisteredColumns();	
-			})(headCells);
-
-            return headCells;
-        },
+		scope: ['body-cell-render', 'head-cell-render'] as const,
 		renderBodyCell: ({ headcell, rowId, gridApi, props, sx, children, cellProps }) => {
 
 			if (!headcell.pin) {
@@ -35,7 +27,6 @@ export const PinnedColumnsPlugin = (): MosaicDataTableGridColumnsPlugin & Mosaic
 				sx={sx}
 				children={children}
 				cellProps={cellProps} />);
-			// return gridApi.memoStore.memoFunction(`pinned-columns-body-${rowId}-${headcell.id}`, getCell)(headcell, gridApi.columns, '', props, sx, children, cellProps);
 		},
 		renderHeadCell: ({ headcell, gridApi, caller, props, sx, children, cellProps }) => {
 
@@ -53,7 +44,6 @@ export const PinnedColumnsPlugin = (): MosaicDataTableGridColumnsPlugin & Mosaic
 				children={children}
 				cellProps={cellProps}
 			/>);
-			// return gridApi.memoStore.memoFunction(`pinned-columns-head-${headcell.id}`, getCell)(headcell, gridApi.columns, caller, props, sx, children, cellProps);
 		}
 	}
 }
@@ -70,25 +60,13 @@ interface PinnedCellProps {
 }
 const PinnedCell = (props: PinnedCellProps) => {
 
-	const mediaStatus = useMediaQueryStore(props.mediaQueryStore);
+	const mediaStatus = useMediaQueryStore(props.mediaQueryStore, props.headCell, props.headCells.map(i => i.id));
 
-    props.mediaQueryStore.registerPinnedColumn(props.headCell);
+	useEffect(() => {
+    	mediaStatus.registerForResponsiveChanges();
+	}, [props.headCell]);
 
-    useEffect(() => {
-        if (
-            props.headCell.pin &&
-            typeof props.headCell.pin === 'object' &&
-            'responsiveBreakpoint' in props.headCell.pin
-        ) {
-            mediaStatus.add(
-                props.headCell.pin.responsiveBreakpoint as Required<PinProps>["responsiveBreakpoint"],
-                props.headCell.pin.direction
-            );
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.headCell]);
-
-    const pinProps = props.mediaQueryStore.getSnapshot().get(props.headCell) ?? {};
+	const pinProps = mediaStatus.props ?? {};
 
 	return <MosaicDataTableCellRoot key={props.headCell.id} {...props.cellProps} sx={{
 		...pinProps,
