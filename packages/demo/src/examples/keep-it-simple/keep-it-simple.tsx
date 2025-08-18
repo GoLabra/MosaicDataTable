@@ -1583,6 +1583,9 @@ export const KeepItSimpleTable = () => {
         },
     ]), []);
 
+
+	const rowDetailStore = useMemo(() => createRowDetailStore<any>(), []);
+
     const gridPlugins = useGridPlugins(
         // process the 'render' function
         CustomBodyCellContentRenderPlugin,
@@ -1661,7 +1664,7 @@ export const KeepItSimpleTable = () => {
         usePluginWithParams(RowDetailPlugin, {
             showExpanderButton: showRowExpansion,
             onGetRowId: useCallback((row: any) => row.id, []),
-            rowDetailStore: useMemo(() => createRowDetailStore<any>(), []),
+            rowDetailStore: rowDetailStore,
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),
 
@@ -1711,6 +1714,11 @@ export const KeepItSimpleTable = () => {
                 headCells={headCells}
                 items={items}
             />
+
+			<Button onClick={() => {
+				console.log(rowDetailStore.getKeys());
+				rowDetailStore.clear();
+			}}>Close All</Button>
         </>
     )
 }
