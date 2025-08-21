@@ -56,6 +56,10 @@ export const AbsoluteHeightContainer = ({ children, sx }: AbsoluteHeightContaine
                 ref={parentRef}
                 sx={{
                     height: parentHeight,
+                    transition: 'height var(--mosaic-height-transition-duration, 80ms) ease-in-out',
+                    '@media (prefers-reduced-motion: reduce)': {
+                        transition: 'none',
+                    },
                 }}></Box>
         </>
     );
