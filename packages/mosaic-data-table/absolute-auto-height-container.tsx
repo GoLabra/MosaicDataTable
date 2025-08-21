@@ -1,11 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Box, SxProps, Theme } from '@mui/material';
+import { Box, BoxProps, SxProps, Theme } from '@mui/material';
 
 interface AbsoluteHeightContainerProps {
     children?: React.ReactNode,
     sx?: SxProps<Theme>;
+	slots?: {
+		filler?: BoxProps
+	}
 }
-export const AbsoluteHeightContainer = ({ children, sx }: AbsoluteHeightContainerProps) => {
+export const AbsoluteHeightContainer = (props: AbsoluteHeightContainerProps) => {
     const parentRef = useRef(null);
     const childRef = useRef(null);
 
@@ -37,7 +40,7 @@ export const AbsoluteHeightContainer = ({ children, sx }: AbsoluteHeightContaine
 
     useEffect(() => {
         updateParentHeight();
-    }, [children]);
+    }, [props.children]);
 
     return (
         <>
@@ -45,21 +48,27 @@ export const AbsoluteHeightContainer = ({ children, sx }: AbsoluteHeightContaine
                 ref={childRef}
                 width={1}
                 sx={{
-                    ...sx,
+                    ...props.sx,
                     position: 'absolute',
                 }}
             >
-                {children}
+                {props.children}
             </Box>
 
             <Box
                 ref={parentRef}
+				{...props.slots?.filler}
                 sx={{
                     height: parentHeight,
                     transition: 'height var(--mosaic-height-transition-duration, 80ms) ease-in-out',
-                    '@media (prefers-reduced-motion: reduce)': {
+					
+                    '&.no-animation': {
                         transition: 'none',
                     },
+					'@media (prefers-reduced-motion: reduce)': {
+                        transition: 'none',
+                    },
+					...props.slots?.filler?.sx
                 }}></Box>
         </>
     );
