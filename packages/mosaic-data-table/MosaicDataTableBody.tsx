@@ -9,7 +9,7 @@ import { hash } from "./util/hash-functinon";
 interface MosaicDataTableBodyProps<T> {
     columns: ColumnDef<T>[];
     gridApi: React.MutableRefObject<GridApi>;
-    items: T[];
+    items: T[] | null;
 }
 export function MosaicDataTableBody<T>(props: MosaicDataTableBodyProps<T>) {
 

@@ -11,7 +11,7 @@ export interface Pagination {
 
 export interface MosaicDataTableProps<T = any> extends HTMLAttributes {
     caption?: string;
-    items: T[];
+    items: T[] | null;
     headCells: ColumnDef<T>[];
     plugins?: MosaicDataTablePlugin[];
 }
@@ -63,7 +63,7 @@ export interface MosaicDataTableGridColumnsPlugin extends MosaicDataTablePlugin 
 
 export interface MosaicDataTableBodyRenderPlugin extends MosaicDataTablePlugin {
     scope: 'body-render' | ArrayWithRequired<'body-render'>;
-    renderBody: (props: {headCells: Array<HeadCell<any>>, rows: any[], gridApi: GridApi, props: TableBodyProps, children?: ReactNode}) => ReactElement;
+    renderBody: (props: {headCells: Array<HeadCell<any>>, rows: any[] | null, gridApi: GridApi, props: TableBodyProps, children?: ReactNode}) => ReactElement;
 }
 
 export interface MosaicDataTableHeadRowRenderPlugin extends MosaicDataTablePlugin {
@@ -172,7 +172,7 @@ export interface MosaicDataTableHeadRowCellPropsPlugin extends MosaicDataTablePl
 }
 
 export interface GridApi {
-    items: any[];
+    items: any[] | null;
     columns: ColumnDef<any>[];
     columnsHash: string;
     plugins: MosaicDataTablePlugin[]; 

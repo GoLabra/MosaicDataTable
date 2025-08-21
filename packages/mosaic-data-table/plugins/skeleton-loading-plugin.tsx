@@ -33,9 +33,11 @@ export const SkeletonLoadingPlugin = ({
             if (!isLoading) {
                 return null;
             }
+
+			const rowsNumber = rows?.length ?? 0;
  
             return <TableBody>
-                {isLoading && (<SkeleonRows columns={headCells.length} rows={ rows?.length === 0 ? rowsWhenEmpty : Math.min(rows.length, maxRowsWhenNotEmpty ?? rows.length)} />)}
+                {isLoading && (<SkeleonRows columns={headCells.length} rows={ rowsNumber === 0 ? rowsWhenEmpty : Math.min(rowsNumber, maxRowsWhenNotEmpty ?? rowsNumber)} />)}
             </TableBody>
         }
     }

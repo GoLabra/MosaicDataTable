@@ -13,7 +13,11 @@ export const EmptyDataPlugin = ({
 
         scope: 'body-render',
         renderBody: ({headCells, rows}) => {
-
+            console.log('rows', rows);
+			if(!rows){
+				return null;
+			}
+			
             if (rows?.length) {
                 return null;
             }
