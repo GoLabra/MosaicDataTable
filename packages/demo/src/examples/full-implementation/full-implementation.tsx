@@ -2,9 +2,9 @@
 
 import { CountryIcon } from '@/lib/icons/country-icon';
 import { stringAvatar } from '@/util/avatar-util';
-import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, FormControlLabel, Checkbox, Box, Typography, Button } from '@mui/material';
-import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, Order, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowExpansionPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, useResponsiveHeadCellVisible, useRowExpansionStore, FilterRowPlugin, DefaultStringFilterOptions, DefaultNumberDateFilterOptions, createRowSelectionStore, createResponsivePin, createFilterRowStore } from 'mosaic-data-table';
-import { use, useCallback, useMemo, useState } from 'react';
+import { Stack, Avatar, Chip, LinearProgress, Rating, MenuItem, ListItemIcon, Box, Typography } from '@mui/material';
+import { AbsoluteHeightContainer, Action, ColumnsFillRowSpacePlugin, ColumnSortPlugin, CustomBodyCellContentRenderPlugin, EmptyDataPlugin, ColumnDef, HighlightColumnPlugin, MosaicDataTable, PaddingPluggin, PinnedColumnsPlugin, RowActionsPlugin, RowSelectionPlugin, SkeletonLoadingPlugin, SummaryRowPlugin, useGridPlugins, usePluginWithParams, FilterRowPlugin, DefaultStringFilterOptions, DefaultNumberDateFilterOptions, createRowSelectionStore, createResponsivePin, createFilterRowStore, RowDetailPlugin, createRowDetailStore } from 'mosaic-data-table';
+import { useCallback, useMemo } from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ModeSwitch from '@/components/ModeSwitch';
@@ -22,19 +22,13 @@ export const FullImplementationTable = () => {
     const contentManagerIds = useContentManagerIds(contentManagerStore.state)
     const contentManagerSelection = useSelection<string>(contentManagerIds.storeIds);
 
-    // responsive hooks for pinned columns and visible columns
-    // const namePinProps = useResponsivePin({ pin: 'left', breakpoint: 'sm', direction: 'up' });
-    // const countryPinProps = useResponsivePin({ pin: 'left', breakpoint: 'md', direction: 'up' });
-    // const tokensPinProps = useResponsivePin({ pin: true, breakpoint: 'lg', direction: 'up' });
-    // const registrationDateVisible = useResponsiveHeadCellVisible({ breakpoint: 'md', direction: 'up' });
-
     // head cells
     const headCells: ColumnDef[] = useMemo(() => [{
         id: 'id',
         header: 'ID',
         width: 80,
         hasSort: true,
-        cell: (row: any) => <>{row.id}</>,
+        cell: (row: any) => row.id,
     }, {
         id: 'name',
         header: 'Name',
@@ -48,7 +42,7 @@ export const FullImplementationTable = () => {
         header: 'E-mail',
         width: 200,
         hasSort: true,
-        cell: (row: any) => <>{row.email}</>,
+        cell: (row: any) => row.email,
     }, {
         id: 'country',
         header: 'Country',
@@ -68,30 +62,30 @@ export const FullImplementationTable = () => {
         header: () => 'City',
         width: 150,
         hasSort: true,
-        cell: (row: any) => <>{row.city}</>,
+        cell: (row: any) => row.city,
     }, {
         id: 'age',
         header: 'Age',
         width: 80,
         hasSort: true,
-        cell: (row: any) => <>{row.age}</>,
+        cell: (row: any) => row.age,
     }, {
         id: 'gender',
         header: 'Gender',
         width: 100,
         hasSort: true,
-        cell: (row: any) => <>{row.gender}</>,
+        cell: (row: any) => row.gender,
     }, {
         id: 'address',
         header: 'Address',
         width: 200,
         hasSort: true,
-        cell: (row: any) => <>{row.address}</>,
+        cell: (row: any) => row.address,
     }, {
         id: 'phone',
         header: 'Phone',
         width: 150,
-        cell: (row: any) => <>{row.phone}</>,
+        cell: (row: any) => row.phone,
     }, {
         id: 'status',
         header: 'Status',
@@ -109,42 +103,42 @@ export const FullImplementationTable = () => {
         header: 'Tokens',
         width: 100,
         hasSort: true,
-        cell: (row: any) => <>{row.tokens}</>,
+        cell: (row: any) => row.tokens,
         pin: createResponsivePin(true, 'lg', 'up'),
     }, {
         id: 'language',
         header: 'Language',
         width: 150,
         hasSort: true,
-        cell: (row: any) => <>{row.language}</>,
+        cell: (row: any) => row.language,
     }, {
         id: 'progress',
         header: 'Progress',
         width: 100,
-        cell: (row: any) => <LinearProgress color="success" value={row.progress} variant="determinate" />,
+        cell: (row: any) => (<LinearProgress color="success" value={row.progress} variant="determinate" />),
     }, {
         id: 'Verified',
         header: 'verified',
         width: 100,
         hasSort: true,
-        cell: (row: any) => <>{row.verified ? 'Yes' : 'No'}</>,
+        cell: (row: any) => row.verified ? 'Yes' : 'No',
     }, {
         id: 'registrationDate',
         header: 'Registered On',
         width: 210,
         hasSort: true,
-        cell: (row: any) => <>{dayjs(row.registrationDate).format('MMM DD, YYYY, hh:mm:ss A')}</>,
+        cell: (row: any) => (dayjs(row.registrationDate).format('MMM DD, YYYY, hh:mm:ss A')),
     }, {
         id: 'role',
         header: 'Role',
         width: 120,
         hasSort: true,
-        cell: (row: any) => <>{row.role}</>,
+        cell: (row: any) => row.role,
     }, {
         id: 'rating',
         header: 'Rating',
         width: 180,
-        cell: (row: any) => <Rating name="half-rating" defaultValue={row.rating} precision={0.5} readOnly />,
+        cell: (row: any) => (<Rating name="half-rating" defaultValue={row.rating} precision={0.5} readOnly />),
     }], []);
 
     const isColumnHighlighted = useCallback((headCellId: string) => {
@@ -164,7 +158,7 @@ export const FullImplementationTable = () => {
     ], []);
 
     const gridPlugins = useGridPlugins(
-        // process the 'render' function
+    	// process the headcell 'call' function
         CustomBodyCellContentRenderPlugin,
 
         // add filter row
@@ -240,10 +234,10 @@ export const FullImplementationTable = () => {
 			rowSelectionStore: useMemo(() => createRowSelectionStore<any>(), [])
         }),
 
-        usePluginWithParams(RowExpansionPlugin, {
+		usePluginWithParams(RowDetailPlugin, {
             showExpanderButton: true,
             onGetRowId: useCallback((row: any) => row.id, []),
-            expanstionStore: useRowExpansionStore(),
+            rowDetailStore: useMemo(() => createRowDetailStore<any>(), []),
             getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),
 

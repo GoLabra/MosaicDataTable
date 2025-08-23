@@ -4,7 +4,7 @@ import { Box, Card, CardContent, CardHeader, Divider, ListItemIcon, MenuItem, St
 import { CustomBodyCellContentRenderPlugin, ColumnDef, usePluginWithParams, MosaicDataTable, PaddingPluggin, RowActionsPlugin, useGridPlugins, Action } from 'mosaic-data-table';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { InlineEditPlugin, useInlineEditPluginStore } from './plugins/inline-edit-plugin';
+import { InlineEditPlugin } from './plugins/inline-edit-plugin';
 import { useMemo, useState } from 'react';
 
 export const InlineEditTable = () => {
@@ -45,7 +45,7 @@ export const InlineEditTable = () => {
 
     // The order of the plugins is (sometimes) important.
     const gridPlugins = useGridPlugins(
-        // process the 'render' function
+        // process the headcell 'call' function
         CustomBodyCellContentRenderPlugin,
 
         // add padding to the table cells
@@ -64,10 +64,8 @@ export const InlineEditTable = () => {
                         ...prevState.map((item: any) => item.id != rowId ? item : {...item, [columnId]:value } ), 
                     ]
                 })
-            },
-            inlineEditStore: useInlineEditPluginStore()
-        }),
-        
+            },        
+		}),
     );
 
     return (

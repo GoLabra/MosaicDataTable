@@ -323,8 +323,7 @@ const NumberInput = (props: InputProps) => {
                 disableUnderline: true,
             }
         }}
-        {...other}
-        value={props.value ?? ''}
+        defaultValue={props.value}
         onChange={(event) =>{
             props.onChange({
                 ...event,
@@ -347,8 +346,7 @@ const SelectInput = (props: InputProps) => {
                 disableUnderline: true,
             }
         }}
-        {...other}
-        value={props.value || ''}
+        defaultValue={props.value}
     >
         <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         {props.selectOptions!.map((option, index) => (
@@ -368,7 +366,7 @@ const BooleanInput = (props: InputProps) => {
             }
         }}
         {...other}
-        value={props.value ?? ''}
+        defaultValue={props.value}
     >
         <MenuItem value={''} sx={{ height: '36px' }}></MenuItem>
         <MenuItem value={'true'}>True</MenuItem>

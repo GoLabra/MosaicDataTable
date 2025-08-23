@@ -6,26 +6,26 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useMemo, useState } from 'react';
 
+
+const headCells: ColumnDef[] = [{
+	id: 'id',
+	header: 'ID',
+	cell: (row: any) => row.id,
+}, {
+	id: 'name',
+	header: 'Name',
+	cell: (row: any) => row.name,
+}];
+
+const items = [{
+	id: 1,
+	name: 'John Doe'
+}, {
+	id: 2,
+	name: 'Jane Doe'
+}];
+
 export const BasicTable = () => {
-
-    const headCells: ColumnDef[] = useMemo(() =>[{
-        id: 'id',
-        header: 'ID',
-        cell: (row: any) => row.id,
-    }, {
-        id: 'name',
-        header: 'Name',
-        cell: (row: any) => row.name,
-    }], []);
-
-
-    const items = useMemo(() => [{
-        id: 1,
-        name: 'John Doe'
-    }, {
-        id: 2,
-        name: 'Jane Doe'
-    }], []);
 
      // Row Actions
      const todoActions: Action<any>[] = useMemo(() => [
@@ -40,19 +40,8 @@ export const BasicTable = () => {
     ], []);
 
     const gridPlugins = useGridPlugins(
-        // process the 'render' function
+        // process the headcell 'call' function
         CustomBodyCellContentRenderPlugin, 
-
-        // add padding to the table cells
-        usePluginWithParams(PaddingPluggin, {}),
-        
-        // add actions column
-        usePluginWithParams(RowActionsPlugin, { 
-            actions: todoActions
-        }),
-
-        // Required for pinned columns when the table is scrolled. Marking a column as pinned alone isn’t enough; this plugin ensures the column stays in place.
-        //PinnedColumnsPlugin,
     );
 
     return (

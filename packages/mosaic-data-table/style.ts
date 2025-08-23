@@ -6,82 +6,103 @@ import { TableRowProps } from '@mui/material/TableRow';
 import { TableCellProps } from '@mui/material/TableCell';
 
 export const MosaicDataTableRoot = styled(Box, {
-    name: 'MosaicDataTable',
-    slot: 'root',
+	name: 'MosaicDataTable',
+	slot: 'root',
 })<BoxProps>(({ theme }) => ({
-    position: 'relative',
-    width: '100%',
-    caption: {
-        display: 'none'
-    },
-    backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+	position: 'relative',
+	width: '100%',
+	caption: {
+		display: 'none'
+	},
+	backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
 }));
 
 export const MosaicDataTableRowRoot = styled(TableRow, {
-    name: 'MosaicDataTableRow',
-    slot: 'root',
+	name: 'MosaicDataTableRow',
+	slot: 'root',
 })<TableRowProps>(({ theme }) => ([
-    {
-        borderBottomWidth: 0,
-        backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+	{
+		position: 'relative',
+		borderBottomWidth: 0,
+		backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
 
-        [`&.${tableRowClasses.root}`]: {
-            'td': {
-                    backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
-                },
-            },
+		[`&.${tableRowClasses.root}`]: {
+			'td': {
+				backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+			},
+		},
 
-         [`&.${tableRowClasses.hover}`]: {
-            '&:hover': {
-                backgroundColor: 'var(--mui-palette-MosaicDataTable-rowHover)',
-                'td': {
-                    backgroundColor: 'var(--mui-palette-MosaicDataTable-rowHover)',
-                }
-            }
-        },
-    },
+		[`&.${tableRowClasses.hover}`]: {
+			'&:hover': {
+				backgroundColor: 'var(--mui-palette-MosaicDataTable-rowHover)',
+				'td': {
+					backgroundColor: 'var(--mui-palette-MosaicDataTable-rowHover)',
+				}
+			}
+		},
+
+		'&:not(:last-child)': {
+			'> td': {
+				borderBottomWidth: 1,
+				borderBottomStyle: 'dashed',
+				borderBottomColor: 'var(--mui-palette-divider)',
+			}
+		},
+
+
+	},
 ]));
 
+export const MosaicDataTableHeadRowRoot = styled(TableRow, {
+	name: 'MosaicDataTableHeadRow',
+	slot: 'root',
+})<TableRowProps>(({ theme }) => ({
+	'> th': {
+		borderBottomWidth: 1,
+		borderBottomStyle: 'dashed',
+		borderBottomColor: 'var(--mui-palette-divider)',
+	}
+}
+));
+
 export const MosaicDataTableCellRoot = styled(TableCell, {
-    name: 'MosaicDataTableCell',
-    slot: 'root',
+	name: 'MosaicDataTableCell',
+	slot: 'root',
 })<TableCellProps>(({ theme }) => {
-    return {
-        padding: 0,
-        height: '100%',
-        backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
-        borderBottomWidth: 1,
-        borderBottomStyle: 'dashed',
-        borderBottomColor: 'var(--mui-palette-divider)',
-    }
+	return {
+		padding: 0,
+		height: '100%',
+		backgroundColor: 'var(--mui-palette-MosaicDataTable-background)',
+		border: 0
+	}
 });
 
 export const DockedDiv = styled(Box)<BoxProps>(({ theme }) => ({
-    height: '100%',
-    width: '100%',
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignContent: 'flex-start',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+	height: '100%',
+	width: '100%',
+	position: 'relative',
+	display: 'flex',
+	flexDirection: 'row',
+	flexWrap: 'nowrap',
+	alignContent: 'flex-start',
+	justifyContent: 'flex-start',
+	alignItems: 'center',
 }));
 
 
 declare module '@mui/material/styles' {
-    interface Palette {
-        MosaicDataTable: {
-            background: string;
-            highlight: string;
-            rowHover: string;
-        };
-    }
-    interface PaletteOptions {
-        MosaicDataTable?: {
-            background?: string;
-            highlight?: string;
-            rowHover?: string;
-        };
-    }
-  }
+	interface Palette {
+		MosaicDataTable: {
+			background: string;
+			highlight: string;
+			rowHover: string;
+		};
+	}
+	interface PaletteOptions {
+		MosaicDataTable?: {
+			background?: string;
+			highlight?: string;
+			rowHover?: string;
+		};
+	}
+}

@@ -10,14 +10,13 @@ export const EmptyDataPlugin = ({
 }): MosaicDataTableBodyRenderPlugin => {
 
     return {
-
         scope: 'body-render',
         renderBody: ({headCells, rows}) => {
-            console.log('rows', rows);
+
 			if(!rows){
 				return null;
 			}
-			
+
             if (rows?.length) {
                 return null;
             }

@@ -45,7 +45,7 @@ export const RowHighlightTable = () => {
 
     // The order of the plugins is (sometimes) important.
     const gridPlugins = useGridPlugins(
-        // process the 'render' function
+        // process the headcell 'call' function
         CustomBodyCellContentRenderPlugin,
 
         // add padding to the table cells

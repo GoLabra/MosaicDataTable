@@ -1,58 +1,60 @@
-import { TableCell, TableHead, TableHeadProps, TableRow } from '@mui/material'
-import { SxProps, Theme } from '@mui/material/styles'
-import { ReactNode, useCallback, useMemo } from 'react'
-import { EnhancedTableProps, ColumnDef, MosaicDataTableHeadCellContentRenderPlugin, MosaicDataTableHeadCellRenderPlugin, MosaicDataTableHeadCellStylePlugin, MosaicDataTableHeadRowRenderPlugin, MosaicDataTableHeadRowStylePlugin, MosaicDataTableHeadExtraRowStartPlugin, MosaicDataTableHeadExtraRowEndPlugin, MosaicDataTablePlugin, GridApi, MosaicDataTableHeadPropsPlugin } from './types/table-types'
-import { MosaicDataTableHeadRow } from './MosaicDataTableHeadRow'
+import { TableHead, TableHeadProps } from '@mui/material';
+import { useMemo } from 'react';
+import { MosaicDataTableHeadRow } from './MosaicDataTableHeadRow';
+import { ColumnDef, GridApi, MosaicDataTableHeadPropsPlugin } from './types/table-types';
 
 interface MosaicDataTableHeadProps<T> {
     headCells: ColumnDef<T>[];
     gridApi: React.MutableRefObject<GridApi>
 }
+
 export const MosaicDataTableHead = <T,>(props: MosaicDataTableHeadProps<T>) => {
-    const { headCells } = props
 
-    const getExtraRowsStart = useMemo(() => {
-
-        return props.gridApi.current.pluginMap.headExtraRowStart.map((plugin) => {
-            var row = plugin.getHeadExtraRowStart?.({ columns: props.headCells, gridApi: props.gridApi.current });
-            return row;
-        });
-
-    }, [...props.gridApi.current.pluginMap.headExtraRowStart, props.headCells]);
-
-    const getExtraRowsEnd = useMemo(() => {
-
-        return props.gridApi.current.pluginMap.headExtraRowEnd.map((plugin) => {
-            var row = plugin.getHeadExtraRowEnd?.({ columns: props.headCells, gridApi: props.gridApi.current });
-            return row;
-        });
-
-    }, [...props.gridApi.current.pluginMap.headExtraRowEnd, props.headCells]);
-
+    const pluginMap = props.gridApi.current.pluginMap
 
     const headProps = useMemo(() => {
-        return props.gridApi.current.pluginMap.headProps.reduce((acc: TableHeadProps, plugin: MosaicDataTableHeadPropsPlugin) => {
+        return pluginMap.headProps.reduce((acc: TableHeadProps, plugin: MosaicDataTableHeadPropsPlugin) => {
             const headProps = plugin.getHeadProps({ gridApi: props.gridApi.current });
             return {
                 ...acc,
                 ...headProps
             }
         }, {})
-    }, [...props.gridApi.current.pluginMap.headProps]);
-    
-    return (
-        <TableHead {...headProps}>
+    }, [pluginMap.headProps]);
 
+    const getExtraRowsStart = useMemo(() => {
+        return pluginMap.headExtraRowStart.map((plugin) => {
+            const row = plugin.getHeadExtraRowStart?.({ columns: props.headCells, gridApi: props.gridApi.current });
+            return row;
+        });
+    }, [pluginMap.headExtraRowStart, props.headCells]);
+
+    const getExtraRowsEnd = useMemo(() => {
+        return pluginMap.headExtraRowEnd.map((plugin) => {
+            const row = plugin.getHeadExtraRowEnd?.({ columns: props.headCells, gridApi: props.gridApi.current });
+            return row;
+        });
+    }, [pluginMap.headExtraRowEnd, props.headCells]);
+
+    // Memoize the children to prevent unnecessary re-creation
+    const headRowsChildren = useMemo(() => (
+        <>
             {getExtraRowsStart}
-
             <MosaicDataTableHeadRow 
                 headCells={props.headCells}
                 gridApi={props.gridApi}
                 caller="mosaic-data-table"
             />
-
             {getExtraRowsEnd}
+        </>
+    ), [getExtraRowsStart, props.headCells, props.gridApi, getExtraRowsEnd]);
 
-        </TableHead >
-    )
+    // Memoize the final result to prevent unnecessary re-renders
+    const tableHeadElement = useMemo(() => (
+        <TableHead {...headProps}>
+            {headRowsChildren}
+        </TableHead>
+    ), [headProps, headRowsChildren]);
+
+    return tableHeadElement;
 }

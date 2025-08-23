@@ -4,6 +4,7 @@ import { Box, BoxProps, SxProps, Theme } from '@mui/material';
 interface AbsoluteHeightContainerProps {
     children?: React.ReactNode,
     sx?: SxProps<Theme>;
+	enableAnimation?: boolean;
 	slots?: {
 		filler?: BoxProps
 	}
@@ -60,14 +61,14 @@ export const AbsoluteHeightContainer = (props: AbsoluteHeightContainerProps) => 
 				{...props.slots?.filler}
                 sx={{
                     height: parentHeight,
-                    transition: 'height var(--mosaic-height-transition-duration, 80ms) ease-in-out',
+
+					...(props.enableAnimation ? {
+						transition: 'height var(--mosaic-height-transition-duration, 80ms) ease-in-out',
+						'@media (prefers-reduced-motion: reduce)': {
+							transition: 'none',
+						},
+					} : {}),
 					
-                    '&.no-animation': {
-                        transition: 'none',
-                    },
-					'@media (prefers-reduced-motion: reduce)': {
-                        transition: 'none',
-                    },
 					...props.slots?.filler?.sx
                 }}></Box>
         </>

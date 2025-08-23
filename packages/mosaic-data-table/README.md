@@ -78,9 +78,9 @@ Plugins can be combined to add specific functionality to your table. The order o
     usePluginWithParams(FilterRowPlugin, {
         visible?: boolean;
         filterChanged: (filter: Filter) => void;
-        filter: Filter;
         filterColumns: Record<string, ColumnDefFilter>;
         key: string;
+        store: FilterRowStore;
     })
     ```   
 
@@ -121,19 +121,19 @@ Plugins can be combined to add specific functionality to your table. The order o
         onGetRowId: (row: any) => any,
         onSelectOne: (id: any) => void,
         onDeselectOne: (id: any) => void,
-        selectedIds: any[]
+        rowSelectionStore: RowSelectionStore,
     })
     ```
 
-- RowExpansionPlugin
+- RowDetailPlugin
 
-    Enables expandable rows
+    Enables Detail rows
 
     ```
-    usePluginWithParams(RowExpansionPlugin, {
+    usePluginWithParams(RowDetailPlugin, {
         showExpanderButton: boolean,
         onGetRowId: (row: any) => any,
-        expansionStore: RowExpansionStore,
+        rowDetailStore: RowDetailStore,
         getExpansionNode: (row: any, params: any) => ReactNode
     })
     ```

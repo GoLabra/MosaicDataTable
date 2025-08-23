@@ -194,11 +194,14 @@ const Expander = (props: { row: any, rowId: string, children: ReactNode, sx: SxP
 		<>
 			<MosaicDataTableRowRoot key={props.rowId} hover tabIndex={-1} sx={props.sx} {...props.rowProps}>{props.children}</MosaicDataTableRowRoot>
 
-			{expansionInfo?.isOpen && <MosaicDataTableRowRoot key={`${props.rowId}-expansion`} tabIndex={-1}>
-				<MosaicDataTableCellRoot colSpan={100}>
-					{props.getExpansionNode(props.row, expansionInfo.params)}
-				</MosaicDataTableCellRoot>
-			</MosaicDataTableRowRoot>}
+			{expansionInfo?.isOpen && (
+				<MosaicDataTableRowRoot key={`${props.rowId}-expansion`}
+					tabIndex={-1}
+					sx={{position: 'inherit'}}>
+					<MosaicDataTableCellRoot colSpan={100}>
+						{props.getExpansionNode(props.row, expansionInfo.params)}
+					</MosaicDataTableCellRoot>
+			</MosaicDataTableRowRoot>)}
 		</>
 	)
 }
