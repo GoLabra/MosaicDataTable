@@ -98,6 +98,6 @@ const MosaicDataTableComponent = <T extends any,>(props: PropsWithChildren<Mosai
     )
 }
 
-const MosaicDataTable = memo(MosaicDataTableComponent);
+const MosaicDataTable = memo(MosaicDataTableComponent) as typeof MosaicDataTableComponent;
 
 export { MosaicDataTable };

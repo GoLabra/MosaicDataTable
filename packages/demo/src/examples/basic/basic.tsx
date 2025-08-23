@@ -7,7 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useMemo, useState } from 'react';
 
 
-const headCells: ColumnDef[] = [{
+const headCells: ColumnDef<{id: number, name: string}>[] = [{
 	id: 'id',
 	header: 'ID',
 	cell: (row: any) => row.id,
