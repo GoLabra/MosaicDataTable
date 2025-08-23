@@ -71,7 +71,7 @@ export const RowExpansionTable = () => {
             showExpanderButton: true,
             onGetRowId: (row: any) => row.id,
             rowDetailStore: rowDetailStore,
-            getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>
+            getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer enableAnimation sx={{ p: 5 }}>
                 Hello {row.name}!
                 {params?.param1 && <div>Param1 is true</div>}
             </AbsoluteHeightContainer>), [])

@@ -238,7 +238,7 @@ export const FullImplementationTable = () => {
             showExpanderButton: true,
             onGetRowId: useCallback((row: any) => row.id, []),
             rowDetailStore: useMemo(() => createRowDetailStore<any>(), []),
-            getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
+            getExpansionNode: useCallback((row: any, params: any) => (<AbsoluteHeightContainer enableAnimation sx={{ p: 5 }}>Hello {row.name}</AbsoluteHeightContainer>), [])
         }),
 
         // Fill the space between the last column and the actions. Needed when only a few columns are fixed-width to push the action column to the right.
