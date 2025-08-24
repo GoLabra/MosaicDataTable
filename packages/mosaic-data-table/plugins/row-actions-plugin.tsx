@@ -58,17 +58,19 @@ interface ActionButtonProps {
 const ActionButton = (props: ActionButtonProps) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [currentTarget, setCurrenttarget] = useState<any>()
+    
     const open = Boolean(anchorEl);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>, actionOn: any) => {
         setAnchorEl(event.currentTarget)
-        setCurrenttarget(actionOn)
+        
     }
     const handleClose = () => {
         setAnchorEl(null)
-        setCurrenttarget(undefined)
+        
     }
+
+	const visibleActions = props.actions.filter((a) => a.isVisible?.(props.row) ?? true);
 
     return (<>
         <IconButton
@@ -80,6 +82,7 @@ const ActionButton = (props: ActionButtonProps) => {
             aria-haspopup="menu"
             aria-expanded={open ? 'true' : undefined}
             id={`user-menu-btn`}
+			disabled={visibleActions.length == 0}
         >
             <MoreVertIcon />
         </IconButton>
@@ -118,8 +121,7 @@ const ActionButton = (props: ActionButtonProps) => {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-            {props.actions.filter((a) => a.isVisible?.(props.row) ?? true)
-                .map((a) => a.render(currentTarget || props.row))}
+            {visibleActions.map((a) => a.render(props.row))}
         </Menu>
     </>)
 };
