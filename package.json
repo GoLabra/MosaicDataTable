@@ -11,7 +11,8 @@
         "update-everything-i-am-lazy": "npm run deploy-demo && npm run deploy-npm && npm run gh-lazy"
     },
     "resolutions": {
-        "glob": "^10.5.0"
+        "glob": "^10.5.0",
+        "@babel/runtime": "7.26.10"
     },
     "overrides": {
         "glob": "^10.5.0",
