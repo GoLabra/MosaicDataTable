@@ -9,7 +9,6 @@
     "start": "next start",
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest",
-
     "predeploy": "DEPLOY_ENV=gh-pages npm run build && touch ./out/.nojekyll",
     "deploy": "gh-pages -d out"
   },
@@ -19,20 +18,20 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^6.1.8",
     "@mui/material": "^6.1.8",
-    "@mui/x-date-pickers": "^7.11.0",
     "@mui/material-nextjs": "^6.1.8",
+    "@mui/x-date-pickers": "^7.11.0",
     "dayjs": "^1.11.11",
     "mosaic-data-table": "*",
     "next": "^15.4.10",
+    "nuqs": "^2.4.1",
     "react": "^18",
-    "react-dom": "^18",
-    "nuqs": "^2.4.1"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "latest",
+    "eslint": "^9.39.2",
     "eslint-config-next": "^15.0.0",
     "gh-pages": "^6.3.0",
     "typescript": "latest"
