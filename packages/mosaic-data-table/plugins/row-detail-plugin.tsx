@@ -102,7 +102,7 @@ export function createRowDetailStore<T>(): RowDetailStore {
 			const rowDetailState = rowDetailStore.get(key);
 			rowDetailStore.set(key, {
 				...rowDetailState,
-				isOpen: openImmediately ?? (rowDetailState?.isOpen ?? false) ?? false,
+				isOpen: openImmediately,
 				params: {
 					...(rowDetailState?.params ?? {}) as T,
 					...params

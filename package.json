@@ -14,21 +14,25 @@
         "glob": "^10.5.0",
         "@babel/runtime": "7.26.10",
         "esbuild": "^0.27.2",
-        "brace-expansion": "^4.0.1",
+        "brace-expansion": "^5.0.6",
         "js-yaml": "^4.1.1",
         "@eslint/plugin-kit": "^0.3.4",
         "eslint": "^9.39.2",
-        "minimatch": "^10.0.1"
+        "minimatch": "^10.0.1",
+        "postcss": "^8.5.15",
+        "@mui/system": "^6.5.0"
     },
     "overrides": {
         "glob": "^10.5.0",
         "@babel/runtime": "7.26.10",
         "esbuild": "^0.27.2",
-        "brace-expansion": "^4.0.1",
+        "brace-expansion": "^5.0.6",
         "js-yaml": "^4.1.1",
         "@eslint/plugin-kit": "^0.3.4",
         "eslint": "^9.39.2",
-        "minimatch": "^10.0.1"
+        "minimatch": "^10.0.1",
+        "postcss": "^8.5.15",
+        "@mui/system": "^6.5.0"
 	},
     "workspaces": [
       "packages/*"

@@ -1,6 +1,6 @@
 {
     "name": "mosaic-data-table",
-    "version": "0.0.77",
+    "version": "0.0.78",
     "description": "React DataTable component with Material-UI",
     "repository": {
         "type": "git",
@@ -42,6 +42,6 @@
         "@types/react-dom": "^18",
         "ts-node": "^10.9.2",
         "tsup": "^8.5.1",
-        "typescript": "^5.7.2"
+        "typescript": "^6.0.3"
     }
 }
